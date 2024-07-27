@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -8,32 +9,36 @@ import {
 } from "react-native";
 import React from "react";
 import { theme } from "../../src/constants/theme";
+import { Link, useNavigation } from "expo-router";
 
 const Home = () => {
   const Module = ({ text }) => {
     return (
-      <View
+      <Link
+        href="/(sales)"
         style={{
           backgroundColor: "orange",
           marginVertical: 10,
           marginHorizontal: 10,
           padding: 20,
           height: "28%",
-          borderRadius: 25,
           justifyContent: "flex-end",
+          borderRadius: 25,
         }}
+        asChild
       >
-        <Text
-          style={{
-            color: theme.colors.secondary,
-            fontStyle: "italic",
-            fontWeight: "bold",
-            textAlignVertical: "bottom",
-          }}
-        >
-          {text}
-        </Text>
-      </View>
+        <Pressable>
+          <Text
+            style={{
+              color: theme.colors.secondary,
+              fontStyle: "italic",
+              fontWeight: "bold",
+            }}
+          >
+            {text}
+          </Text>
+        </Pressable>
+      </Link>
     );
   };
 

@@ -1,6 +1,7 @@
 import { Slot, SplashScreen } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
@@ -41,8 +42,10 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
-      <Slot />
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider>
+        <Slot />
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
