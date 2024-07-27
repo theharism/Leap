@@ -1,4 +1,5 @@
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -50,12 +51,17 @@ const signin = () => {
           bounces={false}
           style={styles.scrollViewStyle}
         >
+          <Image
+            source={require("../assets/logo.png")}
+            style={{ alignSelf: "center" }}
+          />
+
           <Text
             style={{
               textAlign: "center",
-              fontFamily: "",
-              fontSize: 36,
-              margin: 5,
+              fontSize: 32,
+              fontWeight: "300",
+              marginTop: 25,
               color: theme.colors.secondary,
             }}
           >
@@ -68,7 +74,7 @@ const signin = () => {
               fontStyle: "italic",
               fontFamily: "",
               marginHorizontal: 5,
-              marginVertical: 30,
+              marginTop: 80,
               color: theme.colors.secondary,
             }}
           >
@@ -76,7 +82,7 @@ const signin = () => {
           </Text>
           <View
             style={{
-              marginVertical: 50,
+              marginTop: 50,
               justifyContent: "space-between",
             }}
           >
@@ -119,7 +125,7 @@ const signin = () => {
                   textAlign: "left",
                   fontFamily: "",
                   fontSize: 18,
-                  marginTop: 15,
+                  marginTop: 20,
                   color: theme.colors.secondary,
                 }}
               >
