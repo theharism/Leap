@@ -23,7 +23,7 @@ export default function SalesLayout() {
         name="index"
         options={{
           drawerLabel: "Sales Targets",
-          title: "Sales Targets and Success Formula",
+          title: "",
         }}
       />
     </Drawer>
