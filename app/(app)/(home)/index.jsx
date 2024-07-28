@@ -18,8 +18,7 @@ const Home = () => {
         href="/(sales)"
         style={{
           backgroundColor: "orange",
-          marginVertical: 10,
-          marginHorizontal: 10,
+          margin: 10,
           padding: 20,
           height: "28%",
           justifyContent: "flex-end",

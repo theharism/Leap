@@ -14,7 +14,7 @@ import { Link } from "expo-router";
 import { theme } from "./src/constants/theme.js";
 import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
-import LeapTextInput from "./src/components/LeapTextInput.js";
+import LeapTextInput from "./src/components/LeapTextInput.jsx";
 
 const signin = () => {
   const { isKeyboardOpen } = useKeyboard();
