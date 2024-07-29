@@ -7,18 +7,21 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { theme } from "./src/constants/theme.js";
 import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
+import { useDispatch } from "react-redux";
+import axios from "./src/api/axios.js";
+import { setUser } from "./src/redux/features/userSlice.js";
 
 const signin = () => {
-  const { isKeyboardOpen } = useKeyboard();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -27,6 +30,25 @@ const signin = () => {
   const [nameError, setNameError] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const signupFunc = () => {
+    setLoading(true);
+    axios
+      .post("/signup", { email, password, fullName: name, role: "agent" })
+      .then((res) => {
+        const user = res.data.user;
+
+        dispatch(setUser({ user }));
+
+        router.replace("/");
+      })
+      .catch((err) => {
+        ToastAndroid.show(err.data.message, ToastAndroid.SHORT);
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <KeyboardAvoidingView
@@ -124,6 +146,8 @@ const signin = () => {
                 marginVertical: 20,
                 backgroundColor: "#ff914d",
               }}
+              onPress={signupFunc}
+              loading={loading}
             >
               Sign Up
             </Button>

@@ -26,6 +26,13 @@ export default function SalesLayout() {
           title: "",
         }}
       />
+      <Drawer.Screen
+        name="logout"
+        options={{
+          drawerLabel: "Log Out",
+          title: "",
+        }}
+      />
     </Drawer>
   );
 }

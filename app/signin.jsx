@@ -7,6 +7,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from "react-native";
 import React, { useState } from "react";
@@ -15,6 +16,7 @@ import { theme } from "./src/constants/theme.js";
 import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
+import axios from "./src/api/axios.js";
 
 const signin = () => {
   const { isKeyboardOpen } = useKeyboard();
@@ -27,6 +29,26 @@ const signin = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const signinFunc = () => {
+    setLoading(true);
+    axios
+      .post("/login", { email, password })
+      .then((res) => {
+        const user = res.data.user;
+
+        dispatch(setUser({ user }));
+
+        router.replace("/");
+      })
+      .catch((err) => {
+        ToastAndroid.show(err.data.message, ToastAndroid.SHORT);
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <KeyboardAvoidingView
@@ -103,6 +125,7 @@ const signin = () => {
             />
 
             <Button
+              loading={loading}
               labelStyle={{
                 fontSize: 17,
                 fontFamily: "",
@@ -116,6 +139,7 @@ const signin = () => {
                 marginVertical: 20,
                 backgroundColor: "#ff914d",
               }}
+              onPress={signinFunc}
             >
               Sign In
             </Button>

@@ -3,7 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
-import { useDispatch } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
+import { store } from "./src/redux/store";
 
 // SplashScreen.preventAutoHideAsync();
 
@@ -16,36 +17,38 @@ export default function App() {
     //     initPusher(api_token).then(() => console.log("Pusher Initialized"));
     //   }
     // }, [api_token]);
-    // useEffect(() => {
-    //   const loadUser = async () => {
-    //     try {
-    //       const storedUserString = await AsyncStorage.getItem("user");
-    //       const storedChatString = await AsyncStorage.getItem("chat");
-    //       const storedNotificationsString = await AsyncStorage.getItem(
-    //         "notifications"
-    //       );
-    //       if (storedUserString) {
-    //         dispatch(setUser({ user: JSON.parse(storedUserString) }));
-    //       }
-    //       if (storedNotificationsString) {
-    //         dispatch(setNotifications(JSON.parse(storedNotificationsString)));
-    //       }
-    //       if (storedChatString) {
-    //         dispatch(setChat(JSON.parse(storedChatString)));
-    //       }
-    //     } catch (error) {
-    //       console.error("Error loading user from AsyncStorage:", error);
-    //     }
-    //   };
-    //   loadUser();
-    // }, []);
+    useEffect(() => {
+      const loadUser = async () => {
+        try {
+          const storedUserString = await AsyncStorage.getItem("user");
+          // const storedChatString = await AsyncStorage.getItem("chat");
+          // const storedNotificationsString = await AsyncStorage.getItem(
+          //   "notifications"
+          // );
+          if (storedUserString) {
+            dispatch(setUser({ user: JSON.parse(storedUserString) }));
+          }
+          // if (storedNotificationsString) {
+          //   dispatch(setNotifications(JSON.parse(storedNotificationsString)));
+          // }
+          // if (storedChatString) {
+          //   dispatch(setChat(JSON.parse(storedChatString)));
+          // }
+        } catch (error) {
+          console.error("Error loading user from AsyncStorage:", error);
+        }
+      };
+      loadUser();
+    }, []);
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider>
-        <Slot />
-      </PaperProvider>
+      <Provider store={store}>
+        <PaperProvider>
+          <Slot />
+        </PaperProvider>
+      </Provider>
     </GestureHandlerRootView>
   );
 }
