@@ -7,23 +7,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AppLayout() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.User);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const storedUserString = await AsyncStorage.getItem("user");
+  //   useEffect(() => {
+  //   const loadUser = async () => {
+  //     try {
+  //       const storedUserString = await AsyncStorage.getItem("user");
 
-        if (storedUserString) {
-          dispatch(setUser({ user: JSON.parse(storedUserString) }));
-        } else {
-          return <Redirect href="/signin" />;
-        }
-      } catch (error) {
-        console.error("Error loading user from AsyncStorage:", error);
-      }
-    };
-    loadUser();
-  }, []);
+  //       console.log("123", storedUserString);
+  //       if (storedUserString !== null) {
+  //         dispatch(setUser({ user: JSON.parse(storedUserString) }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error loading user from AsyncStorage:", error);
+  //     }
+  //   };
+  //   loadUser();
+  // }, []);
+
+  if (!user) {
+    return <Redirect href="/signin" />;
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

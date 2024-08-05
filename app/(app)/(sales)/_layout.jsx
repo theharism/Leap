@@ -1,7 +1,35 @@
 import { Stack } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { theme } from "../../src/constants/theme";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { privateApi } from "../../src/api/axios";
+import {
+  setDailyAchieved,
+  setEntries,
+} from "../../src/redux/features/entriesSlice";
 export default function SalesLayout() {
+  const token = useSelector((state) => state.User?.token);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (token) {
+      privateApi(token)
+        .get("/entries")
+        .then((res) => {
+          dispatch(setEntries({ entries: res.data.entries }));
+        })
+        .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get("/pas/daily")
+        .then((res) => {
+          dispatch(setDailyAchieved({ daily: res.data.pas }));
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [token]);
+
   return (
     <Drawer
       initialRouteName="(tabs)"
@@ -20,7 +48,7 @@ export default function SalesLayout() {
         }}
       />
       <Drawer.Screen
-        name="index"
+        name="entries"
         options={{
           drawerLabel: "Sales Targets",
           title: "",
