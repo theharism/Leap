@@ -15,9 +15,11 @@ import {
   Entypo,
   MaterialIcons,
 } from "@expo/vector-icons";
-import ProgressBar from "../../../src/components/ProgressBar";
+
 import { plans } from "../../../src/constants/plans";
-const Category = ({ text, backgroundColor }) => {
+import { useSelector } from "react-redux";
+
+const Category = ({ goal, achieved, text, backgroundColor }) => {
   return (
     <View
       style={{
@@ -45,7 +47,7 @@ const Category = ({ text, backgroundColor }) => {
             marginLeft: 3,
           }}
         >
-          70%
+          {goal}%
         </Text>
       </View>
 
@@ -74,7 +76,7 @@ const Category = ({ text, backgroundColor }) => {
             marginLeft: 3,
           }}
         >
-          50%
+          {achieved}%
         </Text>
       </View>
     </View>
@@ -125,6 +127,8 @@ const ImprovementPlan = ({ item }) => {
 };
 
 const EffectivenessReport = () => {
+  const entries = useSelector((state) => state.Entries);
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
@@ -208,7 +212,15 @@ const EffectivenessReport = () => {
             Appointment Ratio
           </Text>
 
-          <Category backgroundColor={"#ffca08"} />
+          <Category
+            goal={Math.floor(
+              (entries?.SuccessFormula?.appointmentsKept /
+                entries?.SuccessFormula?.prospectingApproach) *
+                100
+            )}
+            achieved={0}
+            backgroundColor={"#ffca08"}
+          />
 
           <Text
             style={{
@@ -223,7 +235,15 @@ const EffectivenessReport = () => {
             Sales Ratio
           </Text>
 
-          <Category text={""} backgroundColor={"#00bf63"} />
+          <Category
+            goal={Math.floor(
+              (entries?.SuccessFormula?.salesSubmitted /
+                entries?.SuccessFormula?.appointmentsKept) *
+                100
+            )}
+            achieved={0}
+            backgroundColor={"#00bf63"}
+          />
         </View>
 
         <View
