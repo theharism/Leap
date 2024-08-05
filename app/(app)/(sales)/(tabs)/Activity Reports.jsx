@@ -14,76 +14,78 @@ import {
   Entypo,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { PieChart } from "react-native-gifted-charts";
 import ProgressBar from "../../../src/components/ProgressBar";
+import { useSelector } from "react-redux";
 
-const ActivityReports = () => {
-  const Category = ({ text, backgroundColor }) => {
-    return (
-      <View
+const Category = ({ goals, achieved, text, backgroundColor }) => {
+  return (
+    <View
+      style={{
+        backgroundColor: backgroundColor,
+        flexDirection: "row",
+        paddingHorizontal: 20,
+        marginVertical: 5,
+        borderRadius: 5,
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <Text
         style={{
-          backgroundColor: backgroundColor,
-          flexDirection: "row",
-          paddingHorizontal: 20,
-          marginVertical: 5,
-          borderRadius: 5,
-          justifyContent: "space-between",
-          alignItems: "center",
+          fontSize: 60,
+          fontWeight: "bold",
+          color: theme.colors.secondary,
         }}
       >
+        {text}
+      </Text>
+
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <MaterialIcons
+          name="loop"
+          size={40}
+          color="white"
+          style={{ marginRight: 3 }}
+        />
         <Text
           style={{
-            fontSize: 60,
+            fontSize: 24,
             fontWeight: "bold",
             color: theme.colors.secondary,
+            marginLeft: 3,
           }}
         >
-          {text}
+          {goals}
         </Text>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons
-            name="loop"
-            size={40}
-            color="white"
-            style={{ marginRight: 3 }}
-          />
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              color: theme.colors.secondary,
-              marginLeft: 3,
-            }}
-          >
-            5
-          </Text>
-        </View>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons
-            name="loop"
-            size={40}
-            color="white"
-            style={{ marginRight: 3 }}
-          />
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              color: theme.colors.secondary,
-              marginLeft: 3,
-            }}
-          >
-            5
-          </Text>
-        </View>
-        <View>
-          <ProgressBar percentage={70} />
-        </View>
       </View>
-    );
-  };
+
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <MaterialIcons
+          name="loop"
+          size={40}
+          color="white"
+          style={{ marginRight: 3 }}
+        />
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: theme.colors.secondary,
+            marginLeft: 3,
+          }}
+        >
+          {achieved}
+        </Text>
+      </View>
+      <View>
+        <ProgressBar percentage={Number((achieved / goals) * 100).toFixed(0)} />
+      </View>
+    </View>
+  );
+};
+
+const ActivityReports = () => {
+  const entries = useSelector((state) => state.Entries);
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -161,9 +163,24 @@ const ActivityReports = () => {
           >
             Daily Progress
           </Text>
-          <Category text={"P"} backgroundColor={"#ff5757"} />
-          <Category text={"A"} backgroundColor={"#ffca08"} />
-          <Category text={"S"} backgroundColor={"#00bf63"} />
+          <Category
+            text={"P"}
+            goals={entries?.daily_goals?.p_daily}
+            achieved={entries?.daily_achieved?.p_daily}
+            backgroundColor={"#ff5757"}
+          />
+          <Category
+            text={"A"}
+            goals={entries?.daily_goals?.a_daily}
+            achieved={entries?.daily_achieved?.a_daily}
+            backgroundColor={"#ffca08"}
+          />
+          <Category
+            text={"S"}
+            goals={entries?.daily_goals?.s_daily}
+            achieved={entries?.daily_achieved?.s_daily}
+            backgroundColor={"#00bf63"}
+          />
         </View>
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
           <Text
@@ -178,9 +195,24 @@ const ActivityReports = () => {
           >
             Weekly Progress
           </Text>
-          <Category text={"P"} backgroundColor={"#ff5757"} />
-          <Category text={"A"} backgroundColor={"#ffca08"} />
-          <Category text={"S"} backgroundColor={"#00bf63"} />
+          <Category
+            text={"P"}
+            goals={entries?.weekly_goals?.p_weekly}
+            achieved={entries?.weekly_achieved?.p_weekly}
+            backgroundColor={"#ff5757"}
+          />
+          <Category
+            text={"A"}
+            goals={entries?.weekly_goals?.a_weekly}
+            achieved={entries?.weekly_achieved?.a_weekly}
+            backgroundColor={"#ffca08"}
+          />
+          <Category
+            text={"S"}
+            goals={entries?.weekly_goals?.s_weekly}
+            achieved={entries?.weekly_achieved?.s_weekly}
+            backgroundColor={"#00bf63"}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

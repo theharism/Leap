@@ -5,7 +5,7 @@ export const entriesSlice = createSlice({
     initialState: null,
     reducers: {
         setEntries: (state, action) => {
-            return action.payload.entries;
+            return { ...state, ...action.payload.entries };
         },
         setDailyAchieved: (state, action) => {
             return { ...state, daily_achieved: action.payload.daily };

@@ -7,6 +7,7 @@ import { privateApi } from "../../src/api/axios";
 import {
   setDailyAchieved,
   setEntries,
+  setWeeklyAchieved,
 } from "../../src/redux/features/entriesSlice";
 export default function SalesLayout() {
   const token = useSelector((state) => state.User?.token);
@@ -22,9 +23,17 @@ export default function SalesLayout() {
         .catch((err) => console.error(err));
 
       privateApi(token)
-        .get("/pas/daily")
+        .get(`/pas/daily?date=${new Date().toLocaleDateString()}`)
         .then((res) => {
+          console.log(res.data);
           dispatch(setDailyAchieved({ daily: res.data.pas }));
+        })
+        .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+        .then((res) => {
+          dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
         })
         .catch((err) => console.error(err));
     }
