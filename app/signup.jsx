@@ -17,7 +17,7 @@ import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
 import { useDispatch } from "react-redux";
-import axios from "./src/api/axios.js";
+import { publicApi } from "./src/api/axios.js";
 import { setUser } from "./src/redux/features/userSlice.js";
 
 const signin = () => {
@@ -34,7 +34,7 @@ const signin = () => {
 
   const signupFunc = () => {
     setLoading(true);
-    axios
+    publicApi
       .post("/signup", { email, password, fullName: name, role: "agent" })
       .then((res) => {
         const user = res.data.user;

@@ -11,16 +11,17 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { theme } from "./src/constants/theme.js";
 import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
-import axios from "./src/api/axios.js";
+import { publicApi } from "./src/api/axios.js";
+import { useDispatch } from "react-redux";
+import { setUser } from "./src/redux/features/userSlice.js";
 
 const signin = () => {
-  const { isKeyboardOpen } = useKeyboard();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,7 +35,7 @@ const signin = () => {
 
   const signinFunc = () => {
     setLoading(true);
-    axios
+    publicApi
       .post("/login", { email, password })
       .then((res) => {
         const user = res.data.user;
@@ -44,7 +45,11 @@ const signin = () => {
         router.replace("/");
       })
       .catch((err) => {
-        ToastAndroid.show(err.data.message, ToastAndroid.SHORT);
+        console.error(err);
+        ToastAndroid.show(
+          err?.data?.message || "Internal Server Error  ",
+          ToastAndroid.SHORT
+        );
       })
       .finally(() => setLoading(false));
   };
