@@ -1,8 +1,8 @@
-import { Stack } from "expo-router";
+import { Stack, useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { theme } from "../../src/constants/theme";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { privateApi } from "../../src/api/axios";
 import {
   setDailyAchieved,
@@ -10,9 +10,14 @@ import {
   setWeeklyAchieved,
   setYearlyAchieved,
 } from "../../src/redux/features/entriesSlice";
+import Octicons from "@expo/vector-icons/Octicons";
+import { TouchableOpacity } from "react-native";
+import { DrawerActions } from "@react-navigation/native";
+import Loader from "../../src/components/Loader";
 export default function SalesLayout() {
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
@@ -20,6 +25,7 @@ export default function SalesLayout() {
         .get("/entries")
         .then((res) => {
           dispatch(setEntries({ entries: res.data.entries }));
+          setLoading(false);
         })
         .catch((err) => console.error(err));
 
@@ -46,37 +52,57 @@ export default function SalesLayout() {
     }
   }, [token]);
 
+  const navigation = useNavigation();
+
   return (
-    <Drawer
-      initialRouteName="(tabs)"
-      screenOptions={{
-        title: "",
-        headerStyle: {
-          backgroundColor: theme.colors.background,
-        },
-        headerShadowVisible: false,
-      }}
-    >
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          drawerLabel: "Overview",
-        }}
-      />
-      <Drawer.Screen
-        name="index"
-        options={{
-          drawerLabel: "Sales Targets",
+    <>
+      <Drawer
+        initialRouteName="(tabs)"
+        screenOptions={{
           title: "",
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.dispatch(DrawerActions.toggleDrawer());
+              }}
+            >
+              <Octicons
+                name="three-bars"
+                size={24}
+                color="white"
+                style={{ marginLeft: 30 }}
+              />
+            </TouchableOpacity>
+          ),
         }}
-      />
-      <Drawer.Screen
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{
+            drawerLabel: "Overview",
+          }}
+        />
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: "Sales Targets",
+            title: "",
+          }}
+        />
+        {/* <Drawer.Screen
         name="logout"
         options={{
           drawerLabel: "Log Out",
           title: "",
         }}
-      />
-    </Drawer>
+      /> */}
+      </Drawer>
+
+      {loading && <Loader />}
+    </>
   );
 }

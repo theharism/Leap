@@ -7,13 +7,11 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from "react-native";
 import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import { theme } from "./src/constants/theme.js";
-import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
 import { publicApi } from "./src/api/axios.js";
@@ -46,10 +44,9 @@ const signin = () => {
       })
       .catch((err) => {
         console.error(err);
-        ToastAndroid.show(
-          err?.data?.message || "Internal Server Error  ",
-          ToastAndroid.SHORT
-        );
+        const errorMessage =
+          err?.response?.data?.message || "Internal Server Error";
+        Alert.alert("Error", errorMessage);
       })
       .finally(() => setLoading(false));
   };

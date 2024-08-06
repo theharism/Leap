@@ -7,7 +7,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -18,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-native-paper";
 import { setEntries } from "../../src/redux/features/entriesSlice";
 import { isEmpty } from "../../src/utils/isEmpty";
+import Loader from "../../src/components/Loader";
 
 const index = () => {
   const token = useSelector((state) => state.User?.token);
@@ -44,7 +44,7 @@ const index = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleInputChange = (name, value) => {
     setFormData((prevState) => ({
@@ -55,6 +55,7 @@ const index = () => {
 
   useEffect(() => {
     if (entries) {
+      setLoading(false);
       setFormData({
         salesTargets: entries?.SalesTargets?.salesTargets?.toString() || "",
         averageCaseSize:
@@ -93,7 +94,6 @@ const index = () => {
         privateApi(token)
           .put("/entries", formData)
           .then((res) => {
-            ToastAndroid.show("Updated", ToastAndroid.SHORT);
             dispatch(setEntries({ entries: res.data.entries }));
           })
           .catch((err) => console.error(err))
@@ -102,7 +102,6 @@ const index = () => {
         privateApi(token)
           .post("/entries", formData)
           .then((res) => {
-            ToastAndroid.show("Created", ToastAndroid.SHORT);
             dispatch(setEntries({ entries: res.data.entries }));
           })
           .catch((err) => console.error(err))
@@ -246,6 +245,7 @@ const index = () => {
           onPressOk={() => setShowAlert(false)}
         />
       )}
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };

@@ -7,7 +7,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from "react-native";
 import React, { useState } from "react";
@@ -44,7 +43,10 @@ const signin = () => {
         router.replace("/");
       })
       .catch((err) => {
-        ToastAndroid.show(err.data.message, ToastAndroid.SHORT);
+        console.error(err);
+        const errorMessage =
+          err?.response?.data?.message || "Internal Server Error";
+        Alert.alert("Error", errorMessage);
       })
       .finally(() => setLoading(false));
   };
