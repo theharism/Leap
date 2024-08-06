@@ -6,12 +6,11 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   View,
   Dimensions,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../../src/constants/theme";
 import { formattedDate } from "../../../src/utils/currentDate&Day";
 import {
@@ -24,12 +23,23 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { privateApi } from "../../../src/api/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setDailyAchieved } from "../../../src/redux/features/entriesSlice";
+import { isEmpty } from "../../../src/utils/isEmpty";
+import Loader from "../../../src/components/Loader";
 
-const Activity = ({ text, status, goals, achieved, color, onPress }) => {
+const Activity = ({
+  text,
+  status,
+  goals,
+  achieved,
+  color,
+  onPress,
+  premium,
+}) => {
   const [page, setPage] = useState(0);
   const screenWidth = Dimensions.get("window").width;
   const itemSize = page === 0 ? 45 : 50;
   const itemsPerPage = Math.floor(screenWidth / itemSize);
+  const itemsPerPageOnS = Math.floor(screenWidth / itemSize / 2);
 
   const data = Array.from({ length: 50 }, (_, index) => index + 1);
 
@@ -74,6 +84,15 @@ const Activity = ({ text, status, goals, achieved, color, onPress }) => {
             color="black"
           />
         )}
+
+        {status === "S" && index == itemsPerPageOnS - 1 && (
+          <Ionicons
+            onPress={() => setPage(page + 1)}
+            name="caret-forward"
+            size={24}
+            color="black"
+          />
+        )}
       </View>
     );
   };
@@ -81,6 +100,11 @@ const Activity = ({ text, status, goals, achieved, color, onPress }) => {
   const paginatedData = data.slice(
     page * itemsPerPage,
     (page + 1) * itemsPerPage
+  );
+
+  const paginatedDataOnS = data.slice(
+    page * itemsPerPageOnS,
+    (page + 1) * itemsPerPageOnS
   );
 
   return (
@@ -106,7 +130,6 @@ const Activity = ({ text, status, goals, achieved, color, onPress }) => {
             fontWeight: "400",
             textAlign: "justify",
             flexWrap: "wrap",
-            maxWidth: "95%",
           }}
         >
           {text}
@@ -133,9 +156,14 @@ const Activity = ({ text, status, goals, achieved, color, onPress }) => {
         </View>
       </View>
 
-      <View>
+      <View
+        style={{
+          marginVertical: 15,
+          flexDirection: "row",
+        }}
+      >
         <FlatList
-          data={paginatedData}
+          data={status === "S" ? paginatedDataOnS : paginatedData}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           horizontal
@@ -145,6 +173,30 @@ const Activity = ({ text, status, goals, achieved, color, onPress }) => {
             justifyContent: "space-between",
           }}
         />
+
+        {status === "S" && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ alignItems: "flex-end", marginRight: 5 }}>
+              <Text style={{ fontSize: 10 }}>Total Premium</Text>
+              <Text style={{ fontSize: 10 }}>This Week</Text>
+            </View>
+
+            <View
+              style={{
+                backgroundColor: color,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 20,
+                paddingVertical: 7,
+                borderRadius: 8,
+              }}
+            >
+              <Text style={{ fontWeight: "400", fontSize: 20 }}>
+                ${premium}
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* <View
@@ -275,15 +327,18 @@ const DailyActivity = () => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
-
+  const [loading, setLoading] = useState(false);
   const updateAchievements = (data) => {
-    privateApi(token)
-      .post("/pas", data)
-      .then((res) => {
-        dispatch(setDailyAchieved({ daily: res.data.pas }));
-        ToastAndroid.show("Updated", ToastAndroid.SHORT);
-      })
-      .catch((err) => console.error(err));
+    if (!isEmpty(entries)) {
+      setLoading(true);
+      privateApi(token)
+        .post("/pas", data)
+        .then((res) => {
+          dispatch(setDailyAchieved({ daily: res.data.pas }));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
   };
 
   return (
@@ -348,8 +403,8 @@ const DailyActivity = () => {
         <View style={{ flex: 1, justifyContent: "flex-start", marginTop: 30 }}>
           <Activity
             text={"Prospects Reached for Appointments"}
-            goals={entries?.daily_goals?.p_daily}
-            achieved={entries?.daily_achieved?.p_daily}
+            goals={entries?.daily_goals?.p_daily || 0}
+            achieved={entries?.daily_achieved?.p_daily || 0}
             status={"P"}
             color={"#ff5757"}
             onPress={(value) =>
@@ -362,8 +417,8 @@ const DailyActivity = () => {
 
           <Activity
             text={"Appointments Kept"}
-            goals={entries?.daily_goals?.a_daily}
-            achieved={entries?.daily_achieved?.a_daily}
+            goals={entries?.daily_goals?.a_daily || 0}
+            achieved={entries?.daily_achieved?.a_daily || 0}
             status={"A"}
             onPress={(value) =>
               updateAchievements({
@@ -376,8 +431,8 @@ const DailyActivity = () => {
 
           <Activity
             text={"Sales with Initial Premium"}
-            goals={entries?.daily_goals?.s_daily}
-            achieved={entries?.daily_achieved?.s_daily}
+            goals={entries?.daily_goals?.s_daily || 0}
+            achieved={entries?.daily_achieved?.s_daily || 0}
             status={"S"}
             onPress={(value) =>
               updateAchievements({
@@ -387,9 +442,14 @@ const DailyActivity = () => {
               })
             }
             color={"#00bf63"}
+            premium={
+              entries?.SalesTargets?.averageCaseSize *
+              entries?.daily_achieved?.s_daily
+            }
           />
         </View>
       </ScrollView>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };

@@ -115,7 +115,7 @@ const AnnualProgress = () => {
           >
             $
             {entries?.SalesTargets?.salesTargets -
-              entries?.yearly_achieved?.totalPremiumYearly}{" "}
+              entries?.yearly_achieved?.totalPremiumYearly || 0}{" "}
             To Go
           </Text>
 
@@ -136,7 +136,7 @@ const AnnualProgress = () => {
                   textAlign: "center",
                 }}
               >
-                ${entries?.yearly_achieved?.totalPremiumYearly}
+                ${entries?.yearly_achieved?.totalPremiumYearly || 0}
               </Text>
               <Text
                 style={{
@@ -172,7 +172,7 @@ const AnnualProgress = () => {
                   (entries?.yearly_achieved.totalPremiumYearly /
                     entries?.SalesTargets?.salesTargets) *
                   100
-                ).toFixed(2)}
+                ).toFixed(2) || 0}
                 %
               </Text>
               <Text
@@ -253,12 +253,14 @@ const AnnualProgress = () => {
                 P
               </Text>
               <ProgressBar
-                percentage={(
-                  (entries?.yearly_achieved?.p_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.p_weekly)) *
-                  100
-                ).toFixed(2)}
+                percentage={
+                  (
+                    (entries?.yearly_achieved?.p_yearly /
+                      (entries?.SalesTargets?.numberOfWeeks *
+                        entries?.weekly_goals.p_weekly)) *
+                    100
+                  ).toFixed(2) || 0
+                }
                 sx={"large"}
               />
             </View>
@@ -275,12 +277,14 @@ const AnnualProgress = () => {
                 A
               </Text>
               <ProgressBar
-                percentage={(
-                  (entries?.yearly_achieved?.a_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.a_weekly)) *
-                  100
-                ).toFixed(2)}
+                percentage={
+                  (
+                    (entries?.yearly_achieved?.a_yearly /
+                      (entries?.SalesTargets?.numberOfWeeks *
+                        entries?.weekly_goals.a_weekly)) *
+                    100
+                  ).toFixed(2) || 0
+                }
                 sx={"large"}
               />
             </View>
@@ -297,12 +301,14 @@ const AnnualProgress = () => {
                 S
               </Text>
               <ProgressBar
-                percentage={(
-                  (entries?.yearly_achieved?.s_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.s_weekly)) *
-                  100
-                ).toFixed(2)}
+                percentage={
+                  (
+                    (entries?.yearly_achieved?.s_yearly /
+                      (entries?.SalesTargets?.numberOfWeeks *
+                        entries?.weekly_goals.s_weekly)) *
+                    100
+                  ).toFixed(2) || 0
+                }
                 sx={"large"}
               />
             </View>

@@ -78,7 +78,9 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
         </Text>
       </View>
       <View>
-        <ProgressBar percentage={Number((achieved / goals) * 100).toFixed(0)} />
+        <ProgressBar
+          percentage={Number((achieved / goals) * 100).toFixed(0) || 0}
+        />
       </View>
     </View>
   );
@@ -165,20 +167,20 @@ const ActivityReports = () => {
           </Text>
           <Category
             text={"P"}
-            goals={entries?.daily_goals?.p_daily}
-            achieved={entries?.daily_achieved?.p_daily}
+            goals={entries?.daily_goals?.p_daily || 0}
+            achieved={entries?.daily_achieved?.p_daily || 0}
             backgroundColor={"#ff5757"}
           />
           <Category
             text={"A"}
-            goals={entries?.daily_goals?.a_daily}
-            achieved={entries?.daily_achieved?.a_daily}
+            goals={entries?.daily_goals?.a_daily || 0}
+            achieved={entries?.daily_achieved?.a_daily || 0}
             backgroundColor={"#ffca08"}
           />
           <Category
             text={"S"}
-            goals={entries?.daily_goals?.s_daily}
-            achieved={entries?.daily_achieved?.s_daily}
+            goals={entries?.daily_goals?.s_daily || 0}
+            achieved={entries?.daily_achieved?.s_daily || 0}
             backgroundColor={"#00bf63"}
           />
         </View>
@@ -197,20 +199,20 @@ const ActivityReports = () => {
           </Text>
           <Category
             text={"P"}
-            goals={entries?.weekly_goals?.p_weekly}
-            achieved={entries?.weekly_achieved?.p_weekly}
+            goals={entries?.weekly_goals?.p_weekly || 0}
+            achieved={entries?.weekly_achieved?.p_weekly || 0}
             backgroundColor={"#ff5757"}
           />
           <Category
             text={"A"}
-            goals={entries?.weekly_goals?.a_weekly}
-            achieved={entries?.weekly_achieved?.a_weekly}
+            goals={entries?.weekly_goals?.a_weekly || 0}
+            achieved={entries?.weekly_achieved?.a_weekly || 0}
             backgroundColor={"#ffca08"}
           />
           <Category
             text={"S"}
-            goals={entries?.weekly_goals?.s_weekly}
-            achieved={entries?.weekly_achieved?.s_weekly}
+            goals={entries?.weekly_goals?.s_weekly || 0}
+            achieved={entries?.weekly_achieved?.s_weekly || 0}
             backgroundColor={"#00bf63"}
           />
         </View>

@@ -20,8 +20,10 @@ const ProgressBar = ({ percentage, sx }) => {
         styles.container,
         {
           borderRadius: sx === "large" ? 40 : 30,
-          paddingHorizontal: sx === "large" ? 16 : 6,
-          paddingVertical: sx === "large" ? 20 : percentage >= 100 ? 14 : 11,
+          height: sx === "large" ? 70 : 50,
+          width: sx === "large" ? 70 : 50,
+          // paddingHorizontal: sx === "large" ? 16 : 6,
+          // paddingVertical: sx === "large" ? 20 : percentage >= 100 ? 10 : 11,
         },
       ]}
     >

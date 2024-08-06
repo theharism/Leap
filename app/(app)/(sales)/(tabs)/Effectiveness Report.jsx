@@ -213,11 +213,13 @@ const EffectivenessReport = () => {
           </Text>
 
           <Category
-            goal={Math.floor(
-              (entries?.SuccessFormula?.appointmentsKept /
-                entries?.SuccessFormula?.prospectingApproach) *
-                100
-            )}
+            goal={
+              Math.floor(
+                (entries?.SuccessFormula?.appointmentsKept /
+                  entries?.SuccessFormula?.prospectingApproach) *
+                  100
+              ) || 0
+            }
             achieved={0}
             backgroundColor={"#ffca08"}
           />
@@ -236,11 +238,13 @@ const EffectivenessReport = () => {
           </Text>
 
           <Category
-            goal={Math.floor(
-              (entries?.SuccessFormula?.salesSubmitted /
-                entries?.SuccessFormula?.appointmentsKept) *
-                100
-            )}
+            goal={
+              Math.floor(
+                (entries?.SuccessFormula?.salesSubmitted /
+                  entries?.SuccessFormula?.appointmentsKept) *
+                  100
+              ) || 0
+            }
             achieved={0}
             backgroundColor={"#00bf63"}
           />
