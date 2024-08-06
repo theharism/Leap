@@ -170,7 +170,7 @@ const Activity = ({
           pagingEnabled
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: "space-between",
+            justifyContent: "space-around",
           }}
         />
 
@@ -192,7 +192,7 @@ const Activity = ({
               }}
             >
               <Text style={{ fontWeight: "400", fontSize: 20 }}>
-                ${premium}
+                ${premium || 0}
               </Text>
             </View>
           </View>
@@ -287,7 +287,7 @@ const Activity = ({
                 marginLeft: 2,
               }}
             >
-              {Number((achieved / goals) * 100).toFixed(0)}%
+              {Number((achieved / goals) * 100 || 0).toFixed(0)}%
             </Text>
           </View>
         </View>
@@ -329,7 +329,7 @@ const DailyActivity = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const updateAchievements = (data) => {
-    if (!isEmpty(entries)) {
+    if (entries?.SalesTargets?.averageCaseSize) {
       setLoading(true);
       privateApi(token)
         .post("/pas", data)

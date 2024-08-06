@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -12,7 +13,6 @@ import {
 import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import { theme } from "./src/constants/theme.js";
-import useKeyboard from "./src/hooks/useKeyboard.js";
 import { Button } from "react-native-paper";
 import LeapTextInput from "./src/components/LeapTextInput.jsx";
 import { useDispatch } from "react-redux";

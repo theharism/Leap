@@ -7,13 +7,31 @@ import {
   View,
   Image,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../../src/constants/theme";
 import { EvilIcons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import ProgressBar from "../../../src/components/ProgressBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Loader from "../../../src/components/Loader";
+import { setYearlyAchieved } from "../../../src/redux/features/entriesSlice";
+import { privateApi } from "../../../src/api/axios";
 const AnnualProgress = () => {
   const entries = useSelector((state) => state.Entries);
+  const token = useSelector((state) => state.User?.token);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (token) {
+      privateApi(token)
+        .get("/pas/annual")
+        .then((res) => {
+          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token]);
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -171,8 +189,8 @@ const AnnualProgress = () => {
                 {(
                   (entries?.yearly_achieved.totalPremiumYearly /
                     entries?.SalesTargets?.salesTargets) *
-                  100
-                ).toFixed(2) || 0}
+                    100 || 0
+                ).toFixed(2)}
                 %
               </Text>
               <Text
@@ -203,7 +221,7 @@ const AnnualProgress = () => {
                 fontStyle: "italic",
                 textAlign: "justify",
                 flexWrap: "wrap",
-                maxWidth: 200,
+                maxWidth: 160,
               }}
             >
               "Don't watch the clock; do what it does. Keep going." - Sam
@@ -253,14 +271,12 @@ const AnnualProgress = () => {
                 P
               </Text>
               <ProgressBar
-                percentage={
-                  (
-                    (entries?.yearly_achieved?.p_yearly /
-                      (entries?.SalesTargets?.numberOfWeeks *
-                        entries?.weekly_goals.p_weekly)) *
-                    100
-                  ).toFixed(2) || 0
-                }
+                percentage={(
+                  (entries?.yearly_achieved?.p_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.p_weekly)) *
+                    100 || 0
+                ).toFixed(2)}
                 sx={"large"}
               />
             </View>
@@ -277,14 +293,12 @@ const AnnualProgress = () => {
                 A
               </Text>
               <ProgressBar
-                percentage={
-                  (
-                    (entries?.yearly_achieved?.a_yearly /
-                      (entries?.SalesTargets?.numberOfWeeks *
-                        entries?.weekly_goals.a_weekly)) *
-                    100
-                  ).toFixed(2) || 0
-                }
+                percentage={(
+                  (entries?.yearly_achieved?.a_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.a_weekly)) *
+                    100 || 0
+                ).toFixed(2)}
                 sx={"large"}
               />
             </View>
@@ -301,20 +315,19 @@ const AnnualProgress = () => {
                 S
               </Text>
               <ProgressBar
-                percentage={
-                  (
-                    (entries?.yearly_achieved?.s_yearly /
-                      (entries?.SalesTargets?.numberOfWeeks *
-                        entries?.weekly_goals.s_weekly)) *
-                    100
-                  ).toFixed(2) || 0
-                }
+                percentage={(
+                  (entries?.yearly_achieved?.s_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.s_weekly)) *
+                    100 || 0
+                ).toFixed(2)}
                 sx={"large"}
               />
             </View>
           </View>
         </View>
       </ScrollView>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };

@@ -90,13 +90,13 @@ const index = () => {
   const saveEntries = () => {
     setLoading(true);
     if (validateData()) {
-      if (!isEmpty(entries)) {
+      if (entries?.SalesTargets?.averageCaseSize) {
         privateApi(token)
           .put("/entries", formData)
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
           })
-          .catch((err) => console.error(err))
+          .catch((err) => console.error("put", err))
           .finally(() => setLoading(false));
       } else {
         privateApi(token)
@@ -104,7 +104,7 @@ const index = () => {
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
           })
-          .catch((err) => console.error(err))
+          .catch((err) => console.error("post", err))
           .finally(() => setLoading(false));
       }
     }

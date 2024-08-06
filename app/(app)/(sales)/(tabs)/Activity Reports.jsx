@@ -79,7 +79,7 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
       </View>
       <View>
         <ProgressBar
-          percentage={Number((achieved / goals) * 100).toFixed(0) || 0}
+          percentage={Number((achieved / goals) * 100 || 0).toFixed(0)}
         />
       </View>
     </View>
