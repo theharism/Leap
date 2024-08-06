@@ -286,8 +286,6 @@ const DailyActivity = () => {
       .catch((err) => console.error(err));
   };
 
-  console.log(entries);
-
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar

@@ -26,7 +26,6 @@ export default function SalesLayout() {
       privateApi(token)
         .get(`/pas/daily?date=${new Date().toLocaleDateString()}`)
         .then((res) => {
-          console.log(res.data);
           dispatch(setDailyAchieved({ daily: res.data.pas }));
         })
         .catch((err) => console.error(err));
@@ -41,7 +40,6 @@ export default function SalesLayout() {
       privateApi(token)
         .get("/pas/annual")
         .then((res) => {
-          console.log(res);
           dispatch(setYearlyAchieved({ yearly: res.data.pas }));
         })
         .catch((err) => console.error(err));

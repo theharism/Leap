@@ -86,8 +86,6 @@ const index = () => {
     return !hasError;
   };
 
-  console.log(entries);
-
   const saveEntries = () => {
     setLoading(true);
     if (validateData()) {
