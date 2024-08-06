@@ -8,6 +8,7 @@ import {
   setDailyAchieved,
   setEntries,
   setWeeklyAchieved,
+  setYearlyAchieved,
 } from "../../src/redux/features/entriesSlice";
 export default function SalesLayout() {
   const token = useSelector((state) => state.User?.token);
@@ -36,6 +37,14 @@ export default function SalesLayout() {
           dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
         })
         .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get("/pas/annual")
+        .then((res) => {
+          console.log(res);
+          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+        })
+        .catch((err) => console.error(err));
     }
   }, [token]);
 
@@ -57,7 +66,7 @@ export default function SalesLayout() {
         }}
       />
       <Drawer.Screen
-        name="entries"
+        name="index"
         options={{
           drawerLabel: "Sales Targets",
           title: "",

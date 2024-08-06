@@ -10,7 +10,9 @@ const ProgressBar = ({ percentage, sx }) => {
   const circumference = radius * 2 * Math.PI;
   const halfCircle = size / 2;
 
-  const strokeDashoffset = circumference - (circumference * percentage) / 100;
+  const strokeDashoffset =
+    circumference -
+    (circumference * (percentage > 100 ? 100 : percentage)) / 100;
 
   return (
     <View
@@ -19,7 +21,7 @@ const ProgressBar = ({ percentage, sx }) => {
         {
           borderRadius: sx === "large" ? 40 : 30,
           paddingHorizontal: sx === "large" ? 16 : 6,
-          paddingVertical: sx === "large" ? 20 : 11,
+          paddingVertical: sx === "large" ? 20 : percentage >= 100 ? 14 : 11,
         },
       ]}
     >

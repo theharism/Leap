@@ -11,7 +11,10 @@ import React from "react";
 import { theme } from "../../../src/constants/theme";
 import { EvilIcons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import ProgressBar from "../../../src/components/ProgressBar";
+import { useSelector } from "react-redux";
 const AnnualProgress = () => {
+  const entries = useSelector((state) => state.Entries);
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
@@ -110,7 +113,10 @@ const AnnualProgress = () => {
               textAlign: "center",
             }}
           >
-            $73,220 To Go
+            $
+            {entries?.SalesTargets?.salesTargets -
+              entries?.yearly_achieved?.totalPremiumYearly}{" "}
+            To Go
           </Text>
 
           <View
@@ -130,7 +136,7 @@ const AnnualProgress = () => {
                   textAlign: "center",
                 }}
               >
-                $326,780
+                ${entries?.yearly_achieved?.totalPremiumYearly}
               </Text>
               <Text
                 style={{
@@ -162,7 +168,12 @@ const AnnualProgress = () => {
                   textAlign: "center",
                 }}
               >
-                81%
+                {(
+                  (entries?.yearly_achieved.totalPremiumYearly /
+                    entries?.SalesTargets?.salesTargets) *
+                  100
+                ).toFixed(2)}
+                %
               </Text>
               <Text
                 style={{
@@ -241,7 +252,15 @@ const AnnualProgress = () => {
               >
                 P
               </Text>
-              <ProgressBar percentage={70} sx={"large"} />
+              <ProgressBar
+                percentage={(
+                  (entries?.yearly_achieved?.p_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.p_weekly)) *
+                  100
+                ).toFixed(2)}
+                sx={"large"}
+              />
             </View>
             <View style={{ alignItems: "center" }}>
               <Text
@@ -255,7 +274,15 @@ const AnnualProgress = () => {
               >
                 A
               </Text>
-              <ProgressBar percentage={40} sx={"large"} />
+              <ProgressBar
+                percentage={(
+                  (entries?.yearly_achieved?.a_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.a_weekly)) *
+                  100
+                ).toFixed(2)}
+                sx={"large"}
+              />
             </View>
             <View style={{ alignItems: "center" }}>
               <Text
@@ -269,7 +296,15 @@ const AnnualProgress = () => {
               >
                 S
               </Text>
-              <ProgressBar percentage={20} sx={"large"} />
+              <ProgressBar
+                percentage={(
+                  (entries?.yearly_achieved?.s_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.s_weekly)) *
+                  100
+                ).toFixed(2)}
+                sx={"large"}
+              />
             </View>
           </View>
         </View>

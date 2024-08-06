@@ -7,34 +7,111 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../src/constants/theme";
 import LeapTextInput from "../../src/components/LeapTextInput";
+import { privateApi } from "../../src/api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "react-native-paper";
+import { setEntries } from "../../src/redux/features/entriesSlice";
+import { isEmpty } from "../../src/utils/isEmpty";
 
 const index = () => {
-  const [salesTargets, setSalesTargets] = useState("");
-  const [salesTargetsError, setSalesTargetsError] = useState(false);
+  const token = useSelector((state) => state.User?.token);
+  const entries = useSelector((state) => state.Entries);
+  const dispatch = useDispatch();
 
-  const [averageCaseSize, setAverageCaseSize] = useState("");
-  const [averageCaseSizeError, setAverageCaseSizeError] = useState(false);
+  const [formData, setFormData] = useState({
+    salesTargets: "",
+    averageCaseSize: "",
+    numberOfWeeks: "",
+    prospectingApproach: "",
+    appointmentsKept: "",
+    salesSubmitted: "",
+  });
 
-  const [numberOfWeeks, setNumberOfWeeks] = useState("");
-  const [numberOfWeeksError, setNumberOfWeeksError] = useState(false);
-
-  const [prospectingApproach, setProspectingApproach] = useState("");
-  const [prospectingApproachError, setProspectingApproachError] =
-    useState(false);
-
-  const [appointmentsKept, setAppointmentsKept] = useState("");
-  const [appointmentsKeptError, setAppointmentsKeptError] = useState(false);
-
-  const [salesSubmitted, setSalesSubmitted] = useState("");
-  const [salesSubmittedError, setSalesSubmittedError] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    salesTargetsError: false,
+    averageCaseSizeError: false,
+    numberOfWeeksError: false,
+    prospectingApproachError: false,
+    appointmentsKeptError: false,
+    salesSubmittedError: false,
+  });
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (name, value) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    if (entries) {
+      setFormData({
+        salesTargets: entries?.SalesTargets?.salesTargets?.toString() || "",
+        averageCaseSize:
+          entries?.SalesTargets?.averageCaseSize?.toString() || "",
+        numberOfWeeks: entries?.SalesTargets?.numberOfWeeks?.toString() || "",
+        prospectingApproach:
+          entries?.SuccessFormula?.prospectingApproach?.toString() || "",
+        appointmentsKept:
+          entries?.SuccessFormula?.appointmentsKept?.toString() || "",
+        salesSubmitted:
+          entries?.SuccessFormula?.salesSubmitted?.toString() || "",
+      });
+    }
+  }, [entries]);
+
+  const validateData = () => {
+    const newErrors = {
+      salesTargets: formData.salesTargets === "",
+      averageCaseSize: formData.averageCaseSize === "",
+      numberOfWeeks: formData.numberOfWeeks === "",
+      prospectingApproach: formData.prospectingApproach === "",
+      appointmentsKept: formData.appointmentsKept === "",
+      salesSubmitted: formData.salesSubmitted === "",
+    };
+
+    setFormErrors(newErrors);
+
+    const hasError = Object.values(newErrors).some((error) => error);
+    return !hasError;
+  };
+
+  console.log(entries);
+
+  const saveEntries = () => {
+    setLoading(true);
+    if (validateData()) {
+      if (!isEmpty(entries)) {
+        privateApi(token)
+          .put("/entries", formData)
+          .then((res) => {
+            ToastAndroid.show("Updated", ToastAndroid.SHORT);
+            dispatch(setEntries({ entries: res.data.entries }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      } else {
+        privateApi(token)
+          .post("/entries", formData)
+          .then((res) => {
+            ToastAndroid.show("Created", ToastAndroid.SHORT);
+            dispatch(setEntries({ entries: res.data.entries }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -85,25 +162,26 @@ const index = () => {
           >
             <LeapTextInput
               label="Sales Targets $ "
-              value={salesTargets}
-              keyboardType={"email-address"}
-              autoComplete={"email"}
-              onChangeText={(text) => setSalesTargets(text)}
-              isError={salesTargetsError}
+              value={formData.salesTargets}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange("salesTargets", text)}
+              isError={formErrors.salesTargetsError}
             />
             <LeapTextInput
               label={"Average Case Size $ "}
-              value={averageCaseSize}
-              onChangeText={(text) => setAverageCaseSize(text)}
-              isError={averageCaseSizeError}
+              value={formData.averageCaseSize}
+              keyboardType="numeric"
+              isError={formErrors.averageCaseSizeError}
+              onChangeText={(text) =>
+                handleInputChange("averageCaseSize", text)
+              }
             />
             <LeapTextInput
               label="# of Weeks "
-              value={numberOfWeeks}
-              keyboardType={"email-address"}
-              autoComplete={"email"}
-              onChangeText={(text) => setNumberOfWeeks(text)}
-              isError={numberOfWeeksError}
+              value={formData.numberOfWeeks}
+              keyboardType="numeric"
+              isError={formErrors.numberOfWeeksError}
+              onChangeText={(text) => handleInputChange("numberOfWeeks", text)}
             />
             <Text
               style={{
@@ -119,24 +197,48 @@ const index = () => {
 
             <LeapTextInput
               label={"# ProspectMying Approach"}
-              value={prospectingApproach}
-              onChangeText={(text) => setProspectingApproach(text)}
-              isError={prospectingApproachError}
+              value={formData.prospectingApproach}
+              keyboardType="numeric"
+              isError={formErrors.prospectingApproachError}
+              onChangeText={(text) =>
+                handleInputChange("prospectingApproach", text)
+              }
             />
             <LeapTextInput
               label="# Appointments Kept"
-              value={appointmentsKept}
-              keyboardType={"email-address"}
-              autoComplete={"email"}
-              onChangeText={(text) => setAppointmentsKept(text)}
-              isError={appointmentsKeptError}
+              value={formData.appointmentsKept}
+              keyboardType="numeric"
+              isError={formErrors.appointmentsKeptError}
+              onChangeText={(text) =>
+                handleInputChange("appointmentsKept", text)
+              }
             />
             <LeapTextInput
               label={"# SalesMy Submitted"}
-              value={salesSubmitted}
-              onChangeText={(text) => setSalesSubmitted(text)}
-              isError={salesSubmittedError}
+              value={formData.salesSubmitted}
+              keyboardType="numeric"
+              isError={formErrors.salesSubmittedError}
+              onChangeText={(text) => handleInputChange("salesSubmitted", text)}
             />
+
+            <Button
+              loading={loading}
+              labelStyle={{
+                fontSize: 17,
+                fontFamily: "",
+              }}
+              textColor="#FFFFFF"
+              mode="contained"
+              style={{
+                borderRadius: 35,
+                paddingVertical: 6,
+                marginTop: 30,
+                backgroundColor: "#ff914d",
+              }}
+              onPress={saveEntries}
+            >
+              Save
+            </Button>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
