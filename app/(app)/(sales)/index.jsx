@@ -48,10 +48,22 @@ const index = () => {
   const [loading, setLoading] = useState(true);
 
   const handleInputChange = (name, value) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: Number(value).toLocaleString(),
-    }));
+    // Remove any commas or non-numeric characters except the decimal point
+    const numericValue = value.replace(/,/g, "");
+    // Check if the resulting value is a valid number
+    if (!isNaN(numericValue) && numericValue !== "") {
+      // Update the formData state with the numeric value
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: Number(numericValue),
+      }));
+    } else if (numericValue === "") {
+      // Handle the case where the input is cleared
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: "",
+      }));
+    }
   };
 
   useEffect(() => {
@@ -59,23 +71,11 @@ const index = () => {
       setLoading(false);
       setFormData({
         salesTargets: entries?.SalesTargets?.salesTargets || "",
-        averageCaseSize: entries?.SalesTargets?.averageCaseSize
-          ? Number(entries?.SalesTargets?.averageCaseSize).toLocaleString()
-          : "",
-        numberOfWeeks: entries?.SalesTargets?.numberOfWeeks
-          ? Number(entries?.SalesTargets?.numberOfWeeks).toLocaleString()
-          : "",
-        prospectingApproach: entries?.SuccessFormula?.prospectingApproach
-          ? Number(
-              entries?.SuccessFormula?.prospectingApproach
-            ).toLocaleString()
-          : "",
-        appointmentsKept: entries?.SuccessFormula?.appointmentsKept
-          ? Number(entries?.SuccessFormula?.appointmentsKept).toLocaleString()
-          : "",
-        salesSubmitted: entries?.SuccessFormula?.salesSubmitted
-          ? Number(entries?.SuccessFormula?.salesSubmitted).toLocaleString()
-          : "",
+        averageCaseSize: entries?.SalesTargets?.averageCaseSize || "",
+        numberOfWeeks: entries?.SalesTargets?.numberOfWeeks || "",
+        prospectingApproach: entries?.SuccessFormula?.prospectingApproach || "",
+        appointmentsKept: entries?.SuccessFormula?.appointmentsKept || "",
+        salesSubmitted: entries?.SuccessFormula?.salesSubmitted || "",
       });
     }
   }, [entries]);
@@ -97,18 +97,18 @@ const index = () => {
   };
 
   const saveEntries = () => {
-    setLoading(true);
-
     if (validateData()) {
+      setLoading(true);
+
       if (entries?.SalesTargets?.averageCaseSize) {
         privateApi(token)
           .put("/entries", {
-            salesTargets: Number(formData.salesTargets.replace(/,/g, "")),
-            averageCaseSize: Number(formData.averageCaseSize.replace(/,/g, "")),
-            numberOfWeeks: Number(formData.numberOfWeeks),
-            prospectingApproach: Number(formData.prospectingApproach),
-            appointmentsKept: Number(formData.appointmentsKept),
-            salesSubmitted: Number(formData.salesSubmitted),
+            salesTargets: formData.salesTargets,
+            averageCaseSize: formData.averageCaseSize,
+            numberOfWeeks: formData.numberOfWeeks,
+            prospectingApproach: formData.prospectingApproach,
+            appointmentsKept: formData.appointmentsKept,
+            salesSubmitted: formData.salesSubmitted,
           })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
@@ -119,12 +119,12 @@ const index = () => {
       } else {
         privateApi(token)
           .post("/entries", {
-            salesTargets: Number(formData.salesTargets.replace(/,/g, "")),
-            averageCaseSize: Number(formData.averageCaseSize.replace(/,/g, "")),
-            numberOfWeeks: Number(formData.numberOfWeeks),
-            prospectingApproach: Number(formData.prospectingApproach),
-            appointmentsKept: Number(formData.appointmentsKept),
-            salesSubmitted: Number(formData.salesSubmitted),
+            salesTargets: formData.salesTargets,
+            averageCaseSize: formData.averageCaseSize,
+            numberOfWeeks: formData.numberOfWeeks,
+            prospectingApproach: formData.prospectingApproach,
+            appointmentsKept: formData.appointmentsKept,
+            salesSubmitted: formData.salesSubmitted,
           })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
@@ -185,14 +185,14 @@ const index = () => {
           >
             <LeapTextInput
               label="Annual Sales Targets $ "
-              value={formData.salesTargets}
+              value={Number(formData.salesTargets).toLocaleString()}
               keyboardType="numeric"
               onChangeText={(text) => handleInputChange("salesTargets", text)}
               isError={formErrors.salesTargetsError}
             />
             <LeapTextInput
               label={"Average Case Size $ "}
-              value={formData.averageCaseSize}
+              value={Number(formData.averageCaseSize).toLocaleString()}
               keyboardType="numeric"
               isError={formErrors.averageCaseSizeError}
               onChangeText={(text) =>
@@ -201,7 +201,7 @@ const index = () => {
             />
             <LeapTextInput
               label="# of Weeks "
-              value={formData.numberOfWeeks}
+              value={Number(formData.numberOfWeeks).toLocaleString()}
               keyboardType="numeric"
               isError={formErrors.numberOfWeeksError}
               onChangeText={(text) => handleInputChange("numberOfWeeks", text)}
@@ -220,7 +220,7 @@ const index = () => {
 
             <LeapTextInput
               label={"# Prospecting Approach"}
-              value={formData.prospectingApproach}
+              value={Number(formData.prospectingApproach).toLocaleString()}
               keyboardType="numeric"
               isError={formErrors.prospectingApproachError}
               onChangeText={(text) =>
@@ -229,7 +229,7 @@ const index = () => {
             />
             <LeapTextInput
               label="# Appointments Kept"
-              value={formData.appointmentsKept}
+              value={Number(formData.appointmentsKept).toLocaleString()}
               keyboardType="numeric"
               isError={formErrors.appointmentsKeptError}
               onChangeText={(text) =>
@@ -238,7 +238,7 @@ const index = () => {
             />
             <LeapTextInput
               label={"# Sales Submitted"}
-              value={formData.salesSubmitted}
+              value={Number(formData.salesSubmitted).toLocaleString()}
               keyboardType="numeric"
               isError={formErrors.salesSubmittedError}
               onChangeText={(text) => handleInputChange("salesSubmitted", text)}

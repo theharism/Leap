@@ -70,7 +70,7 @@ const Module = ({ text, bg, fg, href }) => {
 
 const Home = () => {
   const entries = useSelector((state) => state.Entries);
-  console.log(entries);
+
   const href = entries?.SalesTargets?.salesTargets
     ? "/(sales)/(tabs)"
     : "/(sales)";
