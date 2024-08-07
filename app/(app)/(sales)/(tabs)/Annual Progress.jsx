@@ -15,23 +15,26 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../src/components/Loader";
 import { setYearlyAchieved } from "../../../src/redux/features/entriesSlice";
 import { privateApi } from "../../../src/api/axios";
+import { useFocusEffect } from "expo-router";
 const AnnualProgress = () => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      privateApi(token)
-        .get("/pas/annual")
-        .then((res) => {
-          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [token]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get("/pas/annual")
+          .then((res) => {
+            dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -132,8 +135,10 @@ const AnnualProgress = () => {
             }}
           >
             $
-            {entries?.SalesTargets?.salesTargets -
-              entries?.yearly_achieved?.totalPremiumYearly || 0}{" "}
+            {(
+              entries?.SalesTargets?.salesTargets -
+              entries?.yearly_achieved?.totalPremiumYearly
+            )?.toLocaleString() || 0}{" "}
             To Go
           </Text>
 
@@ -154,7 +159,9 @@ const AnnualProgress = () => {
                   textAlign: "center",
                 }}
               >
-                ${entries?.yearly_achieved?.totalPremiumYearly || 0}
+                $
+                {entries?.yearly_achieved?.totalPremiumYearly?.toLocaleString() ||
+                  0}
               </Text>
               <Text
                 style={{
@@ -187,10 +194,10 @@ const AnnualProgress = () => {
                 }}
               >
                 {(
-                  (entries?.yearly_achieved.totalPremiumYearly /
+                  (entries?.yearly_achieved?.totalPremiumYearly /
                     entries?.SalesTargets?.salesTargets) *
                     100 || 0
-                ).toFixed(2)}
+                ).toFixed(0)}
                 %
               </Text>
               <Text
@@ -215,7 +222,7 @@ const AnnualProgress = () => {
           >
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: "300",
                 color: "black",
                 fontStyle: "italic",
@@ -276,7 +283,7 @@ const AnnualProgress = () => {
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.p_weekly)) *
                     100 || 0
-                ).toFixed(2)}
+                ).toFixed(0)}
                 sx={"large"}
               />
             </View>
@@ -298,7 +305,7 @@ const AnnualProgress = () => {
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.a_weekly)) *
                     100 || 0
-                ).toFixed(2)}
+                ).toFixed(0)}
                 sx={"large"}
               />
             </View>
@@ -320,7 +327,7 @@ const AnnualProgress = () => {
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.s_weekly)) *
                     100 || 0
-                ).toFixed(2)}
+                ).toFixed(0)}
                 sx={"large"}
               />
             </View>

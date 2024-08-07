@@ -1,4 +1,5 @@
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -6,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../../src/constants/theme";
 import {
   EvilIcons,
@@ -15,7 +16,11 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import ProgressBar from "../../../src/components/ProgressBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setWeeklyAchieved } from "../../../src/redux/features/entriesSlice";
+import { privateApi } from "../../../src/api/axios";
+import Loader from "../../../src/components/Loader";
+import { useFocusEffect } from "expo-router";
 
 const Category = ({ goals, achieved, text, backgroundColor }) => {
   return (
@@ -41,11 +46,19 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
       </Text>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <MaterialIcons
+        {/* <MaterialIcons
           name="loop"
           size={40}
           color="white"
           style={{ marginRight: 3 }}
+        /> */}
+        <Image
+          source={require("../../../../assets/goal1.png")}
+          style={{
+            marginRight: 2,
+            width: 45,
+            height: 45,
+          }}
         />
         <Text
           style={{
@@ -60,11 +73,19 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
       </View>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <MaterialIcons
+        {/* <MaterialIcons
           name="loop"
           size={40}
           color="white"
           style={{ marginRight: 3 }}
+        /> */}
+        <Image
+          source={require("../../../../assets/achieved1.png")}
+          style={{
+            marginRight: 2,
+            width: 40,
+            height: 40,
+          }}
         />
         <Text
           style={{
@@ -87,7 +108,24 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
 };
 
 const ActivityReports = () => {
+  const token = useSelector((state) => state.User?.token);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const entries = useSelector((state) => state.Entries);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+          .then((res) => {
+            dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -217,6 +255,7 @@ const ActivityReports = () => {
           />
         </View>
       </ScrollView>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };
