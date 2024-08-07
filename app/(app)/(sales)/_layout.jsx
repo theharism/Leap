@@ -14,6 +14,7 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { TouchableOpacity } from "react-native";
 import { DrawerActions } from "@react-navigation/native";
 import Loader from "../../src/components/Loader";
+import { logoutUser } from "../../src/redux/features/userSlice";
 export default function SalesLayout() {
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
@@ -39,6 +40,14 @@ export default function SalesLayout() {
   }, [token]);
 
   const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    // Clear user data
+    // await AsyncStorage.removeItem("user");
+    dispatch(logoutUser());
+    // Navigate to the login screen
+    navigation.navigate("signin");
+  };
 
   return (
     <>
@@ -79,13 +88,18 @@ export default function SalesLayout() {
             title: "",
           }}
         />
-        {/* <Drawer.Screen
-        name="logout"
-        options={{
-          drawerLabel: "Log Out",
-          title: "",
-        }}
-      /> */}
+        <Drawer.Screen
+          name="logout"
+          options={{
+            drawerLabel: "Log Out",
+            title: "",
+          }}
+          listeners={{
+            focus: () => {
+              handleLogout();
+            },
+          }}
+        />
       </Drawer>
 
       {loading && <Loader />}
