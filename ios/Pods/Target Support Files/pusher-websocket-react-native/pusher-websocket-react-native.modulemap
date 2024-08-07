@@ -1,6 +1,0 @@
-module pusher_websocket_react_native {
-  umbrella header "pusher-websocket-react-native-umbrella.h"
-
-  export *
-  module * { export * }
-}

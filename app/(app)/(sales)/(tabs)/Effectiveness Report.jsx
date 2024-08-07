@@ -31,7 +31,7 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
         borderRadius: 5,
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical:20
+        paddingVertical: 15,
       }}
     >
       <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -99,10 +99,10 @@ const ImprovementPlan = ({ item }) => {
         backgroundColor: theme.colors.secondary,
         marginHorizontal: 15,
         marginVertical: 5,
-        paddingVertical: 20,
+        paddingVertical: 15,
         flexDirection: "row",
         alignItems: "flex-start",
-        paddingHorizontal: 10,
+
       }}
     >
       <Entypo
@@ -150,7 +150,7 @@ const EffectivenessReport = () => {
           justifyContent: "center",
           paddingBottom: 20,
           flexGrow: 1,
-          padding:15
+          paddingHorizontal: 10,
           // backgroundColor: "yellow",
         }}
         bounces={false}

@@ -1,6 +1,0 @@
-module Pods_Leap {
-  umbrella header "Pods-Leap-umbrella.h"
-
-  export *
-  module * { export * }
-}

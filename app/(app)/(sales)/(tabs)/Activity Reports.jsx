@@ -140,7 +140,7 @@ const ActivityReports = () => {
         keyboardShouldPersistTaps={"handled"}
         contentContainerStyle={{
           flexGrow: 1,
-          padding:15
+          padding:10
         }}
         showsVerticalScrollIndicator={false}
         bounces={false}
