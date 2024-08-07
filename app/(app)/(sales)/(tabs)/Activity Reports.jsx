@@ -33,6 +33,7 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
         borderRadius: 5,
         justifyContent: "space-between",
         alignItems: "center",
+        paddingVertical:10
       }}
     >
       <Text
@@ -139,6 +140,7 @@ const ActivityReports = () => {
         keyboardShouldPersistTaps={"handled"}
         contentContainerStyle={{
           flexGrow: 1,
+          padding:15
         }}
         showsVerticalScrollIndicator={false}
         bounces={false}
