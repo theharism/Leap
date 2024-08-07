@@ -96,12 +96,12 @@ const AnnualProgress = () => {
               style={{ marginHorizontal: 3 }}
               color="white"
             />
-            <Entypo
+            {/* <Entypo
               name="dots-three-vertical"
               size={24}
               color="white"
               style={{ marginHorizontal: 3 }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -137,8 +137,8 @@ const AnnualProgress = () => {
             $
             {(
               entries?.SalesTargets?.salesTargets -
-              entries?.yearly_achieved?.totalPremiumYearly
-            )?.toLocaleString() || 0}{" "}
+                entries?.yearly_achieved?.totalPremiumYearly || 0
+            )?.toLocaleString()}{" "}
             To Go
           </Text>
 

@@ -13,11 +13,12 @@ import {
 import React from "react";
 import { theme } from "../../src/constants/theme";
 import { Link, useNavigation } from "expo-router";
+import { useSelector } from "react-redux";
 
-const Module = ({ text, bg, fg }) => {
+const Module = ({ text, bg, fg, href }) => {
   return (
     <Link
-      href="/(sales)/(tabs)"
+      href={href}
       style={{
         backgroundColor: "orange",
         marginVertical: 25,
@@ -68,6 +69,12 @@ const Module = ({ text, bg, fg }) => {
 };
 
 const Home = () => {
+  const entries = useSelector((state) => state.Entries);
+  console.log(entries);
+  const href = entries?.SalesTargets?.salesTargets
+    ? "/(sales)/(tabs)"
+    : "/(sales)";
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <KeyboardAvoidingView
@@ -118,16 +125,19 @@ const Home = () => {
               bg={require("../../../assets/1.png")}
               fg={require("../../../assets/1a.png")}
               text={"Track sales activity"}
+              href={href}
             />
             <Module
               bg={require("../../../assets/2.png")}
               fg={require("../../../assets/2a.png")}
               text={"Ask my coach"}
+              href={href}
             />
             <Module
               bg={require("../../../assets/3.png")}
               fg={require("../../../assets/3a.png")}
               text={"Watch masterclass"}
+              href={href}
             />
           </View>
         </ScrollView>

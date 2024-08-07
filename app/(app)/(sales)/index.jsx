@@ -50,7 +50,7 @@ const index = () => {
   const handleInputChange = (name, value) => {
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: Number(value).toLocaleString(),
     }));
   };
 
@@ -58,16 +58,24 @@ const index = () => {
     if (entries) {
       setLoading(false);
       setFormData({
-        salesTargets: entries?.SalesTargets?.salesTargets?.toString() || "",
-        averageCaseSize:
-          entries?.SalesTargets?.averageCaseSize?.toString() || "",
-        numberOfWeeks: entries?.SalesTargets?.numberOfWeeks?.toString() || "",
-        prospectingApproach:
-          entries?.SuccessFormula?.prospectingApproach?.toString() || "",
-        appointmentsKept:
-          entries?.SuccessFormula?.appointmentsKept?.toString() || "",
-        salesSubmitted:
-          entries?.SuccessFormula?.salesSubmitted?.toString() || "",
+        salesTargets: entries?.SalesTargets?.salesTargets || "",
+        averageCaseSize: entries?.SalesTargets?.averageCaseSize
+          ? Number(entries?.SalesTargets?.averageCaseSize).toLocaleString()
+          : "",
+        numberOfWeeks: entries?.SalesTargets?.numberOfWeeks
+          ? Number(entries?.SalesTargets?.numberOfWeeks).toLocaleString()
+          : "",
+        prospectingApproach: entries?.SuccessFormula?.prospectingApproach
+          ? Number(
+              entries?.SuccessFormula?.prospectingApproach
+            ).toLocaleString()
+          : "",
+        appointmentsKept: entries?.SuccessFormula?.appointmentsKept
+          ? Number(entries?.SuccessFormula?.appointmentsKept).toLocaleString()
+          : "",
+        salesSubmitted: entries?.SuccessFormula?.salesSubmitted
+          ? Number(entries?.SuccessFormula?.salesSubmitted).toLocaleString()
+          : "",
       });
     }
   }, [entries]);
@@ -90,10 +98,18 @@ const index = () => {
 
   const saveEntries = () => {
     setLoading(true);
+
     if (validateData()) {
       if (entries?.SalesTargets?.averageCaseSize) {
         privateApi(token)
-          .put("/entries", formData)
+          .put("/entries", {
+            salesTargets: Number(formData.salesTargets.replace(/,/g, "")),
+            averageCaseSize: Number(formData.averageCaseSize.replace(/,/g, "")),
+            numberOfWeeks: Number(formData.numberOfWeeks),
+            prospectingApproach: Number(formData.prospectingApproach),
+            appointmentsKept: Number(formData.appointmentsKept),
+            salesSubmitted: Number(formData.salesSubmitted),
+          })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
             router.push("/(app)/(sales)/(tabs)");
@@ -102,12 +118,19 @@ const index = () => {
           .finally(() => setLoading(false));
       } else {
         privateApi(token)
-          .post("/entries", formData)
+          .post("/entries", {
+            salesTargets: Number(formData.salesTargets.replace(/,/g, "")),
+            averageCaseSize: Number(formData.averageCaseSize.replace(/,/g, "")),
+            numberOfWeeks: Number(formData.numberOfWeeks),
+            prospectingApproach: Number(formData.prospectingApproach),
+            appointmentsKept: Number(formData.appointmentsKept),
+            salesSubmitted: Number(formData.salesSubmitted),
+          })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
             router.push("/(app)/(sales)/(tabs)");
           })
-          .catch((err) => console.error("post", err))
+          .catch((err) => console.error("post", err.response.data))
           .finally(() => setLoading(false));
       }
     }

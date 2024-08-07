@@ -33,7 +33,7 @@ const Category = ({ goals, achieved, text, backgroundColor }) => {
         borderRadius: 5,
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical:10
+        paddingVertical: 10,
       }}
     >
       <Text
@@ -140,7 +140,7 @@ const ActivityReports = () => {
         keyboardShouldPersistTaps={"handled"}
         contentContainerStyle={{
           flexGrow: 1,
-          padding:10
+          padding: 10,
         }}
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -184,12 +184,12 @@ const ActivityReports = () => {
               style={{ marginHorizontal: 3 }}
               color="white"
             />
-            <Entypo
+            {/* <Entypo
               name="dots-three-vertical"
               size={24}
               color="white"
               style={{ marginHorizontal: 3 }}
-            />
+            /> */}
           </View>
         </View>
         <View style={{ flex: 1, justifyContent: "flex-end" }}>

@@ -102,7 +102,6 @@ const ImprovementPlan = ({ item }) => {
         paddingVertical: 15,
         flexDirection: "row",
         alignItems: "flex-start",
-
       }}
     >
       <Entypo
@@ -116,7 +115,7 @@ const ImprovementPlan = ({ item }) => {
           style={{
             fontSize: 18,
             color: "black",
-            marginBottom:5
+            marginBottom: 5,
           }}
         >
           {item.heading}
@@ -198,12 +197,12 @@ const EffectivenessReport = () => {
               style={{ marginHorizontal: 3 }}
               color="white"
             />
-            <Entypo
+            {/* <Entypo
               name="dots-three-vertical"
               size={24}
               color="white"
               style={{ marginHorizontal: 3 }}
-            />
+            /> */}
           </View>
         </View>
 

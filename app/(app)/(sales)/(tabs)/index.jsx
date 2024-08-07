@@ -25,6 +25,7 @@ import Loader from "../../../src/components/Loader";
 import { Link } from "expo-router";
 import { Video, ResizeMode } from "expo-av";
 import { Button } from "react-native-paper";
+import * as Linking from "expo-linking";
 
 const Activity = ({
   text,
@@ -40,7 +41,7 @@ const Activity = ({
   const itemSize = page === 0 ? 45 : 50;
   const itemsPerPage = Math.floor(screenWidth / itemSize);
   const itemsPerPageOnS = Math.floor(screenWidth / itemSize / 2);
-  const [premiumInput, setPremiumInput] = useState("");
+  const [premiumInput, setPremiumInput] = useState("0");
   const [pressedItem, setPressedItem] = useState(null);
   const InputRef = useRef(null);
   const video = React.useRef(null);
@@ -320,7 +321,13 @@ const Activity = ({
               justifyContent: "space-between",
             }}
           >
-            <TouchableOpacity onPress={openModal}>
+            <TouchableOpacity
+              onPress={() =>
+                Linking.canOpenURL(videoLinks[status])
+                  .then(() => Linking.openURL(videoLinks[status]))
+                  .catch((err) => console.error(err))
+              }
+            >
               <SimpleLineIcons name="social-youtube" size={28} color="black" />
             </TouchableOpacity>
             <EvilIcons
@@ -337,16 +344,16 @@ const Activity = ({
                 color="black"
               />
             </Link>
-            <Entypo
+            {/* <Entypo
               name="dots-three-vertical"
               size={20}
               color="#d9d9d9"
               style={{ marginHorizontal: 3 }}
-            />
+            /> */}
           </View>
         </View>
       </View>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -371,7 +378,7 @@ const Activity = ({
             Close
           </Button>
         </View>
-      </Modal>
+      </Modal> */}
     </>
   );
 };
