@@ -17,7 +17,7 @@ import { Link, useNavigation } from "expo-router";
 const Module = ({ text, bg, fg }) => {
   return (
     <Link
-      href="/(sales)"
+      href="/(sales)/(tabs)"
       style={{
         backgroundColor: "orange",
         marginVertical: 25,

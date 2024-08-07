@@ -35,20 +35,6 @@ export default function SalesLayout() {
           dispatch(setDailyAchieved({ daily: res.data.pas }));
         })
         .catch((err) => console.error(err));
-
-      privateApi(token)
-        .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
-        .then((res) => {
-          dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
-        })
-        .catch((err) => console.error(err));
-
-      privateApi(token)
-        .get("/pas/annual")
-        .then((res) => {
-          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
-        })
-        .catch((err) => console.error(err));
     }
   }, [token]);
 

@@ -18,6 +18,7 @@ import { Button } from "react-native-paper";
 import { setEntries } from "../../src/redux/features/entriesSlice";
 import { isEmpty } from "../../src/utils/isEmpty";
 import Loader from "../../src/components/Loader";
+import { router } from "expo-router";
 
 const index = () => {
   const token = useSelector((state) => state.User?.token);
@@ -95,6 +96,7 @@ const index = () => {
           .put("/entries", formData)
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
+            router.push("/(app)/(sales)/(tabs)");
           })
           .catch((err) => console.error("put", err))
           .finally(() => setLoading(false));
@@ -103,6 +105,7 @@ const index = () => {
           .post("/entries", formData)
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
+            router.push("/(app)/(sales)/(tabs)");
           })
           .catch((err) => console.error("post", err))
           .finally(() => setLoading(false));
@@ -158,7 +161,7 @@ const index = () => {
             }}
           >
             <LeapTextInput
-              label="Sales Targets $ "
+              label="Annual Sales Targets $ "
               value={formData.salesTargets}
               keyboardType="numeric"
               onChangeText={(text) => handleInputChange("salesTargets", text)}
@@ -193,7 +196,7 @@ const index = () => {
             </Text>
 
             <LeapTextInput
-              label={"# ProspectMying Approach"}
+              label={"# Prospecting Approach"}
               value={formData.prospectingApproach}
               keyboardType="numeric"
               isError={formErrors.prospectingApproachError}
@@ -211,7 +214,7 @@ const index = () => {
               }
             />
             <LeapTextInput
-              label={"# SalesMy Submitted"}
+              label={"# Sales Submitted"}
               value={formData.salesSubmitted}
               keyboardType="numeric"
               isError={formErrors.salesSubmittedError}
