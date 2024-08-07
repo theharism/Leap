@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -33,11 +34,13 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
       }}
     >
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <MaterialIcons
-          name="loop"
-          size={60}
-          color="white"
-          style={{ marginRight: 3 }}
+        <Image
+          source={require("../../../../assets/goal1.png")}
+          style={{
+            marginRight: 2,
+            width: 45,
+            height: 45,
+          }}
         />
         <Text
           style={{
@@ -62,11 +65,13 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
       </Text>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <MaterialIcons
-          name="loop"
-          size={60}
-          color="white"
-          style={{ marginRight: 3 }}
+        <Image
+          source={require("../../../../assets/achieved1.png")}
+          style={{
+            marginRight: 2,
+            width: 40,
+            height: 40,
+          }}
         />
         <Text
           style={{
