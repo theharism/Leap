@@ -216,24 +216,31 @@ const Activity = ({
           />
 
           {status === "S" && (
-            <View style={{ alignItems: "center" }}>
-              <View>
+            <View style={{ alignItems: "center", width: "45%" }}>
+              <View style={{
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              }}>
                 <View
                   style={{
                     backgroundColor: color,
                     justifyContent: "center",
                     alignItems: "center",
-                    paddingHorizontal: 20,
+                    paddingHorizontal: 1,
                     paddingVertical: 7,
                     borderRadius: 8,
                     flexDirection: "row",
+                    maxWidth: "100%",
+                    width: "100%"
                   }}
                 >
                   <Text style={{ fontWeight: "400", fontSize: 20 }}>$ </Text>
                   <TextInput
                     value={premiumInput}
                     onChangeText={(text) => setPremiumInput(text)}
-                    style={{ fontSize: 20 }}
+                    style={{ fontSize: 20, maxWidth: "90%" }}
                     keyboardType="number-pad"
                     ref={InputRef}
                     cursorColor={"white"}
@@ -242,32 +249,38 @@ const Activity = ({
                         onPress(pressedItem, premiumInput);
                       }
                     }}
-                  />
-                </View>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View style={{ alignItems: "flex-end", marginRight: 5 }}>
-                    <Text style={{ fontSize: 10 }}>Total Premium</Text>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: color,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingHorizontal: 20,
-                      paddingVertical: 7,
-                      borderRadius: 8,
-                      flexDirection: "row",
+                    onBlur={() => {
+                      if (pressedItem && premiumInput.length > 0) {
+                        onPress(pressedItem, premiumInput);
+                      }
                     }}
-                  >
-                    <Text style={{ fontWeight: "400", fontSize: 20 }}>
-                      $ {totalPremium}
-                    </Text>
-                  </View>
+                  />
                 </View>
               </View>
             </View>
           )}
         </View>
+        {status === "S" && <View style={{ width: "100%", maxWidth: "100%", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+          <View style={{ alignItems: "flex-end", marginRight: 5 }}>
+            <Text style={{ fontSize: 10 }}>Total Premium</Text>
+            <Text style={{ fontSize: 10 }}>YTD</Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: color,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 20,
+              paddingVertical: 7,
+              borderRadius: 8,
+              flexDirection: "row",
+            }}
+          >
+            <Text style={{ fontWeight: "400", fontSize: 20 }}>
+              $ {totalPremium}
+            </Text>
+          </View>
+        </View>}
 
         <View
           style={{
