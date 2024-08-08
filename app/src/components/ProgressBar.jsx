@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   percentageText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
     color: "white",
   },

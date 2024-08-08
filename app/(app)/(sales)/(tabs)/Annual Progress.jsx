@@ -137,7 +137,7 @@ const AnnualProgress = () => {
             $
             {(
               entries?.SalesTargets?.salesTargets -
-                entries?.yearly_achieved?.totalPremiumYearly || 0
+              entries?.yearly_achieved?.totalPremiumYearly || 0
             )?.toLocaleString()}{" "}
             To Go
           </Text>
@@ -153,7 +153,7 @@ const AnnualProgress = () => {
             <View>
               <Text
                 style={{
-                  fontSize: 32,
+                  fontSize: 26,
                   fontWeight: "700",
                   color: "black",
                   textAlign: "center",
@@ -165,7 +165,7 @@ const AnnualProgress = () => {
               </Text>
               <Text
                 style={{
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: "300",
                   color: "#b2b2b2",
                   textAlign: "center",
@@ -176,7 +176,7 @@ const AnnualProgress = () => {
             </View>
             <Text
               style={{
-                fontSize: 32,
+                fontSize: 26,
                 fontWeight: "700",
                 color: "black",
                 textAlign: "center",
@@ -187,7 +187,7 @@ const AnnualProgress = () => {
             <View>
               <Text
                 style={{
-                  fontSize: 32,
+                  fontSize: 26,
                   fontWeight: "700",
                   color: "#00bf63",
                   textAlign: "center",
@@ -196,13 +196,13 @@ const AnnualProgress = () => {
                 {(
                   (entries?.yearly_achieved?.totalPremiumYearly /
                     entries?.SalesTargets?.salesTargets) *
-                    100 || 0
+                  100 || 0
                 ).toFixed(0)}
                 %
               </Text>
               <Text
                 style={{
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: "300",
                   color: "#b2b2b2",
                   textAlign: "center",
@@ -218,22 +218,36 @@ const AnnualProgress = () => {
               flexDirection: "row",
               paddingHorizontal: 10,
               marginVertical: 15,
+              gap:10
             }}
           >
-            <Text
-              style={{
-                fontSize: 18,
+            <View style={{gap:10}}>
+
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "300",
+                  color: "black",
+                  fontStyle: "italic",
+                  // textAlign: "justify",
+                  flexWrap: "wrap",
+                  maxWidth: 160,
+                }}
+              >
+                "Don't watch the clock; do what it does. Keep going."
+              </Text>
+              <Text style={{
+                fontSize: 16,
                 fontWeight: "300",
                 color: "black",
                 fontStyle: "italic",
-                textAlign: "justify",
+                // textAlign: "justify",
                 flexWrap: "wrap",
                 maxWidth: 160,
-              }}
-            >
-              "Don't watch the clock; do what it does. Keep going." - Sam
-              Levenson
-            </Text>
+              }}>
+                - Sam Levenson
+              </Text>
+            </View>
             <Image
               source={require("../../../../assets/mountain.png")}
               style={{
@@ -282,7 +296,7 @@ const AnnualProgress = () => {
                   (entries?.yearly_achieved?.p_yearly /
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.p_weekly)) *
-                    100 || 0
+                  100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />
@@ -304,7 +318,7 @@ const AnnualProgress = () => {
                   (entries?.yearly_achieved?.a_yearly /
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.a_weekly)) *
-                    100 || 0
+                  100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />
@@ -326,7 +340,7 @@ const AnnualProgress = () => {
                   (entries?.yearly_achieved?.s_yearly /
                     (entries?.SalesTargets?.numberOfWeeks *
                       entries?.weekly_goals.s_weekly)) *
-                    100 || 0
+                  100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />

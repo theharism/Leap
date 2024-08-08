@@ -11,6 +11,7 @@ import {
   Dimensions,
   TextInput,
   Modal,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { theme } from "../../../src/constants/theme";
@@ -162,7 +163,6 @@ const Activity = ({
             style={{
               fontSize: 20,
               fontWeight: "400",
-              textAlign: "justify",
               flexWrap: "wrap",
               maxWidth: "70%",
             }}
@@ -194,7 +194,9 @@ const Activity = ({
         <View
           style={{
             marginVertical: 15,
-            flexDirection: "row",
+            flexWrap: "wrap",
+            maxWidth: "100%",
+            // justifyContent: "flex-end",
           }}
         >
           <FlatList
@@ -205,42 +207,53 @@ const Activity = ({
             pagingEnabled
             contentContainerStyle={{
               flexGrow: 1,
-              justifyContent: "space-around",
+              justifyContent: status === "S" ? "flex-start" : "space-around",
+              // width:"100%"
             }}
           />
 
           {status === "S" && (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View style={{ alignItems: "flex-end", marginRight: 5 }}>
-                <Text style={{ fontSize: 10 }}>Total Premium</Text>
-                {/* <Text style={{ fontSize: 10 }}>This Week</Text> */}
-              </View>
+            <View style={{ flexDirection: "row", width: "100%", alignItems: "center", justifyContent: "flex-end", marginTop: "2%", flexWrap: "wrap" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", width: "100%", justifyContent: "flex-end" }}>
 
-              <View
-                style={{
-                  backgroundColor: color,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingHorizontal: 20,
-                  paddingVertical: 7,
-                  borderRadius: 8,
-                  flexDirection: "row",
-                }}
-              >
-                <Text style={{ fontWeight: "400", fontSize: 20 }}>$ </Text>
-                <TextInput
-                  value={premiumInput}
-                  onChangeText={(text) => setPremiumInput(text)}
-                  style={{ fontSize: 20 }}
-                  keyboardType="number-pad"
-                  ref={InputRef}
-                  cursorColor={"white"}
-                  onSubmitEditing={() => {
-                    if (pressedItem && premiumInput.length > 0) {
-                      onPress(pressedItem, premiumInput);
-                    }
+                <View style={{ alignItems: "flex-end", marginRight: 5 }}>
+                  <Text style={{ fontSize: 10 }}>Total Premium</Text>
+                  {/* <Text style={{ fontSize: 10 }}>This Week</Text> */}
+                </View>
+
+                <View
+                  style={{
+                    backgroundColor: color,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingHorizontal: 20,
+                    paddingVertical: 7,
+                    borderRadius: 8,
+                    flexDirection: "row",
+                    // flexWrap:"wrap",
+                    maxWidth: "70%"
                   }}
-                />
+                >
+                  <Text style={{ fontWeight: "400", fontSize: 20 }}>$ </Text>
+                  <TextInput
+                    value={premiumInput}
+                    onChangeText={(text) => setPremiumInput(text)}
+                    style={{ fontSize: 20 }}
+                    keyboardType="number-pad"
+                    ref={InputRef}
+                    cursorColor={"white"}
+                    onSubmitEditing={() => {
+                      if (pressedItem && premiumInput.length > 0) {
+                        onPress(pressedItem, premiumInput);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (pressedItem && premiumInput.length > 0) {
+                        onPress(pressedItem, premiumInput);
+                      }
+                    }}
+                  />
+                </View>
               </View>
             </View>
           )}
@@ -409,104 +422,113 @@ const DailyActivity = () => {
         backgroundColor={theme.colors.background}
       />
 
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        keyboardShouldPersistTaps={"handled"}
-        contentContainerStyle={{
-          justifyContent: "center",
-          paddingBottom: 20,
-          flexGrow: 1,
-        }}
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollViewStyle}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={"padding"}
+        enabled
+        keyboardVerticalOffset={100}
       >
-        <Image
-          source={require("../../../../assets/logo.png")}
-          style={{ alignSelf: "center" }}
-        />
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 32,
-            fontWeight: "300",
-            marginTop: 25,
-            color: theme.colors.secondary,
+
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps={"handled"}
+          contentContainerStyle={{
+            justifyContent: "center",
+            paddingBottom: 20,
+            flexGrow: 1,
+
           }}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollViewStyle}
         >
-          My Sales Coach
-        </Text>
-
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 28,
-            fontWeight: "bold",
-            marginTop: 25,
-            color: "#e8bf27",
-          }}
-        >
-          {formattedDate}
-        </Text>
-
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 28,
-            fontWeight: "300",
-            marginTop: 30,
-            color: "#e8bf27",
-          }}
-        >
-          Daily Activity Achievement
-        </Text>
-
-        <View style={{ flex: 1, justifyContent: "flex-start", marginTop: 30 }}>
-          <Activity
-            text={"Prospects Reached for Appointments"}
-            goals={entries?.daily_goals?.p_daily || 0}
-            achieved={entries?.daily_achieved?.p_daily || 0}
-            status={"P"}
-            color={"#ff5757"}
-            onPress={(value) =>
-              updateAchievements({
-                p_daily: value,
-                date: new Date().toLocaleDateString(),
-              })
-            }
+          <Image
+            source={require("../../../../assets/logo.png")}
+            style={{ alignSelf: "center" }}
           />
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 32,
+              fontWeight: "300",
+              marginTop: 25,
+              color: theme.colors.secondary,
+            }}
+          >
+            My Sales Coach
+          </Text>
 
-          <Activity
-            text={"Appointments Kept"}
-            goals={entries?.daily_goals?.a_daily || 0}
-            achieved={entries?.daily_achieved?.a_daily || 0}
-            status={"A"}
-            onPress={(value) =>
-              updateAchievements({
-                a_daily: value,
-                date: new Date().toLocaleDateString(),
-              })
-            }
-            color={"#ffca08"}
-          />
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 28,
+              fontWeight: "bold",
+              marginTop: 25,
+              color: "#e8bf27",
+            }}
+          >
+            {formattedDate}
+          </Text>
 
-          <Activity
-            text={"Sales with Premium"}
-            goals={entries?.daily_goals?.s_daily || 0}
-            achieved={entries?.daily_achieved?.s_daily || 0}
-            status={"S"}
-            onPress={(value, premiumInput) =>
-              updateAchievements({
-                s_daily: value,
-                premium_daily: premiumInput,
-                date: new Date().toLocaleDateString(),
-              })
-            }
-            color={"#00bf63"}
-            premium={entries?.daily_achieved?.premium_daily?.toString()}
-          />
-        </View>
-      </ScrollView>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 28,
+              fontWeight: "300",
+              marginTop: 30,
+              color: "#e8bf27",
+            }}
+          >
+            Daily Activity Achievement
+          </Text>
+
+          <View style={{ flex: 1, justifyContent: "flex-start", marginTop: 30 }}>
+            <Activity
+              text={"Prospects Reached for Appointments"}
+              goals={entries?.daily_goals?.p_daily || 0}
+              achieved={entries?.daily_achieved?.p_daily || 0}
+              status={"P"}
+              color={"#ff5757"}
+              onPress={(value) =>
+                updateAchievements({
+                  p_daily: value,
+                  date: new Date().toLocaleDateString(),
+                })
+              }
+            />
+
+            <Activity
+              text={"Appointments Kept"}
+              goals={entries?.daily_goals?.a_daily || 0}
+              achieved={entries?.daily_achieved?.a_daily || 0}
+              status={"A"}
+              onPress={(value) =>
+                updateAchievements({
+                  a_daily: value,
+                  date: new Date().toLocaleDateString(),
+                })
+              }
+              color={"#ffca08"}
+            />
+
+            <Activity
+              text={"Sales with Premium"}
+              goals={entries?.daily_goals?.s_daily || 0}
+              achieved={entries?.daily_achieved?.s_daily || 0}
+              status={"S"}
+              onPress={(value, premiumInput) =>
+                updateAchievements({
+                  s_daily: value,
+                  premium_daily: premiumInput,
+                  date: new Date().toLocaleDateString(),
+                })
+              }
+              color={"#00bf63"}
+              premium={entries?.daily_achieved?.premium_daily?.toString()}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       {loading && <Loader />}
     </SafeAreaView>
   );

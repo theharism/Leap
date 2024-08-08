@@ -102,6 +102,9 @@ const ImprovementPlan = ({ item }) => {
         paddingVertical: 15,
         flexDirection: "row",
         alignItems: "flex-start",
+        // flexWrap:"wrap",
+        maxWidth:"100%",
+        // width:"100%",
       }}
     >
       <Entypo
@@ -110,11 +113,12 @@ const ImprovementPlan = ({ item }) => {
         color={theme.colors.background}
         style={{ marginTop: -5 }}
       />
-      <View style={{ alignItems: "flex-start" }}>
+      <View style={{ alignItems: "flex-start", width:"85%" }}>
         <Text
           style={{
-            fontSize: 18,
+            fontSize: 14,
             color: "black",
+            fontWeight:"bold",
             marginBottom: 5,
           }}
         >
@@ -124,6 +128,7 @@ const ImprovementPlan = ({ item }) => {
           style={{
             fontSize: 12,
             color: "black",
+            flexWrap:"wrap"
           }}
         >
           {item.subheading}
@@ -268,7 +273,7 @@ const EffectivenessReport = () => {
         >
           <Text
             style={{
-              fontSize: 32,
+              fontSize: 26,
               fontWeight: "700",
               color: "black",
               textAlign: "center",

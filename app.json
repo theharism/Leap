@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gitsa.Leap"
     },
     "android": {
       "adaptiveIcon": {
@@ -44,7 +45,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6100caa0-8372-428e-930c-b05b46049fca"
+        "projectId": "e74f942a-614c-4d8a-b494-e25f4db22b26"
       }
     }
   }
