@@ -38,7 +38,6 @@ const Activity = ({
   achieved,
   color,
   onPress,
-  premium,
   totalPremium,
 }) => {
   const [page, setPage] = useState(0);
@@ -51,12 +50,6 @@ const Activity = ({
   const InputRef = useRef(null);
   const video = React.useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  useEffect(() => {
-    if (premium) {
-      setPremiumInput(premium);
-    }
-  }, [premium]);
 
   const videoLinks = {
     S: "https://vimeo.com/988983248/026de08811?share=copy",
@@ -217,12 +210,14 @@ const Activity = ({
 
           {status === "S" && (
             <View style={{ alignItems: "center", width: "45%" }}>
-              <View style={{
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-              }}>
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
                 <View
                   style={{
                     backgroundColor: color,
@@ -233,7 +228,7 @@ const Activity = ({
                     borderRadius: 8,
                     flexDirection: "row",
                     maxWidth: "100%",
-                    width: "100%"
+                    width: "100%",
                   }}
                 >
                   <Text style={{ fontWeight: "400", fontSize: 20 }}>$ </Text>
@@ -260,27 +255,37 @@ const Activity = ({
             </View>
           )}
         </View>
-        {status === "S" && <View style={{ width: "100%", maxWidth: "100%", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-          <View style={{ alignItems: "flex-end", marginRight: 5 }}>
-            <Text style={{ fontSize: 10 }}>Total Premium</Text>
-            <Text style={{ fontSize: 10 }}>YTD</Text>
-          </View>
+        {status === "S" && (
           <View
             style={{
-              backgroundColor: color,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingHorizontal: 20,
-              paddingVertical: 7,
-              borderRadius: 8,
+              width: "100%",
+              maxWidth: "100%",
               flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-end",
             }}
           >
-            <Text style={{ fontWeight: "400", fontSize: 20 }}>
-              $ {totalPremium}
-            </Text>
+            <View style={{ alignItems: "flex-end", marginRight: 5 }}>
+              <Text style={{ fontSize: 10 }}>Total Premium</Text>
+              <Text style={{ fontSize: 10 }}>YTD</Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: color,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 20,
+                paddingVertical: 7,
+                borderRadius: 8,
+                flexDirection: "row",
+              }}
+            >
+              <Text style={{ fontWeight: "400", fontSize: 20 }}>
+                $ {totalPremium}
+              </Text>
+            </View>
           </View>
-        </View>}
+        )}
 
         <View
           style={{
@@ -421,6 +426,7 @@ const Activity = ({
 
 const DailyActivity = () => {
   const entries = useSelector((state) => state.Entries);
+  console.log(entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -432,12 +438,13 @@ const DailyActivity = () => {
         .post("/pas", data)
         .then((res) => {
           dispatch(setDailyAchieved({ daily: res.data.pas }));
-          privateApi(token)
-            .get("/pas/annual")
-            .then((res) => {
-              dispatch(setYearlyAchieved({ yearly: res.data.pas }));
-            })
-            .catch((err) => console.error(err));
+        })
+        .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get("/pas/annual")
+        .then((res) => {
+          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
@@ -548,7 +555,9 @@ const DailyActivity = () => {
               onPress={(value, premiumInput) =>
                 updateAchievements({
                   s_daily: value,
-                  premium_daily: premiumInput,
+                  premium_daily:
+                    Number(entries?.daily_achieved?.premium_daily) +
+                    Number(premiumInput),
                   date: new Date().toLocaleDateString(),
                 })
               }
