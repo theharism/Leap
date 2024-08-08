@@ -26,7 +26,6 @@ export default function SalesLayout() {
         .get("/entries")
         .then((res) => {
           dispatch(setEntries({ entries: res.data.entries }));
-          setLoading(false);
         })
         .catch((err) => console.error(err));
 
@@ -36,6 +35,15 @@ export default function SalesLayout() {
           dispatch(setDailyAchieved({ daily: res.data.pas }));
         })
         .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get("/pas/annual")
+        .then((res) => {
+          console.log("YYYYYYY", res.data.pas);
+          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
     }
   }, [token]);
 
