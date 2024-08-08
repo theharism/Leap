@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { theme } from "../../../src/constants/theme";
 import {
   EvilIcons,
@@ -18,7 +18,14 @@ import {
 } from "@expo/vector-icons";
 
 import { plans } from "../../../src/constants/plans";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "expo-router";
+import { privateApi } from "../../../src/api/axios";
+import {
+  setWeeklyAchieved,
+  setYearlyAchieved,
+} from "../../../src/redux/features/entriesSlice";
+import Loader from "../../../src/components/Loader";
 
 const Category = ({ goal, achieved, text, backgroundColor }) => {
   return (
@@ -103,7 +110,7 @@ const ImprovementPlan = ({ item }) => {
         flexDirection: "row",
         alignItems: "flex-start",
         // flexWrap:"wrap",
-        maxWidth:"100%",
+        maxWidth: "100%",
         // width:"100%",
       }}
     >
@@ -113,12 +120,12 @@ const ImprovementPlan = ({ item }) => {
         color={theme.colors.background}
         style={{ marginTop: -5 }}
       />
-      <View style={{ alignItems: "flex-start", width:"85%" }}>
+      <View style={{ alignItems: "flex-start", width: "85%" }}>
         <Text
           style={{
             fontSize: 14,
             color: "black",
-            fontWeight:"bold",
+            fontWeight: "bold",
             marginBottom: 5,
           }}
         >
@@ -128,7 +135,7 @@ const ImprovementPlan = ({ item }) => {
           style={{
             fontSize: 12,
             color: "black",
-            flexWrap:"wrap"
+            flexWrap: "wrap",
           }}
         >
           {item.subheading}
@@ -140,6 +147,31 @@ const ImprovementPlan = ({ item }) => {
 
 const EffectivenessReport = () => {
   const entries = useSelector((state) => state.Entries);
+
+  const token = useSelector((state) => state.User?.token);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get("/pas/annual")
+          .then((res) => {
+            dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+          })
+          .catch((err) => console.error(err));
+
+        privateApi(token)
+          .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+          .then((res) => {
+            dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -233,7 +265,16 @@ const EffectivenessReport = () => {
                   100
               ) || 0
             }
-            achieved={0}
+            achieved={
+              Math.ceil(
+                entries?.yearly_achieved?.a_yearly /
+                  (entries?.SalesTargets?.numberOfWeeks *
+                    entries?.weekly_goals.a_weekly) /
+                  (entries?.yearly_achieved?.p_yearly /
+                    (entries?.SalesTargets?.numberOfWeeks *
+                      entries?.weekly_goals.p_weekly))
+              ) || 0
+            }
             backgroundColor={"#ffca08"}
           />
 
@@ -258,7 +299,24 @@ const EffectivenessReport = () => {
                   100
               ) || 0
             }
-            achieved={0}
+            achieved={
+              entries?.yearly_achieved?.s_yearly /
+                (entries?.SalesTargets?.numberOfWeeks *
+                  entries?.weekly_goals.s_weekly) /
+                (entries?.yearly_achieved?.a_yearly /
+                  (entries?.SalesTargets?.numberOfWeeks *
+                    entries?.weekly_goals.a_weekly)) !==
+              Infinity
+                ? Math.ceil(
+                    entries?.yearly_achieved?.s_yearly /
+                      (entries?.SalesTargets?.numberOfWeeks *
+                        entries?.weekly_goals.s_weekly) /
+                      (entries?.yearly_achieved?.a_yearly /
+                        (entries?.SalesTargets?.numberOfWeeks *
+                          entries?.weekly_goals.a_weekly))
+                  )
+                : 0
+            }
             backgroundColor={"#00bf63"}
           />
         </View>
@@ -291,6 +349,7 @@ const EffectivenessReport = () => {
           </View>
         </View>
       </ScrollView>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };
