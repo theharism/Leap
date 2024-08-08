@@ -21,7 +21,10 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { privateApi } from "../../../src/api/axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setDailyAchieved } from "../../../src/redux/features/entriesSlice";
+import {
+  setDailyAchieved,
+  setYearlyAchieved,
+} from "../../../src/redux/features/entriesSlice";
 import Loader from "../../../src/components/Loader";
 import { Link } from "expo-router";
 import { Video, ResizeMode } from "expo-av";
@@ -36,6 +39,7 @@ const Activity = ({
   color,
   onPress,
   premium,
+  totalPremium,
 }) => {
   const [page, setPage] = useState(0);
   const screenWidth = Dimensions.get("window").width;
@@ -194,9 +198,8 @@ const Activity = ({
         <View
           style={{
             marginVertical: 15,
-            flexWrap: "wrap",
-            maxWidth: "100%",
-            // justifyContent: "flex-end",
+            flexDirection: "row",
+            alignItems: "flex-start",
           }}
         >
           <FlatList
@@ -213,14 +216,8 @@ const Activity = ({
           />
 
           {status === "S" && (
-            <View style={{ flexDirection: "row", width: "100%", alignItems: "center", justifyContent: "flex-end", marginTop: "2%", flexWrap: "wrap" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", width: "100%", justifyContent: "flex-end" }}>
-
-                <View style={{ alignItems: "flex-end", marginRight: 5 }}>
-                  <Text style={{ fontSize: 10 }}>Total Premium</Text>
-                  {/* <Text style={{ fontSize: 10 }}>This Week</Text> */}
-                </View>
-
+            <View style={{ alignItems: "center" }}>
+              <View>
                 <View
                   style={{
                     backgroundColor: color,
@@ -230,8 +227,6 @@ const Activity = ({
                     paddingVertical: 7,
                     borderRadius: 8,
                     flexDirection: "row",
-                    // flexWrap:"wrap",
-                    maxWidth: "70%"
                   }}
                 >
                   <Text style={{ fontWeight: "400", fontSize: 20 }}>$ </Text>
@@ -247,12 +242,27 @@ const Activity = ({
                         onPress(pressedItem, premiumInput);
                       }
                     }}
-                    onBlur={() => {
-                      if (pressedItem && premiumInput.length > 0) {
-                        onPress(pressedItem, premiumInput);
-                      }
-                    }}
                   />
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View style={{ alignItems: "flex-end", marginRight: 5 }}>
+                    <Text style={{ fontSize: 10 }}>Total Premium</Text>
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: color,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingHorizontal: 20,
+                      paddingVertical: 7,
+                      borderRadius: 8,
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text style={{ fontWeight: "400", fontSize: 20 }}>
+                      $ {totalPremium}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -409,6 +419,12 @@ const DailyActivity = () => {
         .post("/pas", data)
         .then((res) => {
           dispatch(setDailyAchieved({ daily: res.data.pas }));
+          privateApi(token)
+            .get("/pas/annual")
+            .then((res) => {
+              dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+            })
+            .catch((err) => console.error(err));
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
@@ -428,7 +444,6 @@ const DailyActivity = () => {
         enabled
         keyboardVerticalOffset={100}
       >
-
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps={"handled"}
@@ -436,7 +451,6 @@ const DailyActivity = () => {
             justifyContent: "center",
             paddingBottom: 20,
             flexGrow: 1,
-
           }}
           bounces={false}
           showsVerticalScrollIndicator={false}
@@ -482,7 +496,9 @@ const DailyActivity = () => {
             Daily Activity Achievement
           </Text>
 
-          <View style={{ flex: 1, justifyContent: "flex-start", marginTop: 30 }}>
+          <View
+            style={{ flex: 1, justifyContent: "flex-start", marginTop: 30 }}
+          >
             <Activity
               text={"Prospects Reached for Appointments"}
               goals={entries?.daily_goals?.p_daily || 0}
@@ -525,6 +541,10 @@ const DailyActivity = () => {
               }
               color={"#00bf63"}
               premium={entries?.daily_achieved?.premium_daily?.toString()}
+              totalPremium={
+                entries?.yearly_achieved?.totalPremiumYearly?.toLocaleString() ||
+                0
+              }
             />
           </View>
         </ScrollView>
