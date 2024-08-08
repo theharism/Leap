@@ -89,6 +89,7 @@ const Activity = ({
           onPress={() => {
             if (status === "S") {
               setPressedItem(item);
+              InputRef.current?.clear();
               InputRef.current?.focus();
             } else {
               onPress(item);
@@ -241,6 +242,7 @@ const Activity = ({
                     cursorColor={"white"}
                     onSubmitEditing={() => {
                       if (pressedItem && premiumInput.length > 0) {
+                        console.log("pppp", premiumInput);
                         onPress(pressedItem, premiumInput);
                       }
                     }}
@@ -426,28 +428,30 @@ const Activity = ({
 
 const DailyActivity = () => {
   const entries = useSelector((state) => state.Entries);
-  console.log(entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const updateAchievements = (data) => {
+    console.log(data);
     if (entries?.SalesTargets?.averageCaseSize) {
       setLoading(true);
       privateApi(token)
         .post("/pas", data)
         .then((res) => {
-          dispatch(setDailyAchieved({ daily: res.data.pas }));
+          const daily = res.data.pas;
+
+          privateApi(token)
+            .get("/pas/annual")
+            .then((res) => {
+              console.log("YY", res.data.pas);
+              dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+              dispatch(setDailyAchieved({ daily }));
+            })
+            .catch((err) => console.error(err))
+            .finally(() => setLoading(false));
         })
         .catch((err) => console.error(err));
-
-      privateApi(token)
-        .get("/pas/annual")
-        .then((res) => {
-          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
     }
   };
 
@@ -552,17 +556,17 @@ const DailyActivity = () => {
               goals={entries?.daily_goals?.s_daily || 0}
               achieved={entries?.daily_achieved?.s_daily || 0}
               status={"S"}
-              onPress={(value, premiumInput) =>
+              onPress={(value, premiumInput) => {
+                const temp = entries?.daily_achieved?.premium_daily;
                 updateAchievements({
                   s_daily: value,
-                  premium_daily:
-                    Number(entries?.daily_achieved?.premium_daily) +
-                    Number(premiumInput),
+                  premium_daily: temp
+                    ? Number(temp) + Number(premiumInput)
+                    : premiumInput,
                   date: new Date().toLocaleDateString(),
-                })
-              }
+                });
+              }}
               color={"#00bf63"}
-              premium={entries?.daily_achieved?.premium_daily?.toString()}
               totalPremium={
                 entries?.yearly_achieved?.totalPremiumYearly?.toLocaleString() ||
                 0

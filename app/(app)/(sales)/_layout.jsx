@@ -39,7 +39,6 @@ export default function SalesLayout() {
       privateApi(token)
         .get("/pas/annual")
         .then((res) => {
-          console.log("YYYYYYY", res.data.pas);
           dispatch(setYearlyAchieved({ yearly: res.data.pas }));
         })
         .catch((err) => console.error(err))
