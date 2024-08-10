@@ -220,7 +220,7 @@ const ActivityReports = () => {
           <Category
             text={"S"}
             goals={entries?.daily_goals?.s_daily || 0}
-            achieved={entries?.daily_achieved?.s_daily || 0}
+            achieved={entries?.daily_achieved?.s_daily?.length || 0}
             backgroundColor={"#00bf63"}
           />
         </View>

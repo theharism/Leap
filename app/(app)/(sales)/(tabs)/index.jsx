@@ -90,6 +90,9 @@ const Activity = ({
             if (status === "S") {
               setPressedItem(item);
               InputRef.current?.clear();
+              if (item <= achieved.length) {
+                setPremiumInput(Number(achieved[item - 1])?.toString());
+              }
               InputRef.current?.focus();
             } else {
               onPress(item);
@@ -99,7 +102,7 @@ const Activity = ({
             width: 30,
             height: 30,
             borderRadius: 15,
-            backgroundColor: item <= achieved ? color : "#d9d9d9",
+            backgroundColor: item <= achieved?.length ? color : "#d9d9d9",
             alignItems: "center",
             justifyContent: "center",
             margin: 2.5,
@@ -240,12 +243,6 @@ const Activity = ({
                     keyboardType="number-pad"
                     ref={InputRef}
                     cursorColor={"white"}
-                    onSubmitEditing={() => {
-                      if (pressedItem && premiumInput.length > 0) {
-                        console.log("pppp", premiumInput);
-                        onPress(pressedItem, premiumInput);
-                      }
-                    }}
                     onBlur={() => {
                       if (pressedItem && premiumInput.length > 0) {
                         onPress(pressedItem, premiumInput);
@@ -352,7 +349,7 @@ const Activity = ({
                   marginLeft: 2,
                 }}
               >
-                {Number((achieved / goals) * 100 || 0).toFixed(0)}%
+                {Number((achieved?.length / goals) * 100 || 0).toFixed(0)}%
               </Text>
             </View>
           </View>
@@ -430,21 +427,20 @@ const DailyActivity = () => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
+
   const [loading, setLoading] = useState(false);
 
-  const updateAchievements = (data) => {
-    console.log(data);
+  const updateAchievements = (data, type) => {
     if (entries?.SalesTargets?.averageCaseSize) {
       setLoading(true);
       privateApi(token)
-        .post("/pas", data)
+        .post(type ? "/pas/edit" : "/pas", data)
         .then((res) => {
           const daily = res.data.pas;
 
           privateApi(token)
             .get("/pas/annual")
             .then((res) => {
-              console.log("YY", res.data.pas);
               dispatch(setYearlyAchieved({ yearly: res.data.pas }));
               dispatch(setDailyAchieved({ daily }));
             })
@@ -557,14 +553,25 @@ const DailyActivity = () => {
               achieved={entries?.daily_achieved?.s_daily || 0}
               status={"S"}
               onPress={(value, premiumInput) => {
-                const temp = entries?.daily_achieved?.premium_daily;
-                updateAchievements({
-                  s_daily: value,
-                  premium_daily: temp
-                    ? Number(temp) + Number(premiumInput)
-                    : premiumInput,
-                  date: new Date().toLocaleDateString(),
-                });
+                if (value <= entries?.daily_achieved?.s_daily?.length) {
+                  //edit the sale
+                  updateAchievements(
+                    {
+                      index: value - 1,
+                      s_daily: premiumInput,
+                      date: new Date().toLocaleDateString(),
+                    },
+                    true
+                  );
+                } else {
+                  updateAchievements(
+                    {
+                      s_daily: premiumInput,
+                      date: new Date().toLocaleDateString(),
+                    },
+                    false
+                  );
+                }
               }}
               color={"#00bf63"}
               totalPremium={

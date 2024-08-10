@@ -19,6 +19,15 @@ export default function SalesLayout() {
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    // Clear user data
+    // await AsyncStorage.removeItem("user");
+    dispatch(logoutUser());
+    // Navigate to the login screen
+    navigation.navigate("signin");
+  };
 
   useEffect(() => {
     if (token) {
@@ -27,7 +36,12 @@ export default function SalesLayout() {
         .then((res) => {
           dispatch(setEntries({ entries: res.data.entries }));
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err.response);
+          if (err.response.status === 500) {
+            handleLogout();
+          }
+        });
 
       privateApi(token)
         .get(`/pas/daily?date=${new Date().toLocaleDateString()}`)
@@ -45,16 +59,6 @@ export default function SalesLayout() {
         .finally(() => setLoading(false));
     }
   }, [token]);
-
-  const navigation = useNavigation();
-
-  const handleLogout = async () => {
-    // Clear user data
-    // await AsyncStorage.removeItem("user");
-    dispatch(logoutUser());
-    // Navigate to the login screen
-    navigation.navigate("signin");
-  };
 
   return (
     <>
