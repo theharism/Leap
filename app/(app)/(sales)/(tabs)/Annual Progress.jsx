@@ -36,8 +36,6 @@ const AnnualProgress = () => {
     }, [token])
   );
 
-  console.log(entries);
-
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
