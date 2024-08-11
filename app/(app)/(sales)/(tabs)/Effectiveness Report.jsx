@@ -173,6 +173,34 @@ const EffectivenessReport = () => {
     }, [token])
   );
 
+  const calculateSalesRatioGoal = (entries) => {
+    const salesSubmitted = entries?.SuccessFormula?.salesSubmitted || 0;
+    const appointmentsKept = entries?.SuccessFormula?.appointmentsKept || 0;
+
+    return Math.floor((salesSubmitted / appointmentsKept) * 100) || 0;
+  };
+
+  const calculateSalesRatioAchieved = (entries) => {
+    const yearlyAchieved = entries?.yearly_achieved;
+    const dailyGoals = entries?.daily_goals;
+
+    if (!yearlyAchieved || !dailyGoals) return 0;
+
+    const { a_yearly, total_days } = yearlyAchieved;
+    const { a_daily, s_daily } = dailyGoals;
+
+    const yearlyAchievedADaily = a_yearly / (total_days * a_daily);
+
+    if (yearlyAchievedADaily === 0 || isNaN(yearlyAchievedADaily)) {
+      return 0;
+    }
+
+    const yearlyAchievedSDaily =
+      yearlyAchieved.s_yearly / (total_days * s_daily);
+
+    return Math.ceil((yearlyAchievedSDaily / yearlyAchievedADaily) * 100);
+  };
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
@@ -291,29 +319,8 @@ const EffectivenessReport = () => {
           </Text>
 
           <Category
-            goal={
-              Math.floor(
-                (entries?.SuccessFormula?.salesSubmitted /
-                  entries?.SuccessFormula?.appointmentsKept) *
-                  100
-              ) || 0
-            }
-            achieved={
-              entries?.yearly_achieved?.a_yearly /
-                (entries?.yearly_achieved?.total_days *
-                  entries?.daily_goals?.a_daily) ===
-              0
-                ? 0
-                : Math.ceil(
-                    (entries?.yearly_achieved?.s_yearly /
-                      (entries?.yearly_achieved?.total_days *
-                        entries?.daily_goals?.s_daily) /
-                      (entries?.yearly_achieved?.a_yearly /
-                        (entries?.yearly_achieved?.total_days *
-                          entries?.daily_goals?.a_daily))) *
-                      100
-                  )
-            }
+            goal={calculateSalesRatioGoal(entries)}
+            achieved={calculateSalesRatioAchieved(entries)}
             backgroundColor={"#00bf63"}
           />
         </View>
