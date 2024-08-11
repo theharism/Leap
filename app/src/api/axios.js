@@ -1,11 +1,13 @@
 import axios from "axios";
 
+const baseURL = "https://leaptechsolutions.com/api";
+
 const publicApi = axios.create({
-  baseURL: "http://192.168.100.134:5000/api",
+  baseURL,
 });
 
 const privateApi = (token) => axios.create({
-  baseURL: "http://192.168.100.134:5000/api", headers: {
+  baseURL, headers: {
     Authorization: `Bearer ${token}`,
   },
 });
