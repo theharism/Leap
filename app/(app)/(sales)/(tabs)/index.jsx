@@ -51,6 +51,8 @@ const Activity = ({
   const video = React.useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  console.log(goals, achieved, status);
+
   const videoLinks = {
     S: "https://vimeo.com/988983248/026de08811?share=copy",
     P: "https://vimeo.com/988983018/8475a4b767?share=copy",
@@ -102,7 +104,10 @@ const Activity = ({
             width: 30,
             height: 30,
             borderRadius: 15,
-            backgroundColor: item <= achieved?.length ? color : "#d9d9d9",
+            backgroundColor:
+              item <= (status === "S" ? achieved?.length : achieved)
+                ? color
+                : "#d9d9d9",
             alignItems: "center",
             justifyContent: "center",
             margin: 2.5,
@@ -349,7 +354,11 @@ const Activity = ({
                   marginLeft: 2,
                 }}
               >
-                {Number((achieved?.length / goals) * 100 || 0).toFixed(0)}%
+                {Number(
+                  ((status === "S" ? achieved?.length : achieved) / goals) *
+                    100 || 0
+                ).toFixed(0)}
+                %
               </Text>
             </View>
           </View>
@@ -450,6 +459,8 @@ const DailyActivity = () => {
         .catch((err) => console.error(err));
     }
   };
+
+  console.log(entries);
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Leap",
     "slug": "Leap",
-    "version": "6.0.0",
+    "version": "7.0.0",
     "orientation": "portrait",
     "scheme": "leap",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gitsa.Leap",
-      "buildNumber": "6"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {

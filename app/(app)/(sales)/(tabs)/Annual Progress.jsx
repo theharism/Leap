@@ -36,6 +36,8 @@ const AnnualProgress = () => {
     }, [token])
   );
 
+  console.log(entries);
+
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
@@ -137,7 +139,7 @@ const AnnualProgress = () => {
             $
             {(
               entries?.SalesTargets?.salesTargets -
-              entries?.yearly_achieved?.totalPremiumYearly || 0
+                entries?.yearly_achieved?.totalPremiumYearly || 0
             )?.toLocaleString()}{" "}
             To Go
           </Text>
@@ -196,7 +198,7 @@ const AnnualProgress = () => {
                 {(
                   (entries?.yearly_achieved?.totalPremiumYearly /
                     entries?.SalesTargets?.salesTargets) *
-                  100 || 0
+                    100 || 0
                 ).toFixed(0)}
                 %
               </Text>
@@ -218,11 +220,10 @@ const AnnualProgress = () => {
               flexDirection: "row",
               paddingHorizontal: 10,
               marginVertical: 15,
-              gap:10
+              gap: 10,
             }}
           >
-            <View style={{gap:10}}>
-
+            <View style={{ gap: 10 }}>
               <Text
                 style={{
                   fontSize: 16,
@@ -236,15 +237,17 @@ const AnnualProgress = () => {
               >
                 "Don't watch the clock; do what it does. Keep going."
               </Text>
-              <Text style={{
-                fontSize: 16,
-                fontWeight: "300",
-                color: "black",
-                fontStyle: "italic",
-                // textAlign: "justify",
-                flexWrap: "wrap",
-                maxWidth: 160,
-              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "300",
+                  color: "black",
+                  fontStyle: "italic",
+                  // textAlign: "justify",
+                  flexWrap: "wrap",
+                  maxWidth: 160,
+                }}
+              >
                 - Sam Levenson
               </Text>
             </View>
@@ -294,9 +297,9 @@ const AnnualProgress = () => {
               <ProgressBar
                 percentage={(
                   (entries?.yearly_achieved?.p_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.p_weekly)) *
-                  100 || 0
+                    (entries?.yearly_achieved?.total_days *
+                      entries?.daily_goals?.p_daily)) *
+                    100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />
@@ -316,9 +319,9 @@ const AnnualProgress = () => {
               <ProgressBar
                 percentage={(
                   (entries?.yearly_achieved?.a_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.a_weekly)) *
-                  100 || 0
+                    (entries?.yearly_achieved?.total_days *
+                      entries?.daily_goals?.a_daily)) *
+                    100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />
@@ -338,9 +341,9 @@ const AnnualProgress = () => {
               <ProgressBar
                 percentage={(
                   (entries?.yearly_achieved?.s_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.s_weekly)) *
-                  100 || 0
+                    (entries?.yearly_achieved?.total_days *
+                      entries?.daily_goals?.s_daily)) *
+                    100 || 0
                 ).toFixed(0)}
                 sx={"large"}
               />

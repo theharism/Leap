@@ -265,16 +265,15 @@ const EffectivenessReport = () => {
                   100
               ) || 0
             }
-            achieved={
-              Math.ceil(
-                entries?.yearly_achieved?.a_yearly /
-                  (entries?.SalesTargets?.numberOfWeeks *
-                    entries?.weekly_goals.a_weekly) /
-                  (entries?.yearly_achieved?.p_yearly /
-                    (entries?.SalesTargets?.numberOfWeeks *
-                      entries?.weekly_goals.p_weekly))
-              ) || 0
-            }
+            achieved={Math.ceil(
+              (entries?.yearly_achieved?.a_yearly /
+                (entries?.yearly_achieved?.total_days *
+                  entries?.daily_goals?.a_daily) /
+                (entries?.yearly_achieved?.p_yearly /
+                  (entries?.yearly_achieved?.total_days *
+                    entries?.daily_goals?.p_daily))) *
+                100 || 0
+            )}
             backgroundColor={"#ffca08"}
           />
 
@@ -300,22 +299,20 @@ const EffectivenessReport = () => {
               ) || 0
             }
             achieved={
-              entries?.yearly_achieved?.s_yearly /
-                (entries?.SalesTargets?.numberOfWeeks *
-                  entries?.weekly_goals.s_weekly) /
-                (entries?.yearly_achieved?.a_yearly /
-                  (entries?.SalesTargets?.numberOfWeeks *
-                    entries?.weekly_goals.a_weekly)) !==
-              Infinity
-                ? Math.ceil(
-                    entries?.yearly_achieved?.s_yearly /
-                      (entries?.SalesTargets?.numberOfWeeks *
-                        entries?.weekly_goals.s_weekly) /
+              entries?.yearly_achieved?.a_yearly /
+                (entries?.yearly_achieved?.total_days *
+                  entries?.daily_goals?.a_daily) ===
+              0
+                ? 0
+                : Math.ceil(
+                    (entries?.yearly_achieved?.s_yearly /
+                      (entries?.yearly_achieved?.total_days *
+                        entries?.daily_goals?.s_daily) /
                       (entries?.yearly_achieved?.a_yearly /
-                        (entries?.SalesTargets?.numberOfWeeks *
-                          entries?.weekly_goals.a_weekly))
+                        (entries?.yearly_achieved?.total_days *
+                          entries?.daily_goals?.a_daily))) *
+                      100
                   )
-                : 0
             }
             backgroundColor={"#00bf63"}
           />
