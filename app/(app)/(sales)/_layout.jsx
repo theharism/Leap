@@ -51,9 +51,9 @@ export default function SalesLayout() {
         .catch((err) => console.error(err));
 
       privateApi(token)
-        .get("/pas/annual")
+        .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
         .then((res) => {
-          dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+          dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));

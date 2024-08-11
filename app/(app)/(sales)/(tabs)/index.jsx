@@ -23,6 +23,7 @@ import { privateApi } from "../../../src/api/axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setDailyAchieved,
+  setWeeklyAchieved,
   setYearlyAchieved,
 } from "../../../src/redux/features/entriesSlice";
 import Loader from "../../../src/components/Loader";
@@ -50,8 +51,6 @@ const Activity = ({
   const InputRef = useRef(null);
   const video = React.useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  console.log(goals, achieved, status);
 
   const videoLinks = {
     S: "https://vimeo.com/988983248/026de08811?share=copy",
@@ -448,9 +447,9 @@ const DailyActivity = () => {
           const daily = res.data.pas;
 
           privateApi(token)
-            .get("/pas/annual")
+            .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
             .then((res) => {
-              dispatch(setYearlyAchieved({ yearly: res.data.pas }));
+              dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
               dispatch(setDailyAchieved({ daily }));
             })
             .catch((err) => console.error(err))
@@ -459,8 +458,6 @@ const DailyActivity = () => {
         .catch((err) => console.error(err));
     }
   };
-
-  console.log(entries);
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -586,7 +583,7 @@ const DailyActivity = () => {
               }}
               color={"#00bf63"}
               totalPremium={
-                entries?.yearly_achieved?.totalPremiumYearly?.toLocaleString() ||
+                entries?.weekly_achieved?.totalPremiumWeekly?.toLocaleString() ||
                 0
               }
             />
