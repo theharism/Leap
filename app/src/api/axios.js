@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const baseURL = "https://leaptechsolutions.com/api";
+// const baseURL = "http://192.168.100.134:5000/api";
 
 const publicApi = axios.create({
   baseURL,
