@@ -163,7 +163,7 @@ const EffectivenessReport = () => {
           .catch((err) => console.error(err));
 
         privateApi(token)
-          .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+          .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
           .then((res) => {
             dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
           })
@@ -181,24 +181,18 @@ const EffectivenessReport = () => {
   };
 
   const calculateSalesRatioAchieved = (entries) => {
-    const yearlyAchieved = entries?.yearly_achieved;
-    const dailyGoals = entries?.daily_goals;
+    const yearlyAchievedA = entries?.yearly_achieved?.a_yearly;
+    const yearlyAchievedS = entries?.yearly_achieved?.a_yearly;
 
-    if (!yearlyAchieved || !dailyGoals) return 0;
+    if (!yearlyAchievedA || !yearlyAchievedS) return 0;
 
-    const { a_yearly, total_days } = yearlyAchieved;
-    const { a_daily, s_daily } = dailyGoals;
+    const SalesRatio = yearlyAchievedS / yearlyAchievedA;
 
-    const yearlyAchievedADaily = a_yearly / (total_days * a_daily);
-
-    if (yearlyAchievedADaily === 0 || isNaN(yearlyAchievedADaily)) {
+    if (SalesRatio === 0 || isNaN(SalesRatio) || SalesRatio === Infinity) {
       return 0;
     }
 
-    const yearlyAchievedSDaily =
-      yearlyAchieved.s_yearly / (total_days * s_daily);
-
-    return Math.ceil((yearlyAchievedSDaily / yearlyAchievedADaily) * 100);
+    return Math.ceil(SalesRatio * 100);
   };
 
   return (
@@ -295,11 +289,7 @@ const EffectivenessReport = () => {
             }
             achieved={Math.ceil(
               (entries?.yearly_achieved?.a_yearly /
-                (entries?.yearly_achieved?.total_days *
-                  entries?.daily_goals?.a_daily) /
-                (entries?.yearly_achieved?.p_yearly /
-                  (entries?.yearly_achieved?.total_days *
-                    entries?.daily_goals?.p_daily))) *
+                entries?.yearly_achieved?.p_yearly) *
                 100 || 0
             )}
             backgroundColor={"#ffca08"}
