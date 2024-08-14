@@ -118,7 +118,7 @@ const ActivityReports = () => {
     React.useCallback(() => {
       if (token) {
         privateApi(token)
-          .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+          .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
           .then((res) => {
             dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
           })

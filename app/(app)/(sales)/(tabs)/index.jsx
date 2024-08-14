@@ -12,6 +12,7 @@ import {
   TextInput,
   Modal,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { theme } from "../../../src/constants/theme";
@@ -247,11 +248,19 @@ const Activity = ({
                     keyboardType="number-pad"
                     ref={InputRef}
                     cursorColor={"white"}
-                    onBlur={() => {
+                    onSubmitEditing={() => {
                       if (pressedItem && premiumInput.length > 0) {
                         onPress(pressedItem, premiumInput);
                       }
                     }}
+                    onBlur={
+                      Platform.OS === "ios" &&
+                      (() => {
+                        if (pressedItem && premiumInput.length > 0) {
+                          onPress(pressedItem, premiumInput);
+                        }
+                      })
+                    }
                   />
                 </View>
               </View>
@@ -447,7 +456,7 @@ const DailyActivity = () => {
           const daily = res.data.pas;
 
           privateApi(token)
-            .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+            .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
             .then((res) => {
               dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
               dispatch(setDailyAchieved({ daily }));
@@ -536,7 +545,7 @@ const DailyActivity = () => {
               onPress={(value) =>
                 updateAchievements({
                   p_daily: value,
-                  date: new Date().toLocaleDateString(),
+                  date: new Date().toLocaleDateString("en-GB"),
                 })
               }
             />
@@ -549,7 +558,7 @@ const DailyActivity = () => {
               onPress={(value) =>
                 updateAchievements({
                   a_daily: value,
-                  date: new Date().toLocaleDateString(),
+                  date: new Date().toLocaleDateString("en-GB"),
                 })
               }
               color={"#ffca08"}
@@ -567,7 +576,7 @@ const DailyActivity = () => {
                     {
                       index: value - 1,
                       s_daily: premiumInput,
-                      date: new Date().toLocaleDateString(),
+                      date: new Date().toLocaleDateString("en-GB"),
                     },
                     true
                   );
@@ -575,7 +584,7 @@ const DailyActivity = () => {
                   updateAchievements(
                     {
                       s_daily: premiumInput,
-                      date: new Date().toLocaleDateString(),
+                      date: new Date().toLocaleDateString("en-GB"),
                     },
                     false
                   );

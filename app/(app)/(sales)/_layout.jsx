@@ -44,14 +44,14 @@ export default function SalesLayout() {
         });
 
       privateApi(token)
-        .get(`/pas/daily?date=${new Date().toLocaleDateString()}`)
+        .get(`/pas/daily?date=${new Date().toLocaleDateString("en-GB")}`)
         .then((res) => {
           dispatch(setDailyAchieved({ daily: res.data.pas }));
         })
         .catch((err) => console.error(err));
 
       privateApi(token)
-        .get(`/pas/weekly?date=${new Date().toLocaleDateString()}`)
+        .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
         .then((res) => {
           dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
         })
