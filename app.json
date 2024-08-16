@@ -15,7 +15,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gitsa.Leap",
-      "buildNumber": "9"
+      "buildNumber": "9",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to track agents.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location to track agents even when the app is in the background."
+      }
     },
     "android": {
       "adaptiveIcon": {

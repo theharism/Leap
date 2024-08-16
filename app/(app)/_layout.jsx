@@ -1,36 +1,44 @@
-import { Text } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
 import { Redirect, Stack } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../src/redux/features/userSlice";
-import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useLocationTracking from "../src/hooks/useLocationTracking";
 
 export default function AppLayout() {
+  useLocationTracking();
+
   const dispatch = useDispatch();
   const user = useSelector((state) => state.User);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     try {
       const storedUserString = await AsyncStorage.getItem("user");
 
       if (storedUserString) {
-        dispatch(setUser({ user: JSON.parse(storedUserString) }));
+        const parsedUser = JSON.parse(storedUserString);
+        dispatch(setUser({ user: parsedUser }));
       }
     } catch (error) {
       console.error("Error loading user from AsyncStorage:", error);
     } finally {
-      setLoading(false); // Set loading to false once data is fetched
+      setLoading(false);
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [loadUser]);
 
   if (loading) {
-    // Return a loading spinner or nothing while loading
-    return <Text style={{ alignSelf: "center" }}>Loading...</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
   if (!user) {
@@ -41,6 +49,7 @@ export default function AppLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(home)" />
       <Stack.Screen name="(sales)" />
+      <Stack.Screen name="(manager)" />
     </Stack>
   );
 }
