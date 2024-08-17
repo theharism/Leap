@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Image,
@@ -11,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
+import AntDesign from "@expo/vector-icons/AntDesign";
 import React, { useEffect, useRef, useState } from "react";
 import { theme } from "../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,14 +33,15 @@ import useSocket from "../hooks/useSocket";
 import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
 import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
 
-const AgentTracking = () => {
-  const token = useSelector((state) => state.User?.token);
+const AgentTracking = ({ navigation }) => {
+  const user = useSelector((state) => state.User);
   const { onEvent } = useSocket();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+
   const mapViewRef = useRef(null);
-  const [region, setRegion] = useState(null);
   const currentCoordinates = useSelector((state) => state.Location);
+  const [region, setRegion] = useState(null);
   const [currentAgents, setCurrentAgents] = useState([]);
 
   onEvent("managerReceiveLocation", async (data) => {
@@ -98,13 +100,25 @@ const AgentTracking = () => {
         <Text style={styles.name}>{item?.agentName}</Text>
         <Text style={styles.location}>{item?.location}</Text>
       </View>
-      {item.distance ? (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <AntDesign
+          name="message1"
+          size={26}
+          color="black"
+          onPress={() =>
+            navigation.navigate("Chat", {
+              userId1: user?._id,
+              userId2: item?.agentId,
+              userName2: item?.agentName,
+            })
+          }
+        />
         <View style={styles.distanceContainer}>
           <Text style={styles.distanceText}>
             {Math.round(item?.distance)} mi
           </Text>
         </View>
-      ) : null}
+      </View>
     </Pressable>
   );
 
@@ -165,66 +179,72 @@ const AgentTracking = () => {
             /> */}
         </View>
       </View>
-
-      <View
-        style={{
-          marginTop: 30,
-          maxHeight: "35%",
-          justifyContent: "flex-start",
-        }}
-      >
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          ref={mapViewRef}
+      {currentCoordinates?.latitude ? (
+        <View
           style={{
-            height: "100%",
-            width: "100%",
-          }}
-          rotateEnabled
-          zoomEnabled
-          showsCompass
-          loadingEnabled
-          region={region}
-          initialRegion={currentCoordinates}
-          showsUserLocation={true} // Show the user's location as a blue dot
-        >
-          {currentAgents?.map((agent) => (
-            <Marker
-              key={agent.agentId} // Use a unique key for each marker
-              coordinate={{
-                latitude: agent.latitude,
-                longitude: agent.longitude,
-              }}
-              flat={true}
-              anchor={{ x: 0.5, y: 0.5 }}
-            />
-          ))}
-        </MapView>
-
-        {/* <TouchableOpacity
-          onPress={goToCurrentLocation}
-          style={{
-            position: "absolute",
-            bottom: 20,
-            right: 20,
-            zAgentTracking: 9,
+            marginTop: 30,
+            maxHeight: "35%",
+            justifyContent: "flex-start",
           }}
         >
-          <MaterialIcons name="my-location" size={30} color="black" />
-        </TouchableOpacity> */}
-      </View>
+          <MapView
+            provider={PROVIDER_GOOGLE}
+            ref={mapViewRef}
+            style={{
+              height: "100%",
+              width: "100%",
+            }}
+            rotateEnabled
+            zoomEnabled
+            showsCompass
+            loadingEnabled
+            region={region}
+            initialRegion={currentCoordinates}
+            showsUserLocation={true} // Show the user's location as a blue dot
+          >
+            {currentAgents?.map((agent) => (
+              <Marker
+                key={agent.agentId} // Use a unique key for each marker
+                coordinate={{
+                  latitude: agent.latitude,
+                  longitude: agent.longitude,
+                }}
+                flat={true}
+                anchor={{ x: 0.5, y: 0.5 }}
+              />
+            ))}
+          </MapView>
+        </View>
+      ) : (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size={"large"} style={{ alignSelf: "center" }} />
+        </View>
+      )}
+
       <View
         style={{
           maxHeight: "50%",
-          backgroundColor: "red",
           justifyContent: "flex-start",
         }}
       >
-        <FlatList
-          data={currentAgents}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.agentId}
-        />
+        {currentAgents.length > 0 ? (
+          <FlatList
+            data={currentAgents}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.agentId}
+          />
+        ) : (
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              color: "white",
+              alignSelf: "center",
+            }}
+          >
+            None of the agent is live
+          </Text>
+        )}
       </View>
 
       {loading && <Loader />}
@@ -259,12 +279,15 @@ const styles = StyleSheet.create({
   },
   location: {
     color: "#888",
+    flexWrap: "wrap",
+    maxWidth: "60%",
   },
   distanceContainer: {
     backgroundColor: "#32CD32", // Light green color
     borderRadius: 15,
     paddingVertical: 4,
     paddingHorizontal: 10,
+    marginLeft: 10,
   },
   distanceText: {
     color: "white",

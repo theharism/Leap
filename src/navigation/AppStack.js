@@ -28,6 +28,7 @@ import AnnualProgress from "../screens/Annual Progress";
 import Octicons from "@expo/vector-icons/Octicons";
 import DailySchedule from "../screens/Daily Schedule";
 import Inbox from "../screens/Inbox";
+import Chat from "../screens/Chat";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -238,6 +239,8 @@ export default AppStack = () => {
           <Stack.Screen name="Manager" component={ManagerDrawerNav} />
         </>
       )}
+
+      <Stack.Screen name="Chat" component={Chat} />
     </Stack.Navigator>
   );
 };
