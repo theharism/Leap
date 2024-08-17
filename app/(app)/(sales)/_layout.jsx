@@ -1,4 +1,3 @@
-import { Stack, useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { theme } from "../../src/constants/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +11,7 @@ import {
 } from "../../src/redux/features/entriesSlice";
 import Octicons from "@expo/vector-icons/Octicons";
 import { TouchableOpacity } from "react-native";
-import { DrawerActions } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import Loader from "../../src/components/Loader";
 import { logoutUser } from "../../src/redux/features/userSlice";
 export default function SalesLayout() {
@@ -22,11 +21,7 @@ export default function SalesLayout() {
   const navigation = useNavigation();
 
   const handleLogout = async () => {
-    // Clear user data
-    // await AsyncStorage.removeItem("user");
     dispatch(logoutUser());
-    // Navigate to the login screen
-    navigation.navigate("signin");
   };
 
   useEffect(() => {

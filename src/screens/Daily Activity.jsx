@@ -15,20 +15,19 @@ import {
   Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { theme } from "../../../src/constants/theme";
-import { formattedDate } from "../../../src/utils/currentDate&Day";
+import { theme } from "../constants/theme";
+import { formattedDate } from "../utils/currentDate&Day";
 import { EvilIcons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { privateApi } from "../../../src/api/axios";
+import { privateApi } from "../api/axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setDailyAchieved,
   setWeeklyAchieved,
   setYearlyAchieved,
-} from "../../../src/redux/features/entriesSlice";
-import Loader from "../../../src/components/Loader";
-import { Link } from "expo-router";
+} from "../redux/features/entriesSlice";
+import Loader from "../components/Loader";
 import { Video, ResizeMode } from "expo-av";
 import { Button } from "react-native-paper";
 import * as Linking from "expo-linking";
@@ -41,6 +40,7 @@ const Activity = ({
   color,
   onPress,
   totalPremium,
+  navigation,
 }) => {
   const [page, setPage] = useState(0);
   const screenWidth = Dimensions.get("window").width;
@@ -322,7 +322,7 @@ const Activity = ({
               }}
             >
               <Image
-                source={require("../../../../assets/goal.png")}
+                source={require("../../assets/goal.png")}
                 style={{
                   marginRight: 2,
                   width: 25,
@@ -348,7 +348,7 @@ const Activity = ({
               }}
             >
               <Image
-                source={require("../../../../assets/achieved.png")}
+                source={require("../../assets/achieved.png")}
                 style={{
                   marginRight: 4,
                   width: 20,
@@ -393,14 +393,14 @@ const Activity = ({
               color="black"
               style={{ marginHorizontal: 3 }}
             />
-            <Link href={"/Annual Progress"}>
-              <MaterialCommunityIcons
-                name="progress-check"
-                size={23}
-                style={{ marginHorizontal: 3 }}
-                color="black"
-              />
-            </Link>
+
+            <MaterialCommunityIcons
+              onPress={() => navigation.navigate("Annual Progress")}
+              name="progress-check"
+              size={23}
+              style={{ marginHorizontal: 3 }}
+              color="black"
+            />
             {/* <Entypo
               name="dots-three-vertical"
               size={20}
@@ -440,12 +440,31 @@ const Activity = ({
   );
 };
 
-const DailyActivity = () => {
+const DailyActivity = ({ navigation }) => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (token) {
+      privateApi(token)
+        .get(`/pas/daily?date=${new Date().toLocaleDateString("en-GB")}`)
+        .then((res) => {
+          dispatch(setDailyAchieved({ daily: res.data.pas }));
+        })
+        .catch((err) => console.error(err));
+
+      privateApi(token)
+        .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
+        .then((res) => {
+          dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token]);
 
   const updateAchievements = (data, type) => {
     if (entries?.SalesTargets?.averageCaseSize) {
@@ -494,7 +513,7 @@ const DailyActivity = () => {
           style={styles.scrollViewStyle}
         >
           <Image
-            source={require("../../../../assets/logo.png")}
+            source={require("../../assets/logo.png")}
             style={{ alignSelf: "center" }}
           />
           <Text
@@ -548,6 +567,7 @@ const DailyActivity = () => {
                   date: new Date().toLocaleDateString("en-GB"),
                 })
               }
+              navigation={navigation}
             />
 
             <Activity
@@ -561,6 +581,7 @@ const DailyActivity = () => {
                   date: new Date().toLocaleDateString("en-GB"),
                 })
               }
+              navigation={navigation}
               color={"#ffca08"}
             />
 
@@ -568,6 +589,7 @@ const DailyActivity = () => {
               text={"Sales with Premium"}
               goals={entries?.daily_goals?.s_daily || 0}
               achieved={entries?.daily_achieved?.s_daily || 0}
+              navigation={navigation}
               status={"S"}
               onPress={(value, premiumInput) => {
                 if (value <= entries?.daily_achieved?.s_daily?.length) {

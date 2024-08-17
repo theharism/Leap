@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { theme } from "../../../src/constants/theme";
+import { theme } from "../constants/theme";
 import {
   EvilIcons,
   MaterialCommunityIcons,
@@ -17,15 +17,15 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 
-import { plans } from "../../../src/constants/plans";
+import { plans } from "../constants/plans";
 import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect } from "expo-router";
-import { privateApi } from "../../../src/api/axios";
+import { privateApi } from "../api/axios";
 import {
   setWeeklyAchieved,
   setYearlyAchieved,
-} from "../../../src/redux/features/entriesSlice";
-import Loader from "../../../src/components/Loader";
+} from "../redux/features/entriesSlice";
+import Loader from "../components/Loader";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Category = ({ goal, achieved, text, backgroundColor }) => {
   return (
@@ -43,7 +43,7 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
     >
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Image
-          source={require("../../../../assets/goal1.png")}
+          source={require("../../assets/goal1.png")}
           style={{
             marginRight: 2,
             width: 45,
@@ -74,7 +74,7 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Image
-          source={require("../../../../assets/achieved1.png")}
+          source={require("../../assets/achieved1.png")}
           style={{
             marginRight: 2,
             width: 40,

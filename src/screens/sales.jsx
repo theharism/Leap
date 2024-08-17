@@ -10,17 +10,16 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { theme } from "../../src/constants/theme";
-import LeapTextInput from "../../src/components/LeapTextInput";
-import { privateApi } from "../../src/api/axios";
+import { theme } from "../constants/theme";
+import LeapTextInput from "../components/LeapTextInput";
+import { privateApi } from "../api/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-native-paper";
-import { setEntries } from "../../src/redux/features/entriesSlice";
-import { isEmpty } from "../../src/utils/isEmpty";
-import Loader from "../../src/components/Loader";
-import { router } from "expo-router";
+import { setEntries } from "../redux/features/entriesSlice";
+import { isEmpty } from "../utils/isEmpty";
+import Loader from "../components/Loader";
 
-const index = () => {
+const Sales = ({ navigation }) => {
   const token = useSelector((state) => state.User?.token);
   const entries = useSelector((state) => state.Entries);
   const dispatch = useDispatch();
@@ -65,6 +64,22 @@ const index = () => {
       }));
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      privateApi(token)
+        .get("/entries")
+        .then((res) => {
+          dispatch(setEntries({ entries: res.data.entries }));
+        })
+        .catch((err) => {
+          console.error(err.response);
+          // if (err.response.status === 500) {
+          //   handleLogout();
+          // }
+        });
+    }
+  }, [token]);
 
   useEffect(() => {
     if (entries) {
@@ -112,7 +127,8 @@ const index = () => {
           })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
-            router.push("/(app)/(sales)/(tabs)");
+            navigation.navigate("tabs");
+            // router.push("/(app)/(sales)/(tabs)");
           })
           .catch((err) => console.error("put", err))
           .finally(() => setLoading(false));
@@ -128,7 +144,8 @@ const index = () => {
           })
           .then((res) => {
             dispatch(setEntries({ entries: res.data.entries }));
-            router.push("/(app)/(sales)/(tabs)");
+            // router.push("/(app)/(sales)/(tabs)");
+            navigation.navigate("tabs");
           })
           .catch((err) => console.error("post", err.response.data))
           .finally(() => setLoading(false));
@@ -161,7 +178,7 @@ const index = () => {
           style={styles.scrollViewStyle}
         >
           <Image
-            source={require("../../../assets/logo.png")}
+            source={require("../../assets/logo.png")}
             style={{ alignSelf: "center" }}
           />
 
@@ -276,7 +293,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default Sales;
 
 const styles = StyleSheet.create({
   backgroundStyle: {

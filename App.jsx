@@ -1,16 +1,23 @@
+import "react-native-gesture-handler";
 import React, { useEffect, useState, useCallback } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
+import { Provider } from "react-redux";
+import { NavigationContainer } from "@react-navigation/native";
 import { View, Text, ActivityIndicator } from "react-native";
-import { Redirect, Stack } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../src/redux/features/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import useLocationTracking from "../src/hooks/useLocationTracking";
+import AppStack from "./src/navigation/AppStack";
+import AuthStack from "./src/navigation/AuthStack";
+import { setUser } from "./src/redux/features/userSlice";
+import useLocationTracking from "./src/hooks/useLocationTracking";
+import { store } from "./src/redux/store";
 
-export default function AppLayout() {
+function StartUp() {
   useLocationTracking();
 
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.User);
+  const token = useSelector((state) => state.User?.token);
   const [loading, setLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
@@ -41,15 +48,19 @@ export default function AppLayout() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/signin" />;
-  }
+  return token ? <AppStack /> : <AuthStack />;
+}
 
+export default function App() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(home)" />
-      <Stack.Screen name="(sales)" />
-      <Stack.Screen name="(manager)" />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <PaperProvider>
+          <NavigationContainer>
+            <StartUp />
+          </NavigationContainer>
+        </PaperProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

@@ -12,14 +12,13 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import { theme } from "../../src/constants/theme";
-import { Link } from "expo-router";
+import { theme } from "../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
 
-const Module = ({ text, bg, fg, href }) => {
+const Module = ({ navigation, text, bg, fg, href }) => {
   return (
-    <Link
-      href={href}
+    <Pressable
+      onPress={() => navigation.navigate("Agent")}
       style={{
         backgroundColor: "orange",
         marginVertical: 25,
@@ -28,55 +27,52 @@ const Module = ({ text, bg, fg, href }) => {
         justifyContent: "flex-end",
         borderRadius: 25,
       }}
-      asChild
     >
-      <Pressable style={{ flex: 1 }}>
-        <Image
-          source={bg}
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            borderRadius: 25,
-          }}
-          resizeMode="cover"
-        />
+      <Image
+        source={bg}
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          borderRadius: 25,
+        }}
+        resizeMode="cover"
+      />
 
-        <Image
-          source={fg}
-          style={{
-            width: "40%",
-            height: "130%",
-            position: "absolute",
-            right: -5,
-            bottom: -20,
-            zIndex: 999,
-          }}
-        />
+      <Image
+        source={fg}
+        style={{
+          width: "40%",
+          height: "130%",
+          position: "absolute",
+          right: -5,
+          bottom: -20,
+          zIndex: 999,
+        }}
+      />
 
-        <Text
-          style={{
-            color: theme.colors.secondary,
-            fontStyle: "italic",
-            fontWeight: "bold",
-            padding: 20,
-          }}
-        >
-          {text}
-        </Text>
-      </Pressable>
-    </Link>
+      <Text
+        style={{
+          color: theme.colors.secondary,
+          fontStyle: "italic",
+          fontWeight: "bold",
+          padding: 20,
+        }}
+      >
+        {text}
+      </Text>
+    </Pressable>
   );
 };
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const entries = useSelector((state) => state.Entries);
 
   // const href = entries?.SalesTargets?.salesTargets
   //   ? "/(sales)/(tabs)"
   //   : "/(sales)";
 
-  const href = "/(manager)";
+  // const href = "/(manager)";
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -103,7 +99,7 @@ const Home = () => {
           bounces={false}
         >
           <Image
-            source={require("../../../assets/logo.png")}
+            source={require("../../assets/logo.png")}
             style={{ alignSelf: "center" }}
           />
 
@@ -119,28 +115,28 @@ const Home = () => {
             My Sales Coach
           </Text>
           <Image
-            source={require("../../../assets/welcome.png")}
+            source={require("../../assets/welcome.png")}
             style={{ alignSelf: "center", marginTop: 20 }}
           />
 
           <View style={{ marginTop: 30 }}>
             <Module
-              bg={require("../../../assets/1.png")}
-              fg={require("../../../assets/1a.png")}
+              bg={require("../../assets/1.png")}
+              fg={require("../../assets/1a.png")}
               text={"Track sales activity"}
-              href={href}
+              navigation={navigation}
             />
             <Module
-              bg={require("../../../assets/2.png")}
-              fg={require("../../../assets/2a.png")}
+              bg={require("../../assets/2.png")}
+              fg={require("../../assets/2a.png")}
               text={"Ask my coach"}
-              href={href}
+              navigation={navigation}
             />
             <Module
-              bg={require("../../../assets/3.png")}
-              fg={require("../../../assets/3a.png")}
+              bg={require("../../assets/3.png")}
+              fg={require("../../assets/3a.png")}
               text={"Watch masterclass"}
-              href={href}
+              navigation={navigation}
             />
           </View>
         </ScrollView>

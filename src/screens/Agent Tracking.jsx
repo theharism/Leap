@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import React, { useEffect, useRef, useState } from "react";
-import { theme } from "../../src/constants/theme";
+import { theme } from "../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
 import {
   EvilIcons,
@@ -20,16 +20,16 @@ import {
   Entypo,
   MaterialIcons,
 } from "@expo/vector-icons";
-import Loader from "../../src/components/Loader";
+import Loader from "../components/Loader";
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
   Circle,
   Polyline,
 } from "react-native-maps";
-import useSocket from "../../src/hooks/useSocket";
+import useSocket from "../hooks/useSocket";
 
-const Index = () => {
+const AgentTracking = () => {
   const token = useSelector((state) => state.User?.token);
   const { onEvent } = useSocket();
   const dispatch = useDispatch();
@@ -207,7 +207,7 @@ const Index = () => {
             position: "absolute",
             bottom: 20,
             right: 20,
-            zIndex: 9,
+            zAgentTracking: 9,
           }}
         >
           <MaterialIcons name="my-location" size={30} color="black" />
@@ -232,7 +232,7 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default AgentTracking;
 
 const styles = StyleSheet.create({
   backgroundStyle: {

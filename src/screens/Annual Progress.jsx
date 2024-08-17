@@ -8,14 +8,15 @@ import {
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { theme } from "../../../src/constants/theme";
+import { theme } from "../constants/theme";
 import { EvilIcons, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
-import ProgressBar from "../../../src/components/ProgressBar";
+import ProgressBar from "../components/ProgressBar";
 import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../src/components/Loader";
-import { setYearlyAchieved } from "../../../src/redux/features/entriesSlice";
-import { privateApi } from "../../../src/api/axios";
-import { useFocusEffect } from "expo-router";
+import Loader from "../components/Loader";
+import { setYearlyAchieved } from "../redux/features/entriesSlice";
+import { privateApi } from "../api/axios";
+import { useFocusEffect } from "@react-navigation/native";
+
 const AnnualProgress = () => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
@@ -250,7 +251,7 @@ const AnnualProgress = () => {
               </Text>
             </View>
             <Image
-              source={require("../../../../assets/mountain.png")}
+              source={require("../../assets/mountain.png")}
               style={{
                 alignSelf: "center",
                 maxHeight: 150,

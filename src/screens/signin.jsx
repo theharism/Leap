@@ -11,15 +11,14 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { Link, router } from "expo-router";
-import { theme } from "./src/constants/theme.js";
+import { theme } from "../constants/theme.js";
 import { Button } from "react-native-paper";
-import LeapTextInput from "./src/components/LeapTextInput.jsx";
-import { publicApi } from "./src/api/axios.js";
+import LeapTextInput from "../components/LeapTextInput.jsx";
+import { publicApi } from "../api/axios.js";
 import { useDispatch } from "react-redux";
-import { setUser } from "./src/redux/features/userSlice.js";
+import { setUser } from "../redux/features/userSlice.js";
 
-const signin = () => {
+const SignIn = ({ navigation }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,8 +39,6 @@ const signin = () => {
         const user = res.data.user;
 
         dispatch(setUser({ user }));
-
-        router.replace("/");
       })
       .catch((err) => {
         console.error(err);
@@ -77,7 +74,7 @@ const signin = () => {
           style={styles.scrollViewStyle}
         >
           <Image
-            source={require("../assets/logo.png")}
+            source={require("../../assets/logo.png")}
             style={{ alignSelf: "center" }}
           />
 
@@ -146,19 +143,19 @@ const signin = () => {
             >
               Sign In
             </Button>
-            <Link href="/signup">
-              <Text
-                style={{
-                  textAlign: "left",
-                  fontFamily: "",
-                  fontSize: 18,
-                  marginTop: 20,
-                  color: theme.colors.secondary,
-                }}
-              >
-                Don’t have an account? Sign Up
-              </Text>
-            </Link>
+
+            <Text
+              onPress={() => navigation.navigate("signup")}
+              style={{
+                textAlign: "left",
+                fontFamily: "",
+                fontSize: 18,
+                marginTop: 20,
+                color: theme.colors.secondary,
+              }}
+            >
+              Don’t have an account? Sign Up
+            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -172,7 +169,7 @@ const signin = () => {
   );
 };
 
-export default signin;
+export default SignIn;
 
 const styles = StyleSheet.create({
   backgroundStyle: {
