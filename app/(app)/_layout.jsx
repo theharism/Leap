@@ -30,7 +30,7 @@ export default function AppLayout() {
 
   useEffect(() => {
     loadUser();
-  }, [loadUser]);
+  }, []);
 
   if (loading) {
     return (

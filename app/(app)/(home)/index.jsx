@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -12,8 +13,8 @@ import {
 } from "react-native";
 import React from "react";
 import { theme } from "../../src/constants/theme";
-import { Link, useNavigation } from "expo-router";
-import { useSelector } from "react-redux";
+import { Link } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
 
 const Module = ({ text, bg, fg, href }) => {
   return (
@@ -71,9 +72,11 @@ const Module = ({ text, bg, fg, href }) => {
 const Home = () => {
   const entries = useSelector((state) => state.Entries);
 
-  const href = entries?.SalesTargets?.salesTargets
-    ? "/(sales)/(tabs)"
-    : "/(sales)";
+  // const href = entries?.SalesTargets?.salesTargets
+  //   ? "/(sales)/(tabs)"
+  //   : "/(sales)";
+
+  const href = "/(manager)";
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
