@@ -2,6 +2,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -28,6 +29,8 @@ import MapView, {
   Polyline,
 } from "react-native-maps";
 import useSocket from "../hooks/useSocket";
+import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
+import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
 
 const AgentTracking = () => {
   const token = useSelector((state) => state.User?.token);
@@ -37,70 +40,72 @@ const AgentTracking = () => {
   const mapViewRef = useRef(null);
   const [region, setRegion] = useState(null);
   const currentCoordinates = useSelector((state) => state.Location);
+  const [currentAgents, setCurrentAgents] = useState([]);
 
-  const data = [
-    {
-      id: "1",
-      name: "Patrick Callahan",
-      location: "San Jose, CA",
-      distance: "9 mi",
-    },
-    {
-      id: "2",
-      name: "Meg Callahan",
-      location: "Crittenden Middle School",
-      distance: "7 mi",
-    },
-    {
-      id: "3",
-      name: "Scott Lopatin",
-      location: "Campbell, CA",
-      distance: "6 mi",
-    },
-    {
-      id: "4",
-      name: "Biki Berry",
-      location: "Stanford Shopping Center",
-      distance: "11 mi",
-    },
-    {
-      id: "5",
-      name: "Me",
-      location: "Work",
-      distance: "",
-    },
-  ];
+  onEvent("managerReceiveLocation", async (data) => {
+    const location = await getAddressFromCoordinates(
+      data.latitude,
+      data.longitude
+    );
+    const distance = getDistanceBetweenCoordinates(
+      data.latitude,
+      data.longitude,
+      currentCoordinates.latitude,
+      currentCoordinates.longitude
+    );
+    setCurrentAgents((prevAgents) => {
+      const agentIndex = prevAgents.findIndex(
+        (agent) => agent.agentId === data.agentId
+      );
 
-  onEvent("managerReceiveLocation", (data) => {
-    console.log(data);
+      const updatedData = {
+        ...data,
+        location, // Add the address to the agent's data
+        distance,
+      };
+
+      if (agentIndex !== -1) {
+        // If the agent already exists, update the existing object
+        const updatedAgents = [...prevAgents];
+        updatedAgents[agentIndex] = updatedData;
+        return updatedAgents;
+      } else {
+        // If the agent doesn't exist, add the new object
+        return [...prevAgents, updatedData];
+      }
+    });
   });
 
-  const goToCurrentLocation = async () => {
-    mapViewRef.current?.animateToRegion(
-      {
-        latitude: currentCoordinates.latitude,
-        longitude: currentCoordinates.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      },
-      1000
-    );
-    setRegion(currentCoordinates);
+  const goToAgentLocation = async (lat, lang) => {
+    const newRegion = {
+      latitude: lat,
+      longitude: lang,
+      latitudeDelta: 0.005,
+      longitudeDelta: 0.005,
+    };
+
+    mapViewRef.current?.animateToRegion(newRegion, 1000);
+    setRegion(newRegion);
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image source={{ uri: item.profilePic }} style={styles.profileImage} />
+    <Pressable
+      onPress={() => goToAgentLocation(item?.latitude, item?.longitude)}
+      style={styles.itemContainer}
+    >
+      {/* <Image source={{ uri: item?.profilePic }} style={styles.profileImage} /> */}
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.location}>{item.location}</Text>
+        <Text style={styles.name}>{item?.agentName}</Text>
+        <Text style={styles.location}>{item?.location}</Text>
       </View>
       {item.distance ? (
         <View style={styles.distanceContainer}>
-          <Text style={styles.distanceText}>{item.distance}</Text>
+          <Text style={styles.distanceText}>
+            {Math.round(item?.distance)} mi
+          </Text>
         </View>
       ) : null}
-    </View>
+    </Pressable>
   );
 
   return (
@@ -115,7 +120,7 @@ const AgentTracking = () => {
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
-          marginTop: "20%",
+
           //   backgroundColor: "black",
         }}
       >
@@ -181,27 +186,22 @@ const AgentTracking = () => {
           loadingEnabled
           region={region}
           initialRegion={currentCoordinates}
+          showsUserLocation={true} // Show the user's location as a blue dot
         >
-          {/* <Marker
+          {currentAgents?.map((agent) => (
+            <Marker
+              key={agent.agentId} // Use a unique key for each marker
               coordinate={{
-                latitude: currentCoordinates.latitude,
-                longitude: currentCoordinates.longitude,
+                latitude: agent.latitude,
+                longitude: agent.longitude,
               }}
+              flat={true}
               anchor={{ x: 0.5, y: 0.5 }}
-              image={markerImage}
-            /> */}
-
-          <Marker
-            coordinate={{
-              latitude: currentCoordinates.latitude,
-              longitude: currentCoordinates.longitude,
-            }}
-            flat={true}
-            anchor={{ x: 0.5, y: 0.5 }}
-          ></Marker>
+            />
+          ))}
         </MapView>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={goToCurrentLocation}
           style={{
             position: "absolute",
@@ -211,7 +211,7 @@ const AgentTracking = () => {
           }}
         >
           <MaterialIcons name="my-location" size={30} color="black" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View
         style={{
@@ -221,9 +221,9 @@ const AgentTracking = () => {
         }}
       >
         <FlatList
-          data={data}
+          data={currentAgents}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.agentId}
         />
       </View>
 
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   backgroundStyle: {
     backgroundColor: theme.colors.background,
     flex: 1,
-    // paddingVertical: 20,
+    paddingVertical: 20,
     paddingHorizontal: 20,
   },
 
@@ -249,12 +249,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     backgroundColor: "white",
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
   },
   textContainer: {
     flex: 1,
