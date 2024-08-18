@@ -4,21 +4,23 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppStack from "./src/navigation/AppStack";
 import AuthStack from "./src/navigation/AuthStack";
 import { setUser } from "./src/redux/features/userSlice";
-import useLocationTracking from "./src/hooks/useLocationTracking";
+import * as Location from "expo-location";
+
 import { store } from "./src/redux/store";
+import useSocket from "./src/hooks/useSocket";
+import { setCurrentCoordinates } from "./src/redux/features/locationSlice";
 
 function StartUp() {
-  useLocationTracking();
-
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.User?.token);
+  const user = useSelector((state) => state.User);
   const [loading, setLoading] = useState(true);
+  const { sendEvent, socket } = useSocket();
 
   const loadUser = useCallback(async () => {
     try {
@@ -39,6 +41,51 @@ function StartUp() {
     loadUser();
   }, []);
 
+  useEffect(() => {
+    const startLocationUpdates = async () => {
+      try {
+        const { status } = await Location.requestBackgroundPermissionsAsync();
+        const { status: status1 } =
+          await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted" || status1 !== "granted") {
+          console.log("Permission to access location was denied");
+          Alert.alert("Error", "Permission to access location was denied");
+          return;
+        }
+
+        const subscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.BestForNavigation,
+            timeInterval: 20000,
+          },
+          (location) => {
+            const { latitude, longitude } = location.coords;
+
+            if (user?.role === "agent") {
+              sendEvent("agentLocation", {
+                latitude,
+                longitude,
+                agentId: user?._id,
+                agentName: user?.fullName,
+              });
+            }
+            dispatch(setCurrentCoordinates({ latitude, longitude }));
+          }
+        );
+
+        return () => {
+          subscription?.remove();
+        };
+      } catch (error) {
+        console.error("Error starting location updates:", error);
+      }
+    };
+
+    if (socket && user) {
+      startLocationUpdates();
+    }
+  }, [socket, user, dispatch]);
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -48,7 +95,7 @@ function StartUp() {
     );
   }
 
-  return token ? <AppStack /> : <AuthStack />;
+  return user?.token ? <AppStack /> : <AuthStack />;
 }
 
 export default function App() {
