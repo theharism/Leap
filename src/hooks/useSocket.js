@@ -1,49 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 
 const SOCKET_URL = "https://leaptechsolutions.com";
 
+let socketInstance;
+
 const useSocket = () => {
-  const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Initialize the socket connection
-    socketRef.current = io(SOCKET_URL, {
-      transports: ["websocket"],
-      autoConnect: true,
-    });
+    if (!socketInstance) {
+      socketInstance = io(SOCKET_URL, {
+        transports: ["websocket"],
+        autoConnect: true,
+      });
 
-    // Handle socket connection
-    socketRef.current.on("connect", () => {
-      console.log("Connected to socket server", socketRef.current.id);
-    });
+      socketInstance.on("connect", () => {
+        console.log("Connected to socket server", socketInstance.id);
+        setSocket(socketInstance); // Set the socket only after connection is established
+      });
 
-    // Handle socket disconnection
-    socketRef.current.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-    });
-
-    // Cleanup on component unmount
-    return () => {
-      socketRef.current.disconnect();
-    };
+      socketInstance.on("disconnect", () => {
+        console.log("Disconnected from socket server");
+        setSocket(null);
+      });
+    } else {
+      setSocket(socketInstance); // Use the existing socket instance
+    }
   }, []);
 
-  // Function to send an event
-  const sendEvent = (eventName, data) => {
-    if (socketRef.current && socketRef.current.connected) {
-      socketRef.current.emit(eventName, data);
-    }
-  };
+  const sendEvent = useCallback(
+    (eventName, data) => {
+      if (socket && socket.connected) {
+        socket.emit(eventName, data);
+      } else {
+        console.warn(`Cannot send event ${eventName}: socket not connected`);
+      }
+    },
+    [socket]
+  );
 
-  // Function to listen to an event
-  const onEvent = (eventName, callback) => {
-    if (socketRef.current && socketRef.current.connected) {
-      socketRef.current.on(eventName, callback);
-    }
-  };
+  const onEvent = useCallback(
+    (eventName, callback) => {
+      if (socket) {
+        socket.on(eventName, callback);
+      }
 
-  return { socket: socketRef.current, sendEvent, onEvent };
+      return () => {
+        if (socket) {
+          socket.off(eventName, callback);
+        }
+      };
+    },
+    [socket]
+  );
+
+  return { socket, sendEvent, onEvent };
 };
 
 export default useSocket;
