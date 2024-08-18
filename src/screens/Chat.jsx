@@ -13,10 +13,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import Feather from "@expo/vector-icons/Feather";
 import useSocket from "../hooks/useSocket";
-import { addMessage } from "../redux/features/chatSlice";
+import { addMessage, setChat } from "../redux/features/chatSlice";
+import { privateApi } from "../api/axios";
+import Loader from "../components/Loader";
 
 const Chat = ({ navigation, route }) => {
   const { userId1, userId2, userName2 } = route?.params;
+  const { token } = useSelector((state) => state.User);
+  const [loading, setLoading] = useState(true);
+
   const scrollViewRef = useRef();
   const dispatch = useDispatch();
   const { onEvent, sendEvent, socket } = useSocket();
@@ -24,47 +29,116 @@ const Chat = ({ navigation, route }) => {
   const messages = useSelector((state) => state.Chat.messages);
 
   useEffect(() => {
-    if (userId1 && userId2) {
+    if (socket && userId1 && userId2) {
       sendEvent("join", { userId1, userId2 });
 
-      onEvent("receive_message", (newMessage) => {
-        console.log(newMessage);
+      const handleMessageReceive = (newMessage) => {
+        if (newMessage?.sender != userId1) {
+          const date = new Date();
+          const formattedTime = date
+            .toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+            .toUpperCase();
 
-        const date = new Date();
+          const msgObj = {
+            id: Date.now(),
+            message: newMessage?.content,
+            time: formattedTime,
+            type: "receiver",
+          };
 
-        const formattedTime = date
-          .toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          })
-          .toUpperCase();
+          dispatch(addMessage({ message: msgObj, unread: 1 }));
+        }
+      };
 
-        const msgObj = {
-          id: Date.now(),
-          message: newMessage,
-          time: formattedTime,
-          type: "receiver",
-        };
-
-        dispatch(addMessage({ message: msgObj, unread: 1 }));
-      });
+      onEvent("receive_message", handleMessageReceive);
 
       return () => {
-        socket.off("receive_message");
+        socket.off("receive_message", handleMessageReceive);
       };
     }
-  }, [userId1, userId2]);
+  }, [socket, userId1, userId2, sendEvent, onEvent]);
+
+  useEffect(() => {
+    if (token && userId1 && userId2) {
+      privateApi(token)
+        .get(`/chat/${userId1}/${userId2}`)
+        .then((res) => {
+          const newMessages = res.data.map((msg) => {
+            const formattedTime = new Date(msg.timestamp)
+              .toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+              .toUpperCase();
+            let type = "";
+            if (msg.sender === userId1) {
+              type = "sender";
+            } else {
+              type = "receiver";
+            }
+
+            const msgObj = {
+              id: Date.now(),
+              message: msg.content,
+              time: formattedTime,
+              type,
+            };
+
+            return msgObj;
+          });
+
+          dispatch(
+            setChat({
+              messages: newMessages,
+              unread: 0,
+            })
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token, userId1, userId2]);
+
+  useEffect(() => {
+    // dispatch(resetUnread());
+    const timeoutId = setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
+    return () => clearTimeout(timeoutId); // Cleanup the timeout on component unmount
+  }, [messages]);
 
   const sendMessage = () => {
     if (messageText.trim()) {
+      const formattedTime = new Date()
+        .toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .toUpperCase();
+
+      const msgObj = {
+        id: Date.now(),
+        message: messageText,
+        time: formattedTime,
+        type: "sender",
+      };
+
+      dispatch(addMessage({ message: msgObj }));
+      setMessageText("");
+
       sendEvent("send_message", {
         userId1,
         userId2,
         sender: userId1,
-        content: messageText,
+        content: msgObj.message,
       });
-      setMessageText("");
     }
   };
 
@@ -140,6 +214,7 @@ const Chat = ({ navigation, route }) => {
           </View>
         </View>
       </View>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };

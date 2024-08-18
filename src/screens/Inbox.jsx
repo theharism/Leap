@@ -21,6 +21,8 @@ import {
   Entypo,
   MaterialIcons,
 } from "@expo/vector-icons";
+import Loader from "../components/Loader";
+
 const handleDelete = () => {
   console.log("Deleted");
 };
@@ -33,33 +35,9 @@ const renderRightActions = () => {
   );
 };
 
-const InboxComponent = ({ image, username, time, message }) => (
-  <TouchableOpacity>
-    <Swipeable renderRightActions={renderRightActions}>
-      <View style={styles.inboxContainer}>
-        <View style={styles.leftSideView}>
-          {/* <Image
-            source={{ uri: image } || require("../../assets/profile.png")}
-            style={styles.avatar}
-          /> */}
-          <View>
-            <Text style={styles.userName}>{username}</Text>
-            <Text style={styles.message}>{message}</Text>
-          </View>
-        </View>
-
-        <View style={styles.rightSideView}>
-          <Text style={styles.time}>{time}</Text>
-        </View>
-      </View>
-    </Swipeable>
-  </TouchableOpacity>
-);
-
-const Inbox = () => {
-  const token = useSelector((state) => state.User?.token);
+const Inbox = ({ navigation }) => {
+  const { token, _id, fullName } = useSelector((state) => state.User);
   const [chats, setChats] = useState([]);
-  const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
 
@@ -75,6 +53,39 @@ const Inbox = () => {
         .finally(() => setLoading(false));
     }
   }, [token]);
+
+  const InboxComponent = ({ navigation, id, username, time, message }) => {
+    return (
+      <Pressable
+        onPress={() =>
+          navigation.navigate("Chat", {
+            userId1: _id,
+            userId2: id,
+            userName2: username,
+          })
+        }
+      >
+        {/* <Swipeable renderRightActions={renderRightActions}> */}
+        <View style={styles.inboxContainer}>
+          <View style={styles.leftSideView}>
+            {/* <Image
+              source={{ uri: image } || require("../../assets/profile.png")}
+              style={styles.avatar}
+            /> */}
+            <View>
+              <Text style={styles.userName}>{username}</Text>
+              <Text style={styles.message}>{message}</Text>
+            </View>
+          </View>
+
+          <View style={styles.rightSideView}>
+            <Text style={styles.time}>{time}</Text>
+          </View>
+        </View>
+        {/* </Swipeable> */}
+      </Pressable>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,13 +148,22 @@ const Inbox = () => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <InboxComponent
-              time={item.time}
-              message={item.message}
-              username={item.username}
+              navigation={navigation}
+              time={new Date(item.timestamp)
+                .toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .toUpperCase()}
+              message={item.lastMessage}
+              id={item.otherUserId}
+              username={item.otherUserName}
             />
           )}
         />
       </View>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };
@@ -173,10 +193,12 @@ const styles = StyleSheet.create({
   inboxContainerTop: {
     width: "100%",
     alignItems: "flex-end",
+    marginTop: 15,
   },
   inboxContainer: {
-    width: "95%",
+    width: "100%",
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     backgroundColor: "#fff",
     padding: 8,
@@ -206,16 +228,18 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 14,
-    fontFamily: "SFPro-700",
+    // fontFamily: "SFPro-700",
   },
   message: {
     fontSize: 14,
-    fontFamily: "SFPro-400",
-    color: "#3C3C3C",
+    // fontFamily: "SFPro-400",
+    // color: "#3C3C3C",
+    color: "gray",
   },
   time: {
     fontSize: 12,
-    fontFamily: "SFPro-400",
+    color: "gray",
+    // fontFamily: "SFPro-400",
   },
   deleteButton: {
     backgroundColor: "#C64B31",
