@@ -143,6 +143,14 @@ const DrawerNav = () => {
         }}
       />
       <Drawer.Screen
+        name="Daily Schedule"
+        component={DailySchedule}
+        options={{
+          drawerLabel: "Daily Schedule",
+          title: "",
+        }}
+      />
+      <Drawer.Screen
         name="Inbox"
         component={Inbox}
         options={{
