@@ -94,6 +94,7 @@ const TabNav = () => {
 const DrawerNav = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const entries = useSelector((state) => state.Entries);
 
   const handleLogout = async () => {
     dispatch(logoutUser());
@@ -104,7 +105,9 @@ const DrawerNav = () => {
       drawerContent={(props) => (
         <CustomDrawerContent {...props} handleLogout={handleLogout} />
       )}
-      initialRouteName="tabs"
+      initialRouteName={
+        entries?.SalesTargets?.averageCaseSize ? "tabs" : "Sales"
+      }
       screenOptions={{
         title: "",
         headerStyle: {

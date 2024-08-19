@@ -15,6 +15,8 @@ import * as Location from "expo-location";
 import { store } from "./src/redux/store";
 import useSocket from "./src/hooks/useSocket";
 import { setCurrentCoordinates } from "./src/redux/features/locationSlice";
+import { privateApi } from "./src/api/axios";
+import { setEntries } from "./src/redux/features/entriesSlice";
 
 function StartUp() {
   const dispatch = useDispatch();
@@ -29,6 +31,15 @@ function StartUp() {
       if (storedUserString) {
         const parsedUser = JSON.parse(storedUserString);
         dispatch(setUser({ user: parsedUser }));
+
+        privateApi(parsedUser?.token)
+          .get("/entries")
+          .then((res) => {
+            dispatch(setEntries({ entries: res.data.entries }));
+          })
+          .catch((err) => {
+            console.error(err.response);
+          });
       }
     } catch (error) {
       console.error("Error loading user from AsyncStorage:", error);

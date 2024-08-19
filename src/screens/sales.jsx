@@ -66,22 +66,6 @@ const Sales = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (token) {
-      privateApi(token)
-        .get("/entries")
-        .then((res) => {
-          dispatch(setEntries({ entries: res.data.entries }));
-        })
-        .catch((err) => {
-          console.error(err.response);
-          // if (err.response.status === 500) {
-          //   handleLogout();
-          // }
-        });
-    }
-  }, [token]);
-
-  useEffect(() => {
     if (entries) {
       setLoading(false);
       setFormData({
