@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Feather from "@expo/vector-icons/Feather";
 import useSocket from "../hooks/useSocket";
 import { addMessage, setChat } from "../redux/features/chatSlice";
+import { theme } from "../constants/theme";
 import { privateApi } from "../api/axios";
 import Loader from "../components/Loader";
 
@@ -150,14 +151,14 @@ const Chat = ({ navigation, route }) => {
             <Ionicons
               name="arrow-back"
               size={24}
-              color="black"
+              color="white"
               style={styles.goBack}
             />
           </Pressable>
 
           <View style={styles.nameContainer}>
-            <Text style={{ fontSize: 15 }}>{userName2}</Text>
-            <Text style={{ fontSize: 12 }}>Online</Text>
+            <Text style={{ fontSize: 15, color: "white" }}>{userName2}</Text>
+            <Text style={{ fontSize: 12, color: "white" }}>Online</Text>
           </View>
         </View>
       </View>
@@ -166,6 +167,8 @@ const Chat = ({ navigation, route }) => {
         <ScrollView
           contentContainerStyle={{ padding: 20, width: "100%" }}
           ref={scrollViewRef}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         >
           {messages?.map((msg, index) => {
             return (
@@ -189,7 +192,7 @@ const Chat = ({ navigation, route }) => {
                     style={
                       msg.type === "sender"
                         ? styles.msgText
-                        : [styles.msgText, { color: "#fff" }]
+                        : [styles.msgText, { color: "#000" }]
                     }
                   >
                     {msg.message}
@@ -222,7 +225,7 @@ const Chat = ({ navigation, route }) => {
 export default Chat;
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#ffffff",
+    backgroundColor: theme.colors.background,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -238,6 +241,14 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     marginLeft: 10,
+    elevation: 2,
+    shadowColor: "#fff",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 1.84,
   },
   headerRightSide: {
     marginRight: 20,
@@ -253,11 +264,11 @@ const styles = StyleSheet.create({
   },
   chatContainer: {
     flex: 1,
-    backgroundColor: "#FAFBFC",
+    backgroundColor: theme.colors.background,
     justifyContent: "flex-end",
   },
   inputContainer: {
-    backgroundColor: "#F2F2F2",
+    backgroundColor: theme.colors.background,
     flexDirection: "row",
     alignItems: "center",
     padding: 24,
@@ -293,6 +304,7 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 16,
     backgroundColor: "#ffffff",
     elevation: 2,
+    opacity: 0.8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -308,8 +320,8 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 16,
     borderBottomStartRadius: 16,
     borderBottomEndRadius: 16,
-    backgroundColor: "#884e7e",
-    opacity: 0.8,
+    backgroundColor: "#fff",
+    opacity: 1,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: {
@@ -323,6 +335,7 @@ const styles = StyleSheet.create({
   },
   msgText: {
     fontSize: 16,
+    color: "black",
   },
   time: {
     fontSize: 12,
