@@ -32,11 +32,16 @@ import filter from "lodash/filter";
 import { theme } from "../constants/theme";
 import { Button, SegmentedButtons } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { privateApi } from "../api/axios";
+import { useSelector } from "react-redux";
+import Loader from "../components/Loader";
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 
 const TimelineCalendarScreen = () => {
+  const { token } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(
     CalendarUtils.getCalendarDateString(new Date())
   );
@@ -53,6 +58,41 @@ const TimelineCalendarScreen = () => {
   const [newEventStatus, setNewEventStatus] = useState("Pending");
   const [newEventStartTime, setNewEventStartTime] = useState(new Date());
   const [newEventEndTime, setNewEventEndTime] = useState(new Date());
+
+  useEffect(() => {
+    if (token) {
+      privateApi(token)
+        .get("/events/user")
+        .then((res) => {
+          const events = res.data;
+
+          const updatedEvents = events?.map((event) => {
+            return {
+              title: event.title,
+              description: event.description,
+              start: event.startTime,
+              end: event.endTime,
+              status: event.status,
+              color:
+                event.status === "Completed"
+                  ? "#4CAF50"
+                  : event.status === "Started"
+                  ? "#4A90E2"
+                  : "#FFA500",
+            };
+          });
+
+          setEvents(updatedEvents);
+          setEventsByDate(
+            groupBy(updatedEvents, (e) =>
+              CalendarUtils.getCalendarDateString(e.start)
+            )
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token]);
 
   const markedDates = {
     [currentDate]: { marked: true },
@@ -80,13 +120,21 @@ const TimelineCalendarScreen = () => {
   };
 
   const deleteEvent = (event) => {
-    const updatedEvents = filter(events, (e) => e.id !== event.id);
-    setEvents(updatedEvents);
-    setEventsByDate(
-      groupBy(updatedEvents, (e) =>
-        CalendarUtils.getCalendarDateString(e.start)
-      )
-    );
+    setLoading(true);
+    privateApi(token)
+      .delete(`/events/${event.id}`)
+      .then((res) => {
+        const updatedEvents = filter(events, (e) => e.id !== event.id);
+        setEvents(updatedEvents);
+        setEventsByDate(
+          groupBy(updatedEvents, (e) =>
+            CalendarUtils.getCalendarDateString(e.start)
+          )
+        );
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+
     setEventModalVisible(false);
   };
 
@@ -103,33 +151,49 @@ const TimelineCalendarScreen = () => {
   };
 
   const saveNewEvent = () => {
+    setLoading(true);
+
     Keyboard.dismiss();
 
     if (selectedEvent) {
-      const updatedEvents = events.map((event) =>
-        event.id === selectedEvent.id
-          ? {
-              ...selectedEvent,
-              title: newEventTitle,
-              description: newEventDescription,
-              start: newEventStartTime,
-              end: newEventEndTime,
-              status: newEventStatus,
-              color:
-                newEventStatus === "Completed"
-                  ? "#4CAF50"
-                  : newEventStatus === "Started"
-                  ? "#4A90E2"
-                  : "#FFA500",
-            }
-          : event
-      );
-      setEvents(updatedEvents);
-      setEventsByDate(
-        groupBy(updatedEvents, (e) =>
-          CalendarUtils.getCalendarDateString(e.start)
-        )
-      );
+      privateApi(token)
+        .put(`/events/${selectedEvent.id}`, {
+          title: newEventTitle,
+          description: newEventDescription,
+          start: newEventStartTime,
+          end: newEventEndTime,
+          status: newEventStatus,
+        })
+        .then((res) => {
+          const event = res.data;
+
+          const updatedEvents = events.map((event) =>
+            event.id === selectedEvent.id
+              ? {
+                  ...selectedEvent,
+                  title: newEventTitle,
+                  description: newEventDescription,
+                  start: newEventStartTime,
+                  end: newEventEndTime,
+                  status: newEventStatus,
+                  color:
+                    newEventStatus === "Completed"
+                      ? "#4CAF50"
+                      : newEventStatus === "Started"
+                      ? "#4A90E2"
+                      : "#FFA500",
+                }
+              : event
+          );
+          setEvents(updatedEvents);
+          setEventsByDate(
+            groupBy(updatedEvents, (e) =>
+              CalendarUtils.getCalendarDateString(e.start)
+            )
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
     } else {
       if (
         !newEventTitle ||
@@ -140,26 +204,41 @@ const TimelineCalendarScreen = () => {
         return;
       }
 
-      const newEvent = {
-        id: `event-${events.length + 1}`,
-        start: newEventStartTime.toISOString(),
-        end: newEventEndTime.toISOString(),
-        title: newEventTitle,
-        description: newEventDescription,
-        status: newEventStatus,
-        color: "#FFA500",
-      };
-      setEvents([...events, newEvent]);
-      setEventsByDate(
-        groupBy([...events, newEvent], (e) =>
-          CalendarUtils.getCalendarDateString(e.start)
-        )
-      );
+      privateApi(token)
+        .post("/event", {
+          startTime: newEventStartTime.toISOString(),
+          endTime: newEventEndTime.toISOString(),
+          title: newEventTitle,
+          description: newEventDescription,
+          status: newEventStatus,
+        })
+        .then((res) => {
+          const event = res.data;
+
+          const newEvent = {
+            id: event._id,
+            start: newEventStartTime.toISOString(),
+            end: newEventEndTime.toISOString(),
+            title: newEventTitle,
+            description: newEventDescription,
+            status: newEventStatus,
+            color: "#FFA500",
+          };
+          setEvents([...events, newEvent]);
+          setEventsByDate(
+            groupBy([...events, newEvent], (e) =>
+              CalendarUtils.getCalendarDateString(e.start)
+            )
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
     }
     setAddEventModalVisible(false);
     setSelectedEvent(null);
     setNewEventTitle("");
     setNewEventDescription("");
+    setNewEventStatus("Pending");
   };
 
   // const handleStatusChange = (status) => {
@@ -589,6 +668,7 @@ const TimelineCalendarScreen = () => {
           </Modal> */}
         </CalendarProvider>
       </View>
+      {loading && <Loader />}
     </SafeAreaView>
   );
 };
