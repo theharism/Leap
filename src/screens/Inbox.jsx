@@ -94,16 +94,16 @@ const Inbox = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal: "5%",
+          width:"90%"
           //   backgroundColor: "black",
         }}
       >
         <Text
           style={{
             fontSize: 26,
-            // backgroundColor: "red",
             fontWeight: "300",
             textAlign: "justify",
             flexWrap: "wrap",
@@ -112,11 +112,10 @@ const Inbox = ({ navigation }) => {
         >
           Inbox
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            // backgroundColor: "red",
             justifyContent: "space-between",
             marginTop: 10,
           }}
@@ -133,13 +132,7 @@ const Inbox = ({ navigation }) => {
             style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
-        </View>
+        </View> */}
       </View>
 
       <View style={styles.inboxContainerTop}>
@@ -178,6 +171,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 20,
     paddingHorizontal: 20,
+    alignItems:"center"
   },
   goBack: {
     marginLeft: 20,
@@ -191,9 +185,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inboxContainerTop: {
-    width: "100%",
+    width: "90%",
     alignItems: "flex-end",
     marginTop: 15,
+    
   },
   inboxContainer: {
     width: "100%",

@@ -132,9 +132,9 @@ const AgentTracking = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal: "5%"
           //   backgroundColor: "black",
         }}
       >
@@ -150,11 +150,10 @@ const AgentTracking = ({ navigation }) => {
         >
           Agent Tracking
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            // backgroundColor: "red",
             justifyContent: "space-between",
             marginTop: 10,
           }}
@@ -171,13 +170,7 @@ const AgentTracking = ({ navigation }) => {
             style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
-        </View>
+        </View> */}
       </View>
       {currentCoordinates?.latitude ? (
         <View
@@ -185,6 +178,7 @@ const AgentTracking = ({ navigation }) => {
             marginTop: 30,
             maxHeight: "35%",
             justifyContent: "flex-start",
+            marginHorizontal: "5%",
           }}
         >
           <MapView
@@ -193,6 +187,7 @@ const AgentTracking = ({ navigation }) => {
             style={{
               height: "100%",
               width: "100%",
+              borderRadius:10
             }}
             rotateEnabled
             zoomEnabled
@@ -225,6 +220,8 @@ const AgentTracking = ({ navigation }) => {
         style={{
           maxHeight: "50%",
           justifyContent: "flex-start",
+          marginHorizontal: "5%",
+          marginTop: 20,
         }}
       >
         {currentAgents.length > 0 ? (

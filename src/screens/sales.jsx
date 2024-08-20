@@ -66,7 +66,7 @@ const Sales = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (entries) {
+    // if (entries) {
       setLoading(false);
       setFormData({
         salesTargets: entries?.SalesTargets?.salesTargets || "",
@@ -76,7 +76,7 @@ const Sales = ({ navigation }) => {
         appointmentsKept: entries?.SuccessFormula?.appointmentsKept || "",
         salesSubmitted: entries?.SuccessFormula?.salesSubmitted || "",
       });
-    }
+    // }
   }, [entries]);
 
   const validateData = () => {

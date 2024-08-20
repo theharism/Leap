@@ -89,9 +89,10 @@ const MyAgents = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal: "5%",
+          width:"90%"
           //   backgroundColor: "black",
         }}
       >
@@ -107,11 +108,10 @@ const MyAgents = ({ navigation }) => {
         >
           My Agents
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            // backgroundColor: "red",
             justifyContent: "space-between",
             marginTop: 10,
           }}
@@ -128,13 +128,7 @@ const MyAgents = ({ navigation }) => {
             style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
-        </View>
+        </View> */}
       </View>
 
       <View style={styles.inboxContainerTop}>
@@ -163,6 +157,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
     justifyContent: "flex-start",
+    alignItems:"center",
     width: "100%",
     paddingVertical: 20,
     paddingHorizontal: 20,
@@ -179,7 +174,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inboxContainerTop: {
-    width: "100%",
+    width: "90%",
     alignItems: "flex-end",
     marginTop: 15,
   },

@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Pressable,
 } from "react-native";
 import {
   EvilIcons,
@@ -35,10 +36,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { privateApi } from "../api/axios";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
+import { Ionicons } from "@expo/vector-icons";
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 
-const TimelineCalendarScreen = ({ route }) => {
+const TimelineCalendarScreen = ({ navigation,route }) => {
   const { userId } = route?.params || {};
   const { token } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
@@ -78,8 +80,8 @@ const TimelineCalendarScreen = ({ route }) => {
                 event.status === "Completed"
                   ? "#4CAF50"
                   : event.status === "Started"
-                  ? "#4A90E2"
-                  : "#FFA500",
+                    ? "#4A90E2"
+                    : "#FFA500",
             };
           });
 
@@ -109,8 +111,8 @@ const TimelineCalendarScreen = ({ route }) => {
                 event.status === "Completed"
                   ? "#4CAF50"
                   : event.status === "Started"
-                  ? "#4A90E2"
-                  : "#FFA500",
+                    ? "#4A90E2"
+                    : "#FFA500",
             };
           });
 
@@ -202,19 +204,19 @@ const TimelineCalendarScreen = ({ route }) => {
           const updatedEvents = events.map((event) =>
             event.id === selectedEvent.id
               ? {
-                  ...selectedEvent,
-                  title: newEventTitle,
-                  description: newEventDescription,
-                  start: newEventStartTime,
-                  end: newEventEndTime,
-                  status: newEventStatus,
-                  color:
-                    newEventStatus === "Completed"
-                      ? "#4CAF50"
-                      : newEventStatus === "Started"
+                ...selectedEvent,
+                title: newEventTitle,
+                description: newEventDescription,
+                start: newEventStartTime,
+                end: newEventEndTime,
+                status: newEventStatus,
+                color:
+                  newEventStatus === "Completed"
+                    ? "#4CAF50"
+                    : newEventStatus === "Started"
                       ? "#4A90E2"
                       : "#FFA500",
-                }
+              }
               : event
           );
           setEvents(updatedEvents);
@@ -299,7 +301,7 @@ const TimelineCalendarScreen = ({ route }) => {
     initialTime: INITIAL_TIME,
     overlapEventsSpacing: 3,
   };
-
+  const User = useSelector((state) => state.User);
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar
@@ -307,12 +309,16 @@ const TimelineCalendarScreen = ({ route }) => {
         backgroundColor={theme.colors.background}
       />
 
+      {User.role !=="agent" && <Pressable onPress={()=> navigation.goBack()} style={{ marginHorizontal: "5%", marginVertical:"2%"}}>
+        <Ionicons name={"arrow-back"} size={26} color={"#ffffff"} />
+      </Pressable>}
+
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal: "5%",
           //   backgroundColor: "black",
         }}
       >
@@ -328,11 +334,10 @@ const TimelineCalendarScreen = ({ route }) => {
         >
           Daily Schedule
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            // backgroundColor: "red",
             justifyContent: "space-between",
             marginTop: 10,
           }}
@@ -349,19 +354,14 @@ const TimelineCalendarScreen = ({ route }) => {
             style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
-        </View>
+        </View> */}
       </View>
       <View
         style={{
           marginTop: 30,
           flex: 1,
           justifyContent: "flex-start",
+          // marginHorizontal: "5%",
         }}
       >
         <CalendarProvider date={currentDate} onDateChanged={handleDateChanged}>

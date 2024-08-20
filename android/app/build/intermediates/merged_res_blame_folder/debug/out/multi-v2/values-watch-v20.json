@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.gitsa.Leap.app-mergeDebugResources-41:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "/Users/mac/.gradle/caches/transforms-4/0b0a55c38b1bcd67d05c0d5a1505fa34/transformed/appcompat-1.6.1/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        }
+    ]
+}

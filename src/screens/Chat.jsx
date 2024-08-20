@@ -145,7 +145,7 @@ const Chat = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor:"#3871c1" }}>
       <View style={styles.header}>
         <View style={styles.headerLeftSide}>
           <Pressable onPress={() => navigation.goBack()}>
@@ -159,7 +159,7 @@ const Chat = ({ navigation, route }) => {
 
           <View style={styles.nameContainer}>
             <Text style={{ fontSize: 15, color: "white" }}>{userName2}</Text>
-            <Text style={{ fontSize: 12, color: "white" }}>Online</Text>
+            {/* <Text style={{ fontSize: 12, color: "white" }}>Online</Text> */}
           </View>
         </View>
       </View>
