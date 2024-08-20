@@ -38,7 +38,8 @@ import Loader from "../components/Loader";
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 
-const TimelineCalendarScreen = () => {
+const TimelineCalendarScreen = ({ route }) => {
+  const { userId } = route?.params || {};
   const { token } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,38 @@ const TimelineCalendarScreen = () => {
   const [newEventEndTime, setNewEventEndTime] = useState(new Date());
 
   useEffect(() => {
-    if (token) {
+    if (userId) {
+      privateApi(token)
+        .get(`/events/user/${userId}`)
+        .then((res) => {
+          const events = res.data;
+
+          const updatedEvents = events?.map((event) => {
+            return {
+              title: event.title,
+              description: event.description,
+              start: event.startTime,
+              end: event.endTime,
+              status: event.status,
+              color:
+                event.status === "Completed"
+                  ? "#4CAF50"
+                  : event.status === "Started"
+                  ? "#4A90E2"
+                  : "#FFA500",
+            };
+          });
+
+          setEvents(updatedEvents);
+          setEventsByDate(
+            groupBy(updatedEvents, (e) =>
+              CalendarUtils.getCalendarDateString(e.start)
+            )
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    } else {
       privateApi(token)
         .get("/events/user")
         .then((res) => {
@@ -92,7 +124,7 @@ const TimelineCalendarScreen = () => {
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     }
-  }, [token]);
+  }, [userId, token]);
 
   const markedDates = {
     [currentDate]: { marked: true },

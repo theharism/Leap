@@ -19,7 +19,8 @@ import { privateApi } from "../api/axios";
 import Loader from "../components/Loader";
 
 const Chat = ({ navigation, route }) => {
-  const { userId1, userId2, userName2 } = route?.params;
+  const { userId1, userId2, userName2 } = route?.params || {};
+
   const { token } = useSelector((state) => state.User);
   const [loading, setLoading] = useState(true);
 

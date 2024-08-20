@@ -29,6 +29,7 @@ import Octicons from "@expo/vector-icons/Octicons";
 import DailySchedule from "../screens/Daily Schedule";
 import Inbox from "../screens/Inbox";
 import Chat from "../screens/Chat";
+import MyAgents from "../screens/My Agents";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -209,13 +210,20 @@ const ManagerDrawerNav = () => {
         }}
       />
       <Drawer.Screen
+        name="My Agents"
+        component={MyAgents}
+        options={{
+          drawerLabel: "My Agents",
+        }}
+      />
+      {/* <Drawer.Screen
         name="Daily Schedule"
         component={DailySchedule}
         options={{
           drawerLabel: "Daily Schedule",
           title: "",
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="Inbox"
         component={Inbox}
@@ -245,9 +253,10 @@ export default AppStack = () => {
           <Stack.Screen name="Agent" component={DrawerNav} />
         </>
       )}
-      {role === "admin" && (
+      {role === "supervisor" && (
         <>
           <Stack.Screen name="Manager" component={ManagerDrawerNav} />
+          <Stack.Screen name="DailySchedule1" component={DailySchedule} />
         </>
       )}
 
