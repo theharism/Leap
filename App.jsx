@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppStack from "./src/navigation/AppStack";
 import AuthStack from "./src/navigation/AuthStack";
-import { setUser } from "./src/redux/features/userSlice";
+import { logoutUser, setUser } from "./src/redux/features/userSlice";
 import * as Location from "expo-location";
 
 import { store } from "./src/redux/store";
@@ -38,7 +38,8 @@ function StartUp() {
             dispatch(setEntries({ entries: res.data.entries }));
           })
           .catch((err) => {
-            console.error(err.response);
+            console.error(err.response.data);
+            dispatch(logoutUser());
           });
       }
     } catch (error) {
@@ -78,6 +79,7 @@ function StartUp() {
                 longitude,
                 agentId: user?._id,
                 agentName: user?.fullName,
+                companyName: user?.companyName,
               });
             }
             dispatch(setCurrentCoordinates({ latitude, longitude }));
@@ -93,6 +95,8 @@ function StartUp() {
     };
 
     if (socket && user) {
+      sendEvent("joinCompanyRoom", user?.companyName);
+
       startLocationUpdates();
     }
   }, [socket, user, dispatch]);
