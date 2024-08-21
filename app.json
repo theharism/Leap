@@ -2,7 +2,7 @@
   "expo": {
     "name": "Leap",
     "slug": "Leap",
-    "version": "11.0.0",
+    "version": "13.0.0",
     "orientation": "portrait",
     "scheme": "leap",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gitsa.Leap",
-      "buildNumber": "11",
+      "buildNumber": "13",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses your location to track agents.",
         "NSLocationAlwaysUsageDescription": "This app uses your location to track agents even when the app is in the background."

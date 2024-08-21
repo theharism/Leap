@@ -7,6 +7,9 @@ export const entriesSlice = createSlice({
         setEntries: (state, action) => {
             return { ...state, ...action.payload.entries };
         },
+        resetEntries: (state, action) => {
+            return null;
+        },
         setDailyAchieved: (state, action) => {
             return { ...state, daily_achieved: action.payload.daily };
         },
@@ -25,6 +28,7 @@ export const {
     setDailyAchieved,
     setWeeklyAchieved,
     setYearlyAchieved,
+    resetEntries
 } = entriesSlice.actions;
 
 export default entriesSlice.reducer;

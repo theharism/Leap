@@ -30,8 +30,8 @@ const SignUp = ({ navigation }) => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [showAlert, setShowAlert] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -72,8 +72,9 @@ const SignUp = ({ navigation }) => {
     } catch (err) {
       console.error(err);
       const message = err?.response?.data?.message || "Internal Server Error";
-      setErrorMessage(message);
-      setShowAlert(true);
+      // setErrorMessage(message);
+      alert(message);
+      // setShowAlert(true);
     } finally {
       setLoading(false);
     }
@@ -164,13 +165,9 @@ const SignUp = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      {showAlert && (
-        <Alert
-          title="Error"
-          message={errorMessage}
-          onClose={() => setShowAlert(false)}
-        />
-      )}
+      {/* {!showAlert && (
+        <Aler
+      )} */}
     </SafeAreaView>
   );
 };

@@ -30,6 +30,7 @@ import DailySchedule from "../screens/Daily Schedule";
 import Inbox from "../screens/Inbox";
 import Chat from "../screens/Chat";
 import MyAgents from "../screens/My Agents";
+import { resetEntries } from "../redux/features/entriesSlice";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -171,6 +172,7 @@ const ManagerDrawerNav = () => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
+    dispatch(resetEntries());
     dispatch(logoutUser());
   };
 

@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { theme } from "../constants/theme";
 import LeapTextInput from "../components/LeapTextInput";
 import { privateApi } from "../api/axios";
@@ -18,6 +18,8 @@ import { Button } from "react-native-paper";
 import { setEntries } from "../redux/features/entriesSlice";
 import { isEmpty } from "../utils/isEmpty";
 import Loader from "../components/Loader";
+import { logoutUser, setUser } from "../redux/features/userSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Sales = ({ navigation }) => {
   const token = useSelector((state) => state.User?.token);
@@ -66,7 +68,36 @@ const Sales = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // if (entries) {
+    (async () => {
+      setLoading(true);
+      console.log("starting")
+      try {
+        const storedUserString = await AsyncStorage.getItem("user");
+        if (storedUserString) {
+          const parsedUser = JSON.parse(storedUserString);
+          dispatch(setUser({ user: parsedUser }));
+  
+          privateApi(parsedUser?.token)
+            .get("/entries")
+            .then((res) => {
+              dispatch(setEntries({ entries: res.data.entries }));
+            })
+            .catch((err) => {
+              console.error(err.response.data);
+              dispatch(logoutUser());
+            });
+        }
+      } catch (error) {
+        console.error("Error loading user from AsyncStorage:", error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+  }, []);
+
+  useEffect(() => {
+    if (entries) {
       setLoading(false);
       setFormData({
         salesTargets: entries?.SalesTargets?.salesTargets || "",
@@ -76,7 +107,7 @@ const Sales = ({ navigation }) => {
         appointmentsKept: entries?.SuccessFormula?.appointmentsKept || "",
         salesSubmitted: entries?.SuccessFormula?.salesSubmitted || "",
       });
-    // }
+    }
   }, [entries]);
 
   const validateData = () => {
