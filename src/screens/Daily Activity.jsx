@@ -467,8 +467,9 @@ const DailyActivity = ({ navigation }) => {
   }, [token]);
 
   const updateAchievements = (data, type) => {
+    setLoading(true);
     if (entries?.SalesTargets?.averageCaseSize) {
-      setLoading(true);
+      console.log("yo");
       privateApi(token)
         .post(type ? "/pas/edit" : "/pas", data)
         .then((res) => {
@@ -480,12 +481,25 @@ const DailyActivity = ({ navigation }) => {
               dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
               dispatch(setDailyAchieved({ daily }));
             })
-            .catch((err) => console.error(err))
+            .catch((err) => {
+              setLoading(false);
+              console.error(err)
+              alert(err || "Network Error")
+            })
             .finally(() => setLoading(false));
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          setLoading(false);
+          alert(err || "Network Error")
+          console.error(err)
+        }).finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+      alert("Network Error");
     }
   };
+
+  
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>

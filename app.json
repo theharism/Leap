@@ -2,7 +2,7 @@
   "expo": {
     "name": "Leap",
     "slug": "Leap",
-    "version": "9.0.0",
+    "version": "11.0.0",
     "orientation": "portrait",
     "scheme": "leap",
     "icon": "./assets/icon.png",
@@ -15,12 +15,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gitsa.Leap",
-      "buildNumber": "9",
+      "buildNumber": "11",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses your location to track agents.",
         "NSLocationAlwaysUsageDescription": "This app uses your location to track agents even when the app is in the background."
-      }, 
-       "config": {
+      },
+      "config": {
         "googleMapsApiKey": "AIzaSyDOxXWQXMymZwIWAiVkJC4Dp-6iZ-mQ9Yg"
       }
     },
@@ -38,7 +38,6 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      
       "package": "com.gitsa.Leap"
     },
     "web": {
@@ -59,8 +58,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "e74f942a-614c-4d8a-b494-e25f4db22b26"
+        "projectId": "c8baabb9-a634-4bdc-aab7-8309c65ba15a"
       }
-    }
+    },
+    "owner": "gitsagroup"
   }
 }
