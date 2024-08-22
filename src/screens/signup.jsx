@@ -139,7 +139,7 @@ const SignUp = ({ navigation }) => {
             <LeapRadioButton
               options={[
                 { label: "Agent", value: "agent" },
-                { label: "Supervisor", value: "supervisor" },
+                { label: "Manager", value: "supervisor" },
               ]}
               selectedOption={formData.role}
               onSelect={(text) => handleInputChange("role", text)}
