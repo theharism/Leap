@@ -17,6 +17,26 @@ import useSocket from "./src/hooks/useSocket";
 import { setCurrentCoordinates } from "./src/redux/features/locationSlice";
 import { privateApi } from "./src/api/axios";
 import { setEntries } from "./src/redux/features/entriesSlice";
+import { debounce } from "lodash";
+
+// Define the function to send the agent location
+const sendAgentLocation = async (latitude, longitude, user) => {
+  try {
+    const response = await privateApi(user?.token).post("/location", {
+      latitude,
+      longitude,
+      agentId: user?._id,
+      agentName: user?.fullName,
+      companyName: user?.companyName,
+    });
+    console.log("Location sent successfully:", response.data);
+  } catch (error) {
+    console.error("Failed to send location:", error);
+  }
+};
+
+// Debounce the function with a 2-second delay
+const debouncedSendAgentLocation = debounce(sendAgentLocation, 2000);
 
 function StartUp() {
   const dispatch = useDispatch();
@@ -74,6 +94,8 @@ function StartUp() {
             const { latitude, longitude } = location.coords;
 
             if (user?.role === "agent") {
+              debouncedSendAgentLocation(latitude, longitude, user);
+
               sendEvent("agentLocation", {
                 latitude,
                 longitude,

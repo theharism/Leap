@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -13,7 +14,7 @@ import {
   View,
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { theme } from "../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -32,19 +33,20 @@ import MapView, {
 import useSocket from "../hooks/useSocket";
 import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
 import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
+import { privateApi } from "../api/axios";
 
 const AgentTracking = ({ navigation }) => {
   const user = useSelector((state) => state.User);
   const { onEvent } = useSocket();
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const mapViewRef = useRef(null);
   const currentCoordinates = useSelector((state) => state.Location);
   const [region, setRegion] = useState(null);
   const [currentAgents, setCurrentAgents] = useState([]);
 
-  onEvent("managerReceiveLocation", async (data) => {
+  async function ProcessLocation(data) {
     const location = await getAddressFromCoordinates(
       data.latitude,
       data.longitude
@@ -76,7 +78,32 @@ const AgentTracking = ({ navigation }) => {
         return [...prevAgents, updatedData];
       }
     });
-  });
+  }
+
+  onEvent("managerReceiveLocation", ProcessLocation);
+
+  const getAgentLocations = () => {
+    setLoading(true);
+    privateApi(user?.token)
+      .get("/location", {
+        params: {
+          companyName: user?.companyName,
+        },
+      })
+      .then((res) => res.data?.map((location) => ProcessLocation(location)))
+      .catch((err) => console.error("error fetching locations", err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    if (user?.token) {
+      getAgentLocations();
+    }
+  }, [user]);
+
+  const onRefresh = useCallback(() => {
+    getAgentLocations();
+  }, []);
 
   const goToAgentLocation = async (lat, lang) => {
     const newRegion = {
@@ -232,6 +259,9 @@ const AgentTracking = ({ navigation }) => {
             data={currentAgents}
             renderItem={renderItem}
             keyExtractor={(item) => item.agentId}
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+            }
           />
         ) : (
           <Text
