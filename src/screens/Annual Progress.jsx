@@ -15,13 +15,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import { setYearlyAchieved } from "../redux/features/entriesSlice";
 import { privateApi } from "../api/axios";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const AnnualProgress = () => {
   const entries = useSelector((state) => state.Entries);
   const token = useSelector((state) => state.User?.token);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -87,16 +88,17 @@ const AnnualProgress = () => {
           >
             <EvilIcons
               name="calendar"
+              onPress={() => navigation.navigate("Daily Schedule")}
               size={34}
               color="white"
               style={{ marginHorizontal: 3 }}
             />
-            <MaterialCommunityIcons
+            {/* <MaterialCommunityIcons
               name="progress-check"
               size={28}
               style={{ marginHorizontal: 3 }}
               color="white"
-            />
+            /> */}
             {/* <Entypo
               name="dots-three-vertical"
               size={24}

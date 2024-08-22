@@ -374,7 +374,7 @@ const Activity = ({
           <View
             style={{
               flexDirection: "row",
-              alignItems: "center",
+              alignItems: "stretch",
               justifyContent: "space-between",
             }}
           >
@@ -384,29 +384,25 @@ const Activity = ({
                   .then(() => Linking.openURL(videoLinks[status]))
                   .catch((err) => console.error(err))
               }
+              style={{ marginRight: 3, marginTop: 2 }}
             >
               <SimpleLineIcons name="social-youtube" size={28} color="black" />
             </TouchableOpacity>
             <EvilIcons
               name="calendar"
-              size={34}
+              onPress={() => navigation.navigate("Daily Schedule")}
+              size={35}
               color="black"
-              style={{ marginHorizontal: 3 }}
+              style={{ marginRight: 3 }}
             />
 
             <MaterialCommunityIcons
               onPress={() => navigation.navigate("Annual Progress")}
               name="progress-check"
-              size={23}
-              style={{ marginHorizontal: 3 }}
+              size={25}
               color="black"
+              style={{ marginTop: 3 }}
             />
-            {/* <Entypo
-              name="dots-three-vertical"
-              size={20}
-              color="#d9d9d9"
-              style={{ marginHorizontal: 3 }}
-            /> */}
           </View>
         </View>
       </View>

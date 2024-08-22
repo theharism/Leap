@@ -35,11 +35,13 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { privateApi } from "../api/axios";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
+import { useNavigation } from "@react-navigation/native";
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 
 const TimelineCalendarScreen = ({ route }) => {
   const { userId } = route?.params || {};
+  const navigation = useNavigation();
   const { token } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -337,16 +339,18 @@ const TimelineCalendarScreen = ({ route }) => {
             marginTop: 10,
           }}
         >
-          <EvilIcons
+          {/* <EvilIcons
             name="calendar"
+            onPress={() => navigation.navigate("Daily Schedule")}
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }}
-          />
+          /> */}
           <MaterialCommunityIcons
             name="progress-check"
-            size={28}
-            style={{ marginHorizontal: 3 }}
+            onPress={() => navigation.navigate("Annual Progress")}
+            size={26}
+            style={{ marginHorizontal: 3, marginTop: 4 }}
             color="white"
           />
           {/* <Entypo

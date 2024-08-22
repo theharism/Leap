@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setWeeklyAchieved } from "../redux/features/entriesSlice";
 import { privateApi } from "../api/axios";
 import Loader from "../components/Loader";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const Category = ({ goals, achieved, text, backgroundColor }) => {
   return (
@@ -113,6 +113,7 @@ const ActivityReports = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const entries = useSelector((state) => state.Entries);
+  const navigation = useNavigation();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -174,14 +175,16 @@ const ActivityReports = () => {
           >
             <EvilIcons
               name="calendar"
+              onPress={() => navigation.navigate("Daily Schedule")}
               size={34}
               color="white"
               style={{ marginHorizontal: 3 }}
             />
             <MaterialCommunityIcons
               name="progress-check"
-              size={28}
-              style={{ marginHorizontal: 3 }}
+              onPress={() => navigation.navigate("Annual Progress")}
+              size={26}
+              style={{ marginHorizontal: 3, marginTop: 4 }}
               color="white"
             />
             {/* <Entypo

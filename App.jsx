@@ -38,7 +38,7 @@ function StartUp() {
             dispatch(setEntries({ entries: res.data.entries }));
           })
           .catch((err) => {
-            console.error(err.response.data);
+            console.error("Error fetching entries", err.response.data);
             dispatch(logoutUser());
           });
       }
@@ -94,7 +94,7 @@ function StartUp() {
       }
     };
 
-    if (socket && user) {
+    if (socket && user?.companyName) {
       sendEvent("joinCompanyRoom", user?.companyName);
 
       startLocationUpdates();

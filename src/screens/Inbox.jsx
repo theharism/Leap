@@ -123,14 +123,16 @@ const Inbox = ({ navigation }) => {
         >
           <EvilIcons
             name="calendar"
+            onPress={() => navigation.navigate("Daily Schedule")}
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }}
           />
           <MaterialCommunityIcons
             name="progress-check"
-            size={28}
-            style={{ marginHorizontal: 3 }}
+            onPress={() => navigation.navigate("Annual Progress")}
+            size={26}
+            style={{ marginHorizontal: 3, marginTop: 4 }}
             color="white"
           />
           {/* <Entypo
