@@ -1,4 +1,6 @@
 import {
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -145,81 +147,87 @@ const Chat = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.header}>
-        <View style={styles.headerLeftSide}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color="white"
-              style={styles.goBack}
-            />
-          </Pressable>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Adjust offset if needed
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.header}>
+          <View style={styles.headerLeftSide}>
+            <Pressable onPress={() => navigation.goBack()}>
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color="white"
+                style={styles.goBack}
+              />
+            </Pressable>
 
-          <View style={styles.nameContainer}>
-            <Text style={{ fontSize: 15, color: "white" }}>{userName2}</Text>
-            <Text style={{ fontSize: 12, color: "white" }}>Online</Text>
+            <View style={styles.nameContainer}>
+              <Text style={{ fontSize: 15, color: "white" }}>{userName2}</Text>
+              <Text style={{ fontSize: 12, color: "white" }}>Online</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.chatContainer}>
-        <ScrollView
-          contentContainerStyle={{ padding: 20, width: "100%" }}
-          ref={scrollViewRef}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-        >
-          {messages?.map((msg, index) => {
-            return (
-              <View
-                key={index}
-                style={
-                  msg.type === "sender"
-                    ? styles.senderMsgContainer
-                    : styles.receiverMsgContainer
-                }
-              >
-                <Text style={styles.time}>{msg.time}</Text>
+        <View style={styles.chatContainer}>
+          <ScrollView
+            contentContainerStyle={{ padding: 20, width: "100%" }}
+            ref={scrollViewRef}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            {messages?.map((msg, index) => {
+              return (
                 <View
+                  key={index}
                   style={
                     msg.type === "sender"
-                      ? styles.senderMsg
-                      : styles.receiverMsg
+                      ? styles.senderMsgContainer
+                      : styles.receiverMsgContainer
                   }
                 >
-                  <Text
+                  <Text style={styles.time}>{msg.time}</Text>
+                  <View
                     style={
                       msg.type === "sender"
-                        ? styles.msgText
-                        : [styles.msgText, { color: "#000" }]
+                        ? styles.senderMsg
+                        : styles.receiverMsg
                     }
                   >
-                    {msg.message}
-                  </Text>
+                    <Text
+                      style={
+                        msg.type === "sender"
+                          ? styles.msgText
+                          : [styles.msgText, { color: "#000" }]
+                      }
+                    >
+                      {msg.message}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+              );
+            })}
+          </ScrollView>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.inputX}>
-            <TextInput
-              style={styles.input}
-              placeholder="Type a message here"
-              onChangeText={setMessageText}
-              value={messageText}
-            />
-            <TouchableOpacity onPress={sendMessage}>
-              <Feather name="send" size={24} color="black" />
-            </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputX}>
+              <TextInput
+                style={styles.input}
+                placeholder="Type a message here"
+                onChangeText={setMessageText}
+                value={messageText}
+              />
+              <TouchableOpacity onPress={sendMessage}>
+                <Feather name="send" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-      {loading && <Loader />}
-    </SafeAreaView>
+        {loading && <Loader />}
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
