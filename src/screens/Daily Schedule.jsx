@@ -13,6 +13,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Linking,
+  RefreshControl,
 } from "react-native";
 import {
   EvilIcons,
@@ -42,7 +44,7 @@ const INITIAL_TIME = { hour: 9, minutes: 0 };
 const TimelineCalendarScreen = ({ route }) => {
   const { userId } = route?.params || {};
   const navigation = useNavigation();
-  const { token } = useSelector((state) => state.User);
+  const { token, _id } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(
@@ -61,11 +63,12 @@ const TimelineCalendarScreen = ({ route }) => {
   const [newEventStatus, setNewEventStatus] = useState("Pending");
   const [newEventStartTime, setNewEventStartTime] = useState(new Date());
   const [newEventEndTime, setNewEventEndTime] = useState(new Date());
+  const [userAuthorized, setUserAuthorized] = useState(null);
 
   useEffect(() => {
     if (userId) {
       privateApi(token)
-        .get(`/events/user/${userId}`)
+        .get(`/fetch-events/${userId}`)
         .then((res) => {
           const events = res.data;
 
@@ -91,12 +94,13 @@ const TimelineCalendarScreen = ({ route }) => {
               CalendarUtils.getCalendarDateString(e.start)
             )
           );
+          setUserAuthorized(true);
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     } else {
       privateApi(token)
-        .get("/events/user")
+        .get(`/fetch-events/${_id}`)
         .then((res) => {
           const events = res.data;
 
@@ -107,6 +111,7 @@ const TimelineCalendarScreen = ({ route }) => {
               start: event.startTime,
               end: event.endTime,
               status: event.status,
+              source: event.source || "local",
               color:
                 event.status === "Completed"
                   ? "#4CAF50"
@@ -122,6 +127,7 @@ const TimelineCalendarScreen = ({ route }) => {
               CalendarUtils.getCalendarDateString(e.start)
             )
           );
+          setUserAuthorized(true);
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
@@ -275,6 +281,15 @@ const TimelineCalendarScreen = ({ route }) => {
     setNewEventStatus("Pending");
   };
 
+  const AuthorizeToGoogle = () => {
+    setLoading(true);
+    privateApi(token)
+      .get("/auth/google")
+      .then((res) => Linking.openURL(res.data.authUrl))
+      .catch((err) => Alert.alert(err.response.data.message))
+      .finally(() => setLoading(false));
+  };
+
   // const handleStatusChange = (status) => {
   //   if (selectedEvent) {
   //     console.log(events);
@@ -346,13 +361,13 @@ const TimelineCalendarScreen = ({ route }) => {
             color="white"
             style={{ marginHorizontal: 3 }}
           /> */}
-          <MaterialCommunityIcons
+          {/* <MaterialCommunityIcons
             name="progress-check"
             onPress={() => navigation.navigate("Annual Progress")}
             size={26}
             style={{ marginHorizontal: 3, marginTop: 4 }}
             color="white"
-          />
+          /> */}
           {/* <Entypo
               name="dots-three-vertical"
               size={24}
@@ -368,85 +383,111 @@ const TimelineCalendarScreen = ({ route }) => {
           justifyContent: "flex-start",
         }}
       >
-        <CalendarProvider date={currentDate} onDateChanged={handleDateChanged}>
-          <ExpandableCalendar firstDay={1} markedDates={markedDates} />
-          <TimelineList
-            events={eventsByDate}
-            scrollToFirst
-            showNowIndicator
-            scrollToNow
-            timelineProps={{
-              ...timelineProps,
-              renderEvent: (event, eventStyle) => (
-                <View
-                  style={[
-                    eventStyle,
-                    {
-                      backgroundColor: event.color,
-                      padding: 5, // Optional: add some padding
-                    },
-                  ]}
-                >
-                  <Text style={{ color: "white", fontWeight: "bold" }}>
-                    {event.title}
-                  </Text>
-                </View>
-              ),
-            }}
-          />
-
-          <Modal
-            visible={isEventModalVisible}
-            transparent={true}
-            animationType="slide"
+        {!loading && !userAuthorized ? (
+          <Button mode="elevated" onPress={AuthorizeToGoogle}>
+            Authorize to Google Calendar
+          </Button>
+        ) : (
+          <CalendarProvider
+            date={currentDate}
+            onDateChanged={handleDateChanged}
           >
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={"padding"}
-              enabled
+            <ExpandableCalendar firstDay={1} markedDates={markedDates} />
+            <TimelineList
+              events={eventsByDate}
+              scrollToFirst
+              showNowIndicator
+              scrollToNow
+              timelineProps={{
+                ...timelineProps,
+                renderEvent: (event, eventStyle) => (
+                  <View
+                    style={[
+                      eventStyle,
+                      {
+                        backgroundColor: event.color,
+                        padding: 5, // Optional: add some padding
+                      },
+                    ]}
+                  >
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      {event.title}
+                    </Text>
+                  </View>
+                ),
+              }}
+            />
+
+            <Modal
+              visible={isEventModalVisible}
+              transparent={true}
+              animationType="slide"
             >
-              <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <Text style={{ textAlign: "center", fontSize: 20 }}>
-                      Event Details
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "bold",
-                        marginTop: 10,
-                      }}
-                    >
-                      {selectedEvent?.title}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        marginVertical: 5,
-                      }}
-                    >
-                      {selectedEvent?.description}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginVertical: 10,
-                      }}
-                    >
-                      <Text>
-                        {new Date(selectedEvent?.start).toLocaleTimeString()} -{" "}
-                        {new Date(selectedEvent?.end).toLocaleTimeString()}
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={"padding"}
+                enabled
+              >
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <Text style={{ textAlign: "center", fontSize: 20 }}>
+                        Event Details
                       </Text>
-
-                      <Text style={{ fontWeight: "bold" }}>
-                        {selectedEvent?.status}
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "bold",
+                          marginTop: 10,
+                        }}
+                      >
+                        {selectedEvent?.title}
                       </Text>
-                    </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            marginVertical: 5,
+                          }}
+                        >
+                          {selectedEvent?.description}
+                        </Text>
 
-                    {/* <SegmentedButtons
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontWeight: "bold",
+                            color: "purple",
+                          }}
+                        >
+                          {selectedEvent?.source || "Local"}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginVertical: 10,
+                        }}
+                      >
+                        <Text>
+                          {new Date(selectedEvent?.start).toLocaleTimeString()}{" "}
+                          - {new Date(selectedEvent?.end).toLocaleTimeString()}
+                        </Text>
+
+                        <Text style={{ fontWeight: "bold" }}>
+                          {selectedEvent?.status}
+                        </Text>
+                      </View>
+
+                      {/* <SegmentedButtons
                       buttons={[
                         {
                           value: "walk",
@@ -459,7 +500,7 @@ const TimelineCalendarScreen = ({ route }) => {
                         { value: "drive", label: "Started" },
                       ]}
                     /> */}
-                    {/* <Button onPress={() => handleStatusChange("completed")}>
+                      {/* <Button onPress={() => handleStatusChange("completed")}>
                       Mark as Completed
                     </Button>
                     <Button onPress={() => handleStatusChange("pending")}>
@@ -474,186 +515,194 @@ const TimelineCalendarScreen = ({ route }) => {
                     <Button onPress={() => setEventModalVisible(false)}>
                       Close
                     </Button> */}
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginTop: 10,
-                      }}
-                    >
-                      <Button
-                        buttonColor="red"
-                        labelStyle={{ color: "white" }}
-                        onPress={() => deleteEvent(selectedEvent)}
-                      >
-                        Delete
-                      </Button>
+
                       <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginTop: 10,
+                        }}
                       >
-                        <Button
-                          mode="outlined"
-                          style={{ marginRight: 5 }}
-                          onPress={() => setEventModalVisible(false)}
+                        {selectedEvent?.source !== "google" && (
+                          <Button
+                            buttonColor="red"
+                            labelStyle={{ color: "white" }}
+                            onPress={() => deleteEvent(selectedEvent)}
+                          >
+                            Delete
+                          </Button>
+                        )}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
                         >
-                          Cancel
-                        </Button>
+                          <Button
+                            mode="outlined"
+                            style={{ marginRight: 5 }}
+                            onPress={() => setEventModalVisible(false)}
+                          >
+                            Cancel
+                          </Button>
+                          {selectedEvent?.source !== "google" && (
+                            <Button
+                              mode="contained"
+                              onPress={() => editEvent(selectedEvent)}
+                            >
+                              Edit
+                            </Button>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </ScrollView>
+              </KeyboardAvoidingView>
+            </Modal>
+
+            <Modal
+              visible={isAddEventModalVisible}
+              transparent={true}
+              animationType="slide"
+            >
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={"padding"}
+                enabled
+              >
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <TextInput
+                        placeholder="Event Title"
+                        multiline
+                        numberOfLines={2}
+                        maxLength={100}
+                        value={newEventTitle}
+                        style={{
+                          marginVertical: 5,
+                          paddingVertical: 10,
+                          paddingHorizontal: 5,
+                          borderColor: "gray",
+                          borderWidth: 1,
+                          borderRadius: 5,
+                          textAlignVertical: "top", // Ensure text starts from top-left corner
+                        }}
+                        onChangeText={setNewEventTitle}
+                      />
+                      <TextInput
+                        placeholder="Event Description"
+                        value={newEventDescription}
+                        multiline
+                        numberOfLines={5}
+                        maxLength={300}
+                        style={{
+                          marginVertical: 5,
+                          paddingVertical: 10,
+                          paddingHorizontal: 5,
+                          borderColor: "gray",
+                          borderWidth: 1,
+                          borderRadius: 5,
+                          textAlignVertical: "top", // Ensure text starts from top-left corner
+                        }}
+                        onChangeText={setNewEventDescription}
+                      />
+
+                      {selectedEvent && (
+                        <SegmentedButtons
+                          value={newEventStatus}
+                          onValueChange={setNewEventStatus}
+                          buttons={[
+                            {
+                              value: "Completed",
+                              label: "Completed",
+                            },
+
+                            { value: "Started", label: "Started" },
+                            {
+                              value: "Pending",
+                              label: "Pending",
+                            },
+                          ]}
+                        />
+                      )}
+
+                      <View>
                         <Button
                           mode="contained"
-                          onPress={() => editEvent(selectedEvent)}
+                          onPress={() => setSelectStartTime(true)}
+                          style={{ marginVertical: 4 }}
                         >
-                          Edit
+                          Start Time
+                        </Button>
+
+                        <Button
+                          style={{ marginVertical: 4 }}
+                          mode="contained"
+                          onPress={() => setSelectEndTime(true)}
+                        >
+                          End Time
+                        </Button>
+                      </View>
+
+                      {selectStartTime && (
+                        <DateTimePicker
+                          onCon
+                          value={newEventStartTime}
+                          mode="time"
+                          display="spinner"
+                          onChange={(event, date) => {
+                            setSelectStartTime(false);
+                            setNewEventStartTime(date || newEventStartTime);
+                          }}
+                        />
+                      )}
+                      {selectEndTime && (
+                        <DateTimePicker
+                          value={newEventEndTime}
+                          mode="time"
+                          display="spinner"
+                          onChange={(event, date) => {
+                            setSelectEndTime(false);
+                            setNewEventEndTime(date || newEventEndTime);
+                          }}
+                        />
+                      )}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          marginTop: 15,
+                        }}
+                      >
+                        <Button
+                          mode="contained"
+                          onPress={saveNewEvent}
+                          buttonColor="green"
+                        >
+                          Save Event
+                        </Button>
+                        <Button
+                          mode="outlined"
+                          onPress={() => {
+                            setSelectedEvent(null);
+                            setNewEventTitle("");
+                            setNewEventDescription("");
+                            setAddEventModalVisible(false);
+                          }}
+                        >
+                          Cancel
                         </Button>
                       </View>
                     </View>
                   </View>
-                </View>
-              </ScrollView>
-            </KeyboardAvoidingView>
-          </Modal>
+                </ScrollView>
+              </KeyboardAvoidingView>
+            </Modal>
 
-          <Modal
-            visible={isAddEventModalVisible}
-            transparent={true}
-            animationType="slide"
-          >
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={"padding"}
-              enabled
-            >
-              <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <TextInput
-                      placeholder="Event Title"
-                      multiline
-                      numberOfLines={2}
-                      maxLength={100}
-                      value={newEventTitle}
-                      style={{
-                        marginVertical: 5,
-                        paddingVertical: 10,
-                        paddingHorizontal: 5,
-                        borderColor: "gray",
-                        borderWidth: 1,
-                        borderRadius: 5,
-                        textAlignVertical: "top", // Ensure text starts from top-left corner
-                      }}
-                      onChangeText={setNewEventTitle}
-                    />
-                    <TextInput
-                      placeholder="Event Description"
-                      value={newEventDescription}
-                      multiline
-                      numberOfLines={5}
-                      maxLength={300}
-                      style={{
-                        marginVertical: 5,
-                        paddingVertical: 10,
-                        paddingHorizontal: 5,
-                        borderColor: "gray",
-                        borderWidth: 1,
-                        borderRadius: 5,
-                        textAlignVertical: "top", // Ensure text starts from top-left corner
-                      }}
-                      onChangeText={setNewEventDescription}
-                    />
-
-                    {selectedEvent && (
-                      <SegmentedButtons
-                        value={newEventStatus}
-                        onValueChange={setNewEventStatus}
-                        buttons={[
-                          {
-                            value: "Completed",
-                            label: "Completed",
-                          },
-
-                          { value: "Started", label: "Started" },
-                          {
-                            value: "Pending",
-                            label: "Pending",
-                          },
-                        ]}
-                      />
-                    )}
-
-                    <View>
-                      <Button
-                        mode="contained"
-                        onPress={() => setSelectStartTime(true)}
-                        style={{ marginVertical: 4 }}
-                      >
-                        Start Time
-                      </Button>
-
-                      <Button
-                        style={{ marginVertical: 4 }}
-                        mode="contained"
-                        onPress={() => setSelectEndTime(true)}
-                      >
-                        End Time
-                      </Button>
-                    </View>
-
-                    {selectStartTime && (
-                      <DateTimePicker
-                        onCon
-                        value={newEventStartTime}
-                        mode="time"
-                        display="spinner"
-                        onChange={(event, date) => {
-                          setSelectStartTime(false);
-                          setNewEventStartTime(date || newEventStartTime);
-                        }}
-                      />
-                    )}
-                    {selectEndTime && (
-                      <DateTimePicker
-                        value={newEventEndTime}
-                        mode="time"
-                        display="spinner"
-                        onChange={(event, date) => {
-                          setSelectEndTime(false);
-                          setNewEventEndTime(date || newEventEndTime);
-                        }}
-                      />
-                    )}
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginTop: 15,
-                      }}
-                    >
-                      <Button
-                        mode="contained"
-                        onPress={saveNewEvent}
-                        buttonColor="green"
-                      >
-                        Save Event
-                      </Button>
-                      <Button
-                        mode="outlined"
-                        onPress={() => {
-                          setSelectedEvent(null);
-                          setNewEventTitle("");
-                          setNewEventDescription("");
-                          setAddEventModalVisible(false);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </View>
-                  </View>
-                </View>
-              </ScrollView>
-            </KeyboardAvoidingView>
-          </Modal>
-
-          {/* <Modal
+            {/* <Modal
             visible={isAddEventModalVisible}
             transparent={true}
             animationType="slide"
@@ -702,7 +751,8 @@ const TimelineCalendarScreen = ({ route }) => {
               </View>
             </ScrollView>
           </Modal> */}
-        </CalendarProvider>
+          </CalendarProvider>
+        )}
       </View>
       {loading && <Loader />}
     </SafeAreaView>
