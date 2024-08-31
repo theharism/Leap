@@ -46,7 +46,6 @@ const Inbox = ({ navigation }) => {
       privateApi(token)
         .get(`/inbox`)
         .then((res) => {
-          console.log(res.data);
           setChats(res.data);
         })
         .catch((err) => console.error(err))
@@ -112,7 +111,7 @@ const Inbox = ({ navigation }) => {
         >
           Inbox
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -132,15 +131,33 @@ const Inbox = ({ navigation }) => {
             name="progress-check"
             onPress={() => navigation.navigate("Annual Progress")}
             size={26}
-            style={{ marginHorizontal: 3, marginTop: 4 }}
+            style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
+        </View> */}
+
+        <View
+          style={{
+            flexDirection: "row", // Align children in a row
+            alignItems: "center", // Center icons vertically in the row
+            justifyContent: "center", // Center icons horizontally in the row
+            marginTop: 10, // Top margin for the entire row
+          }}
+        >
+          <EvilIcons
+            name="calendar"
+            onPress={() => navigation.navigate("Daily Schedule")}
+            size={34}
+            color="white"
+            style={{ marginHorizontal: 3 }} // Increase horizontal margin for better spacing
+          />
+          <MaterialCommunityIcons
+            name="progress-check"
+            onPress={() => navigation.navigate("Annual Progress")}
+            size={26}
+            color="white"
+            style={{ marginHorizontal: 3 }} // Increase horizontal margin for better spacing
+          />
         </View>
       </View>
 

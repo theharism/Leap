@@ -374,8 +374,9 @@ const Activity = ({
           <View
             style={{
               flexDirection: "row",
-              alignItems: "stretch",
-              justifyContent: "space-between",
+              alignItems: "center", // Center vertically
+              justifyContent: "space-between", // Evenly space icons horizontally
+              paddingHorizontal: 10, // Add some horizontal padding to the container
             }}
           >
             <TouchableOpacity
@@ -384,25 +385,28 @@ const Activity = ({
                   .then(() => Linking.openURL(videoLinks[status]))
                   .catch((err) => console.error(err))
               }
-              style={{ marginRight: 3, marginTop: 2 }}
+              style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
             >
               <SimpleLineIcons name="social-youtube" size={28} color="black" />
             </TouchableOpacity>
-            <EvilIcons
-              name="calendar"
-              onPress={() => navigation.navigate("Daily Schedule")}
-              size={35}
-              color="black"
-              style={{ marginRight: 3 }}
-            />
 
-            <MaterialCommunityIcons
+            <TouchableOpacity // Make EvilIcons touchable
+              onPress={() => navigation.navigate("Daily Schedule")}
+              style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
+            >
+              <EvilIcons name="calendar" size={35} color="black" />
+            </TouchableOpacity>
+
+            <TouchableOpacity // Make MaterialCommunityIcons touchable
               onPress={() => navigation.navigate("Annual Progress")}
-              name="progress-check"
-              size={25}
-              color="black"
-              style={{ marginTop: 3 }}
-            />
+              style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
+            >
+              <MaterialCommunityIcons
+                name="progress-check"
+                size={25}
+                color="black"
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
