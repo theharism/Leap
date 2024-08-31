@@ -44,7 +44,7 @@ const Sales = ({ navigation }) => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (name, value) => {
     // Remove any commas or non-numeric characters except the decimal point
@@ -67,7 +67,6 @@ const Sales = ({ navigation }) => {
 
   useEffect(() => {
     if (entries) {
-      setLoading(false);
       setFormData({
         salesTargets: entries?.SalesTargets?.salesTargets || "",
         averageCaseSize: entries?.SalesTargets?.averageCaseSize || "",
