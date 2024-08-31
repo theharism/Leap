@@ -222,6 +222,7 @@ const AgentTracking = ({ navigation }) => {
             name="message1"
             size={23}
             color="white"
+            style={{ marginHorizontal: 3, marginTop: 3 }}
             onPress={() => navigation.navigate("My Agents")}
           />
           {/* <MaterialCommunityIcons

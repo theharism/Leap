@@ -22,6 +22,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import Loader from "../components/Loader";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const handleDelete = () => {
   console.log("Deleted");
@@ -146,18 +147,25 @@ const Inbox = ({ navigation }) => {
         >
           <EvilIcons
             name="calendar"
-            onPress={() => navigation.navigate("Daily Schedule")}
+            onPress={() => navigation.navigate("My Agents")}
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }} // Increase horizontal margin for better spacing
           />
-          <MaterialCommunityIcons
+          <AntDesign
+            name="message1"
+            size={23}
+            color="white"
+            style={{ marginHorizontal: 3, marginTop: 3 }}
+            onPress={() => navigation.navigate("My Agents")}
+          />
+          {/* <MaterialCommunityIcons
             name="progress-check"
             onPress={() => navigation.navigate("Annual Progress")}
             size={26}
             color="white"
             style={{ marginHorizontal: 3 }} // Increase horizontal margin for better spacing
-          />
+          /> */}
         </View>
       </View>
 

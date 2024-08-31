@@ -34,7 +34,6 @@ const MyAgents = ({ navigation }) => {
       privateApi(token)
         .get(`/agents`)
         .then((res) => {
-          console.log(res.data);
           setAgents(res.data);
         })
         .catch((err) => console.error(err))
@@ -76,6 +75,7 @@ const MyAgents = ({ navigation }) => {
                 userName2: fullName,
               })
             }
+            style={{ marginTop: 3 }}
           />
         </View>
       </View>
@@ -107,7 +107,7 @@ const MyAgents = ({ navigation }) => {
         >
           My Agents
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -128,13 +128,8 @@ const MyAgents = ({ navigation }) => {
             style={{ marginHorizontal: 3 }}
             color="white"
           />
-          {/* <Entypo
-              name="dots-three-vertical"
-              size={24}
-              color="white"
-              style={{ marginHorizontal: 3 }}
-            /> */}
-        </View>
+        
+        </View> */}
       </View>
 
       <View style={styles.inboxContainerTop}>
