@@ -58,8 +58,24 @@ function StartUp() {
             dispatch(setEntries({ entries: res.data.entries }));
           })
           .catch((err) => {
-            console.error("Error fetching entries", err.response.data);
-            dispatch(logoutUser());
+            console.error("Error fetching entries", err.response?.data);
+
+            if (err.response?.status === 401) {
+              // Show alert and handle logout on OK
+              Alert.alert(
+                "Session Expired",
+                "Your session has expired. Please log in again.",
+                [
+                  {
+                    text: "OK",
+                    onPress: () => {
+                      dispatch(logoutUser());
+                    },
+                  },
+                ],
+                { cancelable: false } // Prevent closing the alert without user action
+              );
+            }
           });
       }
     } catch (error) {
@@ -102,7 +118,7 @@ function StartUp() {
                 agentId: user?._id,
                 agentName: user?.fullName,
                 companyName: user?.companyName,
-                agentProfilePic: user?.profilePic,
+                profilePic: user?.profilePic,
               });
             }
             dispatch(setCurrentCoordinates({ latitude, longitude }));
