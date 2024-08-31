@@ -33,7 +33,7 @@ import MapView, {
 import useSocket from "../hooks/useSocket";
 import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
 import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
-import { privateApi } from "../api/axios";
+import { privateApi, publicURL } from "../api/axios";
 
 const AgentTracking = ({ navigation }) => {
   const user = useSelector((state) => state.User);
@@ -45,6 +45,7 @@ const AgentTracking = ({ navigation }) => {
   const currentCoordinates = useSelector((state) => state.Location);
   const [region, setRegion] = useState(null);
   const [currentAgents, setCurrentAgents] = useState([]);
+  const [expandedItems, setExpandedItems] = useState({});
 
   async function ProcessLocation(data) {
     const location = await getAddressFromCoordinates(
@@ -79,7 +80,7 @@ const AgentTracking = ({ navigation }) => {
       }
     });
   }
-
+  // console.log(currentAgents);
   onEvent("managerReceiveLocation", ProcessLocation);
 
   const getAgentLocations = () => {
@@ -117,37 +118,61 @@ const AgentTracking = ({ navigation }) => {
     setRegion(newRegion);
   };
 
-  const renderItem = ({ item }) => (
-    <Pressable
-      onPress={() => goToAgentLocation(item?.latitude, item?.longitude)}
-      style={styles.itemContainer}
-    >
-      {/* <Image source={{ uri: item?.profilePic }} style={styles.profileImage} /> */}
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{item?.agentName}</Text>
-        <Text style={styles.location}>{item?.location}</Text>
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <AntDesign
-          name="message1"
-          size={26}
-          color="black"
-          onPress={() =>
-            navigation.navigate("Chat", {
-              userId1: user?._id,
-              userId2: item?.agentId,
-              userName2: item?.agentName,
-            })
-          }
+  // Function to toggle the expanded state of a specific item
+  const toggleItemExpansion = (id) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const RenderItem = ({ navigation, publicURL, item, toggleExpansion }) => {
+    const getTruncatedLocation = (location) => {
+      return location?.split(" ").slice(0, 3).join(" ") + "...";
+    };
+
+    return (
+      <Pressable
+        onPress={() => {
+          goToAgentLocation(item?.latitude, item?.longitude);
+          toggleExpansion(item.agentId);
+        }}
+        style={styles.itemContainer}
+      >
+        <Image
+          source={{ uri: `${publicURL}${item?.profilePic}` }}
+          style={styles.profileImage}
         />
-        <View style={styles.distanceContainer}>
-          <Text style={styles.distanceText}>
-            {Math.round(item?.distance)} mi
+        <View style={styles.textContainer}>
+          <Text style={styles.name}>{item?.agentName}</Text>
+          <Text style={styles.location}>
+            {!!expandedItems[item.agentId]
+              ? item?.location
+              : getTruncatedLocation(item?.location)}
           </Text>
         </View>
-      </View>
-    </Pressable>
-  );
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <AntDesign
+            name="message1"
+            size={26}
+            color="black"
+            onPress={() =>
+              navigation.navigate("Chat", {
+                userId1: user?._id,
+                userId2: item?.agentId,
+                userName2: item?.agentName,
+              })
+            }
+          />
+          <View style={styles.distanceContainer}>
+            <Text style={styles.distanceText}>
+              {Math.round(item?.distance)} mi
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
@@ -187,17 +212,24 @@ const AgentTracking = ({ navigation }) => {
           }}
         >
           <EvilIcons
+            onPress={() => navigation.navigate("My Agents")}
             name="calendar"
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }}
           />
-          <MaterialCommunityIcons
+          <AntDesign
+            name="message1"
+            size={23}
+            color="white"
+            onPress={() => navigation.navigate("My Agents")}
+          />
+          {/* <MaterialCommunityIcons
             name="progress-check"
             size={28}
             style={{ marginHorizontal: 3 }}
             color="white"
-          />
+          /> */}
           {/* <Entypo
               name="dots-three-vertical"
               size={24}
@@ -243,7 +275,13 @@ const AgentTracking = ({ navigation }) => {
           </MapView>
         </View>
       ) : (
-        <View style={{ flex: 1, justifyContent: "center" }}>
+        <View
+          style={{
+            marginTop: 30,
+            maxHeight: "35%",
+            justifyContent: "flex-start",
+          }}
+        >
           <ActivityIndicator size={"large"} style={{ alignSelf: "center" }} />
         </View>
       )}
@@ -257,7 +295,14 @@ const AgentTracking = ({ navigation }) => {
         {currentAgents.length > 0 ? (
           <FlatList
             data={currentAgents}
-            renderItem={renderItem}
+            renderItem={({ item }) => (
+              <RenderItem
+                item={item}
+                publicURL={publicURL}
+                navigation={navigation}
+                toggleExpansion={toggleItemExpansion}
+              />
+            )}
             keyExtractor={(item) => item.agentId}
             refreshControl={
               <RefreshControl refreshing={loading} onRefresh={onRefresh} />
@@ -291,7 +336,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
-
+  profileImage: {
+    width: 40, // Adjust width as needed
+    height: 40, // Adjust height as needed
+    borderRadius: 20, // Make it circular, adjust for desired shape
+    alignSelf: "flex-start", // Center the image
+    backgroundColor: "#e0e0e0", // Placeholder color while loading
+  },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -302,6 +353,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    marginLeft: 10,
   },
   name: {
     fontSize: 16,
