@@ -18,6 +18,9 @@ import LeapTextInput from "../components/LeapTextInput.jsx";
 import { publicApi } from "../api/axios.js";
 import { setUser } from "../redux/features/userSlice.js";
 import LeapRadioButton from "../components/LeapRadioButtons.jsx";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { pickImageFromGallery } from "../utils/pickImageFromGallery.js";
 
 const SignUp = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -28,10 +31,11 @@ const SignUp = ({ navigation }) => {
     role: "",
     companyName: "",
   });
+  const [image, setImage] = useState(null);
+  const [pickedImage, setPickedImage] = useState(null);
+  const [imageError, setImageError] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -48,6 +52,7 @@ const SignUp = ({ navigation }) => {
       errors.email = true;
     if (!formData.password.trim() || formData.password.length < 8)
       errors.password = true;
+    if (!image) setImageError(true);
 
     setFormErrors(errors);
 
@@ -58,13 +63,23 @@ const SignUp = ({ navigation }) => {
     if (!validateFields()) return;
 
     setLoading(true);
+
     try {
-      const response = await publicApi.post("/signup", {
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.name,
-        role: formData.role,
-        companyName: formData.companyName,
+      // Create a new FormData instance
+      const formData1 = new FormData();
+
+      formData1.append("email", formData.email);
+      formData1.append("password", formData.password);
+      formData1.append("fullName", formData.name);
+      formData1.append("role", formData.role);
+      formData1.append("companyName", formData.companyName);
+      formData1.append("profilePic", image);
+
+      // Make the POST request with multipart/form-data content type
+      const response = await publicApi.post("/signup", formData1, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       const user = response.data.user;
@@ -72,11 +87,20 @@ const SignUp = ({ navigation }) => {
     } catch (err) {
       console.error(err);
       const message = err?.response?.data?.message || "Internal Server Error";
-      setErrorMessage(message);
-      setShowAlert(true);
+      Alert.alert(message);
+      // setErrorMessage(message);
+      // setShowAlert(true);
     } finally {
       setLoading(false);
     }
+  };
+
+  const uploadImage = async () => {
+    setImageError(false);
+    await pickImageFromGallery({
+      setImage,
+      setPickedImage,
+    });
   };
 
   return (
@@ -104,6 +128,34 @@ const SignUp = ({ navigation }) => {
           <Text style={styles.title}>My Sales Coach</Text>
           <Text style={styles.subtitle}>“My Best Partner In Sales”</Text>
           <View style={styles.inputContainer}>
+            <TouchableOpacity
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 50,
+                borderWidth: 1,
+                borderColor: imageError ? "red" : "white",
+                alignItems: "center",
+                alignSelf: "center",
+                justifyContent: "center",
+                marginBottom: 15,
+              }}
+              onPress={uploadImage}
+            >
+              {pickedImage ? (
+                <Image
+                  source={{ uri: pickedImage }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 50,
+                  }}
+                />
+              ) : (
+                <Ionicons name="camera-outline" size={40} color="white" />
+              )}
+            </TouchableOpacity>
+
             <LeapTextInput
               label="Full Name"
               value={formData.name}
@@ -164,13 +216,6 @@ const SignUp = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      {showAlert && (
-        <Alert
-          title="Error"
-          message={errorMessage}
-          onClose={() => setShowAlert(false)}
-        />
-      )}
     </SafeAreaView>
   );
 };

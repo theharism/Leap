@@ -28,8 +28,8 @@ const sendAgentLocation = async (latitude, longitude, user) => {
       agentId: user?._id,
       agentName: user?.fullName,
       companyName: user?.companyName,
+      profilePic: user?.profilePic,
     });
-    console.log("Location sent successfully:", response.data);
   } catch (error) {
     console.error("Failed to send location:", error);
   }
@@ -102,6 +102,7 @@ function StartUp() {
                 agentId: user?._id,
                 agentName: user?.fullName,
                 companyName: user?.companyName,
+                agentProfilePic: user?.profilePic,
               });
             }
             dispatch(setCurrentCoordinates({ latitude, longitude }));
