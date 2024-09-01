@@ -387,14 +387,20 @@ const Activity = ({
               }
               style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
             >
-              <SimpleLineIcons name="social-youtube" size={28} color="black" />
+              <SimpleLineIcons name="social-youtube" size={27} color="black" />
+              {/* <MaterialCommunityIcons name="youtube" size={27} color="black" /> */}
             </TouchableOpacity>
 
             <TouchableOpacity // Make EvilIcons touchable
               onPress={() => navigation.navigate("DailySchedule")}
               style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
             >
-              <EvilIcons name="calendar" size={35} color="black" />
+              {/* <EvilIcons name="calendar" size={35} color="black" /> */}
+              <MaterialCommunityIcons
+                name="calendar-month"
+                size={27}
+                color="black"
+              />
             </TouchableOpacity>
 
             <TouchableOpacity // Make MaterialCommunityIcons touchable
@@ -403,7 +409,7 @@ const Activity = ({
             >
               <MaterialCommunityIcons
                 name="progress-check"
-                size={25}
+                size={27}
                 color="black"
               />
             </TouchableOpacity>

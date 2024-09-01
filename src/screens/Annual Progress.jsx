@@ -86,12 +86,19 @@ const AnnualProgress = () => {
               marginTop: 10,
             }}
           >
-            <EvilIcons
+            {/* <EvilIcons
               name="calendar"
               onPress={() => navigation.navigate("DailySchedule")}
               size={34}
               color="white"
               style={{ marginHorizontal: 3 }}
+            /> */}
+            <MaterialCommunityIcons
+              onPress={() => navigation.navigate("DailySchedule")}
+              style={{ marginHorizontal: 3 }}
+              name="calendar-month"
+              size={27}
+              color="white"
             />
             {/* <MaterialCommunityIcons
               name="progress-check"

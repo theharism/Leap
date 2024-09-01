@@ -37,7 +37,7 @@ const renderRightActions = () => {
 };
 
 const Inbox = ({ navigation }) => {
-  const { token, _id, fullName } = useSelector((state) => state.User);
+  const { token, _id, role } = useSelector((state) => state.User);
   const [chats, setChats] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -145,20 +145,31 @@ const Inbox = ({ navigation }) => {
             marginTop: 10, // Top margin for the entire row
           }}
         >
-          <EvilIcons
+          {/* <EvilIcons
             name="calendar"
             onPress={() => navigation.navigate("My Agents")}
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }} // Increase horizontal margin for better spacing
+          /> */}
+          <MaterialCommunityIcons
+            onPress={() =>
+              navigation.navigate(
+                role === "agent" ? "DailySchedule" : "My Agents"
+              )
+            }
+            style={{ marginHorizontal: 3 }}
+            name="calendar-month"
+            size={27}
+            color="white"
           />
-          <AntDesign
+          {/* <AntDesign
             name="message1"
             size={23}
             color="white"
-            style={{ marginHorizontal: 3, marginTop: 3 }}
-            onPress={() => navigation.navigate("My Agents")}
-          />
+            style={{ marginHorizontal: 3 }}
+            onPress={() => navigation.navigate(role === "agent" ? "DailySchedule" :"My Agents")}
+          /> */}
           {/* <MaterialCommunityIcons
             name="progress-check"
             onPress={() => navigation.navigate("Annual Progress")}

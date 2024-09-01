@@ -211,18 +211,25 @@ const AgentTracking = ({ navigation }) => {
             marginTop: 10,
           }}
         >
-          <EvilIcons
+          {/* <EvilIcons
             onPress={() => navigation.navigate("My Agents")}
             name="calendar"
             size={34}
             color="white"
             style={{ marginHorizontal: 3 }}
+          /> */}
+          <MaterialCommunityIcons
+            onPress={() => navigation.navigate("My Agents")}
+            style={{ marginHorizontal: 3 }}
+            name="calendar-month"
+            size={27}
+            color="white"
           />
           <AntDesign
             name="message1"
             size={23}
             color="white"
-            style={{ marginHorizontal: 3, marginTop: 3 }}
+            style={{ marginHorizontal: 3 }}
             onPress={() => navigation.navigate("My Agents")}
           />
           {/* <MaterialCommunityIcons

@@ -52,7 +52,7 @@ const MyAgents = ({ navigation }) => {
         </View>
 
         <View style={styles.rightSideView}>
-          <EvilIcons
+          {/* <EvilIcons
             name="calendar"
             size={38}
             color="black"
@@ -62,6 +62,18 @@ const MyAgents = ({ navigation }) => {
                 userId: id,
               })
             }
+          /> */}
+
+          <MaterialCommunityIcons
+            onPress={() =>
+              navigation.navigate("DailySchedule1", {
+                userId: id,
+              })
+            }
+            style={{ marginHorizontal: 6 }}
+            name="calendar-month"
+            size={30}
+            color="black"
           />
 
           <AntDesign
@@ -75,7 +87,6 @@ const MyAgents = ({ navigation }) => {
                 userName2: fullName,
               })
             }
-            style={{ marginTop: 3 }}
           />
         </View>
       </View>

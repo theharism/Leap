@@ -173,18 +173,25 @@ const ActivityReports = () => {
               justifyContent: "space-between",
             }}
           >
-            <EvilIcons
+            {/* <EvilIcons
               name="calendar"
               onPress={() => navigation.navigate("DailySchedule")}
               size={34}
               color="white"
               style={{ marginHorizontal: 3 }}
+            /> */}
+            <MaterialCommunityIcons
+              onPress={() => navigation.navigate("DailySchedule")}
+              style={{ marginHorizontal: 3 }}
+              name="calendar-month"
+              size={27}
+              color="white"
             />
             <MaterialCommunityIcons
               name="progress-check"
               onPress={() => navigation.navigate("Annual Progress")}
               size={26}
-              style={{ marginHorizontal: 3, marginTop: 4 }}
+              style={{ marginHorizontal: 3 }}
               color="white"
             />
             {/* <Entypo
