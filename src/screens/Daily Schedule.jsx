@@ -13,7 +13,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  Linking,
   RefreshControl,
 } from "react-native";
 import {
@@ -37,13 +36,14 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { privateApi } from "../api/axios";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
-import { useNavigation } from "@react-navigation/native";
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
 
+const redirectTo = makeRedirectUri();
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 
 const TimelineCalendarScreen = ({ route }) => {
-  const { userId } = route?.params || {};
-  const navigation = useNavigation();
+  const { userId, state } = route?.params || {};
   const { token, _id } = useSelector((state) => state.User);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -132,7 +132,7 @@ const TimelineCalendarScreen = ({ route }) => {
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     }
-  }, [userId, token]);
+  }, [state, userId, token]);
 
   const markedDates = {
     [currentDate]: { marked: true },
@@ -194,7 +194,6 @@ const TimelineCalendarScreen = ({ route }) => {
     setLoading(true);
 
     Keyboard.dismiss();
-
     if (selectedEvent) {
       privateApi(token)
         .put(`/events/${selectedEvent.id}`, {
@@ -284,8 +283,10 @@ const TimelineCalendarScreen = ({ route }) => {
   const AuthorizeToGoogle = () => {
     setLoading(true);
     privateApi(token)
-      .get("/auth/google")
-      .then((res) => Linking.openURL(res.data.authUrl))
+      .get(`/auth/google?redirect=${redirectTo}`)
+      .then(
+        async (res) => await WebBrowser.openAuthSessionAsync(res.data.authUrl)
+      )
       .catch((err) => Alert.alert(err.response.data.message))
       .finally(() => setLoading(false));
   };

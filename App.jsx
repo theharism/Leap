@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { Provider } from "react-redux";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { View, Text, ActivityIndicator, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,13 +11,13 @@ import AppStack from "./src/navigation/AppStack";
 import AuthStack from "./src/navigation/AuthStack";
 import { logoutUser, setUser } from "./src/redux/features/userSlice";
 import * as Location from "expo-location";
-
 import { store } from "./src/redux/store";
 import useSocket from "./src/hooks/useSocket";
 import { setCurrentCoordinates } from "./src/redux/features/locationSlice";
 import { privateApi } from "./src/api/axios";
 import { setEntries } from "./src/redux/features/entriesSlice";
 import { debounce } from "lodash";
+import * as Linking from "expo-linking";
 
 // Define the function to send the agent location
 const sendAgentLocation = async (latitude, longitude, user) => {
@@ -40,6 +40,7 @@ const debouncedSendAgentLocation = debounce(sendAgentLocation, 2000);
 
 function StartUp() {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const user = useSelector((state) => state.User);
   const [loading, setLoading] = useState(true);
   const { sendEvent, socket } = useSocket();
@@ -109,7 +110,7 @@ function StartUp() {
           (location) => {
             const { latitude, longitude } = location.coords;
 
-            if (user?.role === "agent") {
+            if (user?.token && user?.role === "agent") {
               debouncedSendAgentLocation(latitude, longitude, user);
 
               sendEvent("agentLocation", {
@@ -139,6 +140,37 @@ function StartUp() {
       startLocationUpdates();
     }
   }, [socket, user, dispatch]);
+
+  useEffect(() => {
+    const handleDeepLink = (event) => {
+      const data = Linking.parse(event.url);
+      const state = data.queryParams.state;
+      if (!state) {
+        Alert.alert(
+          "Internal Server Error",
+          "An Unexpected error occurred while authorizing to Google",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("DailySchedule", { state });
+              },
+            },
+          ],
+          { cancelable: false } // Prevent closing the alert without user action
+        );
+      } else {
+        navigation.navigate("DailySchedule", { state });
+      }
+    };
+    // Add the event listener for deep linking
+    const linkingListener = Linking.addEventListener("url", handleDeepLink);
+
+    // Cleanup the event listener when component unmounts
+    return () => {
+      linkingListener.remove();
+    };
+  }, []);
 
   if (loading) {
     return (
