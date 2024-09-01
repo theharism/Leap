@@ -364,7 +364,7 @@ const EffectivenessReport = () => {
           >
             <EvilIcons
               name="calendar"
-              onPress={() => navigation.navigate("Daily Schedule")}
+              onPress={() => navigation.navigate("DailySchedule")}
               size={34}
               color="white"
               style={{ marginHorizontal: 3 }}

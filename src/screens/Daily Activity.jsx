@@ -391,7 +391,7 @@ const Activity = ({
             </TouchableOpacity>
 
             <TouchableOpacity // Make EvilIcons touchable
-              onPress={() => navigation.navigate("Daily Schedule")}
+              onPress={() => navigation.navigate("DailySchedule")}
               style={{ marginHorizontal: 2 }} // Add horizontal margin to space out the icon
             >
               <EvilIcons name="calendar" size={35} color="black" />
