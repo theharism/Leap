@@ -148,9 +148,9 @@ const Chat = ({ navigation, route }) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor:theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Adjust offset if needed
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // Adjust offset if needed
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>

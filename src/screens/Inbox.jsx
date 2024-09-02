@@ -94,8 +94,9 @@ const Inbox = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
+          marginHorizontal:"5%",
 
           //   backgroundColor: "black",
         }}
@@ -229,9 +230,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inboxContainerTop: {
-    width: "100%",
+    width: "90%",
     alignItems: "flex-end",
     marginTop: 15,
+    marginHorizontal:"5%"
   },
   inboxContainer: {
     width: "100%",

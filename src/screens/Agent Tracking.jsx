@@ -187,9 +187,9 @@ const AgentTracking = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal:"5%"
           //   backgroundColor: "black",
         }}
       >
@@ -255,6 +255,7 @@ const AgentTracking = ({ navigation }) => {
             marginTop: 30,
             maxHeight: "35%",
             justifyContent: "flex-start",
+            marginHorizontal:"5%"
           }}
         >
           <MapView
@@ -301,6 +302,7 @@ const AgentTracking = ({ navigation }) => {
         style={{
           maxHeight: "50%",
           justifyContent: "flex-start",
+          marginHorizontal:"5%"
         }}
       >
         {currentAgents.length > 0 ? (

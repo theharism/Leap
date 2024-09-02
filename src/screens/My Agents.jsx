@@ -100,9 +100,10 @@ const MyAgents = ({ navigation }) => {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-
+          marginHorizontal:"5%",
+          width:"90%"
           //   backgroundColor: "black",
         }}
       >
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 20,
     paddingHorizontal: 20,
+    alignItems:"center"
   },
   goBack: {
     marginLeft: 20,
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inboxContainerTop: {
-    width: "100%",
+    width: "90%",
     alignItems: "flex-end",
     marginTop: 15,
   },
