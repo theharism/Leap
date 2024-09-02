@@ -448,9 +448,10 @@ const EffectivenessReport = () => {
             borderRadius: 5,
             paddingVertical: 10,
             marginTop: 40,
+            
           }}
         >
-          <View>
+          <View style={{flexDirection:"row", justifyContent:"space-evenly"}}> 
             <Text
               style={{
                 fontSize: 26,
@@ -466,7 +467,7 @@ const EffectivenessReport = () => {
               name="add-circle-outline"
               size={30}
               color="black"
-              style={{ position: "absolute", right: 10, top: 5 }}
+              // style={{ position: "absolute", right: 10, top: 5 }}
             />
           </View>
           <View>
@@ -498,7 +499,7 @@ const EffectivenessReport = () => {
                   value={title}
                   style={{
                     marginVertical: 5,
-                    paddingHorizontal: 5,
+                    padding: "3%",
                     borderColor: "gray",
                     borderWidth: 1,
                     borderRadius: 5,
@@ -514,7 +515,8 @@ const EffectivenessReport = () => {
                   value={subTitle}
                   style={{
                     marginVertical: 5,
-                    paddingHorizontal: 5,
+                    padding: "3%",
+
                     borderColor: "gray",
                     borderWidth: 1,
                     borderRadius: 5,

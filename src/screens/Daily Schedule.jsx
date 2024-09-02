@@ -337,6 +337,7 @@ const TimelineCalendarScreen = ({ route }) => {
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
+          marginHorizontal:"5%"
 
           //   backgroundColor: "black",
         }}
@@ -359,7 +360,7 @@ const TimelineCalendarScreen = ({ route }) => {
             alignItems: "center",
             // backgroundColor: "red",
             justifyContent: "space-between",
-            marginTop: 10,
+            // marginTop: 10,
           }}
         >
           {/* <EvilIcons
