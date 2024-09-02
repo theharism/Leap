@@ -127,8 +127,11 @@ const AgentTracking = ({ navigation }) => {
   };
 
   const RenderItem = ({ navigation, publicURL, item, toggleExpansion }) => {
+    // const getTruncatedLocation = (location) => {
+    //   return location?.split(" ").slice(0, 3).join(" ") + "...";
+    // };
     const getTruncatedLocation = (location) => {
-      return location?.split(" ").slice(0, 3).join(" ") + "...";
+      return location?.substring(0, 15) + "...";
     };
 
     return (
