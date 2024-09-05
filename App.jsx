@@ -40,7 +40,7 @@ const sendAgentLocation = async (latitude, longitude, user) => {
 };
 
 // Debounce the function with a 2-second delay
-const debouncedSendAgentLocation = debounce(sendAgentLocation, 2000);
+const debouncedSendAgentLocation = debounce(sendAgentLocation, 10000);
 
 function StartUp() {
   const dispatch = useDispatch();
