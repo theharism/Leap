@@ -131,7 +131,7 @@ const AgentTracking = ({ navigation }) => {
     //   return location?.split(" ").slice(0, 3).join(" ") + "...";
     // };
     const getTruncatedLocation = (location) => {
-      return location?.substring(0, 15) + "...";
+      return location?.substring(0, 10) + "...";
     };
 
     return (
@@ -189,7 +189,7 @@ const AgentTracking = ({ navigation }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          marginHorizontal:"5%"
+          marginHorizontal: "5%",
           //   backgroundColor: "black",
         }}
       >
@@ -255,7 +255,7 @@ const AgentTracking = ({ navigation }) => {
             marginTop: 30,
             maxHeight: "35%",
             justifyContent: "flex-start",
-            marginHorizontal:"5%"
+            marginHorizontal: "5%",
           }}
         >
           <MapView
@@ -302,7 +302,7 @@ const AgentTracking = ({ navigation }) => {
         style={{
           maxHeight: "50%",
           justifyContent: "flex-start",
-          marginHorizontal:"5%"
+          marginHorizontal: "5%",
         }}
       >
         {currentAgents.length > 0 ? (
@@ -367,6 +367,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     marginLeft: 10,
+    marginRight: 10,
   },
   name: {
     fontSize: 16,
