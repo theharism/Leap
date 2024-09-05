@@ -6,10 +6,10 @@ import { resetCurrentCoordinates } from "../redux/features/locationSlice";
 import { resetEntries } from "../redux/features/entriesSlice";
 import { resetChat } from "../redux/features/chatSlice";
 
-// const baseURL = "https://leaptechsolutions.com/api";
-// const publicURL = "http://leaptechsolutions.com/public";
-const baseURL = "http://192.168.100.202:5000/api";
-const publicURL = "http://192.168.100.202:5000/public";
+const baseURL = "https://leaptechsolutions.com/api";
+const publicURL = "https://leaptechsolutions.com/public";
+// const baseURL = "http://192.168.100.202:5000/api";
+// const publicURL = "http://192.168.100.202:5000/public";
 
 const publicApi = axios.create({
   baseURL,
