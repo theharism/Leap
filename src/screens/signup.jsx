@@ -52,7 +52,10 @@ const SignUp = ({ navigation }) => {
       errors.email = true;
     if (!formData.password.trim() || formData.password.length < 8)
       errors.password = true;
-    if (!image) setImageError(true);
+    if (!image) {
+      setImageError(true);
+      return false;
+    }
 
     setFormErrors(errors);
 
@@ -152,7 +155,11 @@ const SignUp = ({ navigation }) => {
                   }}
                 />
               ) : (
-                <Ionicons name="camera-outline" size={40} color="white" />
+                <Ionicons
+                  name="camera-outline"
+                  size={40}
+                  color={imageError ? "red" : "white"}
+                />
               )}
             </TouchableOpacity>
 
