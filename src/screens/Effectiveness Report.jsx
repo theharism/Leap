@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -150,7 +151,7 @@ const Category = ({ goal, achieved, text, backgroundColor }) => {
 //   );
 // };
 
-const ImprovementPlan = ({ item }) => {
+const ImprovementPlan = ({ item, deletePlan }) => {
   const [expanded, setExpanded] = useState(false);
 
   // Toggle accordion state
@@ -179,6 +180,7 @@ const ImprovementPlan = ({ item }) => {
           width: "100%",
         }}
         onPress={toggleAccordion}
+        onLongPress={deletePlan}
         activeOpacity={0.7}
       >
         <Entypo
@@ -311,6 +313,36 @@ const EffectivenessReport = () => {
         setDescription("");
       })
       .catch((err) => console.error(err));
+  };
+
+  const deletePlan = (id) => {
+    // Show a confirmation alert to the user
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this improvement plan?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            // Proceed with the API call to delete the plan
+            privateApi(token)
+              .delete(`/improvementplan/${id}`)
+              .then((res) => {
+                // On success, filter out the deleted plan from the `plans` array
+                setPlans((prevPlans) =>
+                  prevPlans.filter((plan) => plan._id !== id)
+                );
+              })
+              .catch((err) => console.error(err));
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -448,10 +480,15 @@ const EffectivenessReport = () => {
             borderRadius: 5,
             paddingVertical: 10,
             marginTop: 40,
-            
           }}
         >
-          <View style={{flexDirection:"row", justifyContent:"space-evenly"}}> 
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+          >
             <Text
               style={{
                 fontSize: 26,
@@ -474,7 +511,11 @@ const EffectivenessReport = () => {
             <FlatList
               data={plans}
               renderItem={({ item, index }) => (
-                <ImprovementPlan key={index} item={item} />
+                <ImprovementPlan
+                  key={index}
+                  item={item}
+                  deletePlan={() => deletePlan(item._id)}
+                />
               )}
             />
           </View>
