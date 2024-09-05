@@ -27,6 +27,7 @@ import EffectivenessReport from "../screens/Effectiveness Report";
 import AnnualProgress from "../screens/Annual Progress";
 import Octicons from "@expo/vector-icons/Octicons";
 import DailySchedule from "../screens/Daily Schedule";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Inbox from "../screens/Inbox";
 import Chat from "../screens/Chat";
 import MyAgents from "../screens/My Agents";
@@ -247,29 +248,69 @@ const ManagerDrawerNav = () => {
 
 export default AppStack = () => {
   const role = useSelector((state) => state.User?.role);
+  const navigation = useNavigation();
 
   return (
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerShown: false,
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
       }}
     >
       {role === "agent" && (
         <>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Agent" component={DrawerNav} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Home"
+            component={Home}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Agent"
+            component={DrawerNav}
+          />
         </>
       )}
       {role === "supervisor" && (
         <>
-          <Stack.Screen name="Manager" component={ManagerDrawerNav} />
-          <Stack.Screen name="DailySchedule1" component={DailySchedule} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Manager"
+            component={ManagerDrawerNav}
+          />
+          <Stack.Screen
+            options={{
+              headerTitle: "",
+              headerStyle: {
+                backgroundColor: theme.colors.background,
+              },
+              headerShadowVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                >
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color="white"
+                    style={{ marginLeft: 30 }}
+                  />
+                </TouchableOpacity>
+              ),
+            }}
+            name="DailySchedule1"
+            component={DailySchedule}
+          />
         </>
       )}
 
-      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Chat"
+        component={Chat}
+      />
     </Stack.Navigator>
   );
 };
