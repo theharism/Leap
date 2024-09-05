@@ -2,11 +2,14 @@ import axios from "axios";
 import { store } from "../redux/store";
 import { logoutUser } from "../redux/features/userSlice";
 import { Alert } from "react-native";
+import { resetCurrentCoordinates } from "../redux/features/locationSlice";
+import { resetEntries } from "../redux/features/entriesSlice";
+import { resetChat } from "../redux/features/chatSlice";
 
-const baseURL = "https://leaptechsolutions.com/api";
-const publicURL = "http://leaptechsolutions.com/public";
-// const baseURL = "http://192.168.100.202:5000/api";
-// const publicURL = "http://192.168.100.202:5000/public";
+// const baseURL = "https://leaptechsolutions.com/api";
+// const publicURL = "http://leaptechsolutions.com/public";
+const baseURL = "http://192.168.100.202:5000/api";
+const publicURL = "http://192.168.100.202:5000/public";
 
 const publicApi = axios.create({
   baseURL,
@@ -39,6 +42,9 @@ const privateApi = (token) => {
               text: "OK",
               onPress: () => {
                 store.dispatch(logoutUser());
+                store.dispatch(resetCurrentCoordinates());
+                store.dispatch(resetEntries());
+                store.dispatch(resetChat());
               },
             },
           ],

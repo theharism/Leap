@@ -13,11 +13,15 @@ import { logoutUser, setUser } from "./src/redux/features/userSlice";
 import * as Location from "expo-location";
 import { store } from "./src/redux/store";
 import useSocket from "./src/hooks/useSocket";
-import { setCurrentCoordinates } from "./src/redux/features/locationSlice";
+import {
+  resetCurrentCoordinates,
+  setCurrentCoordinates,
+} from "./src/redux/features/locationSlice";
 import { privateApi } from "./src/api/axios";
-import { setEntries } from "./src/redux/features/entriesSlice";
+import { resetEntries, setEntries } from "./src/redux/features/entriesSlice";
 import { debounce } from "lodash";
 import * as Linking from "expo-linking";
+import { resetChat } from "./src/redux/features/chatSlice";
 
 // Define the function to send the agent location
 const sendAgentLocation = async (latitude, longitude, user) => {
@@ -71,6 +75,9 @@ function StartUp() {
                     text: "OK",
                     onPress: () => {
                       dispatch(logoutUser());
+                      dispatch(resetCurrentCoordinates());
+                      dispatch(resetEntries());
+                      dispatch(resetChat());
                     },
                   },
                 ],

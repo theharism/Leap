@@ -30,6 +30,9 @@ import DailySchedule from "../screens/Daily Schedule";
 import Inbox from "../screens/Inbox";
 import Chat from "../screens/Chat";
 import MyAgents from "../screens/My Agents";
+import { resetCurrentCoordinates } from "../redux/features/locationSlice";
+import { resetEntries } from "../redux/features/entriesSlice";
+import { resetChat } from "../redux/features/chatSlice";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -99,6 +102,9 @@ const DrawerNav = () => {
 
   const handleLogout = async () => {
     dispatch(logoutUser());
+    dispatch(resetCurrentCoordinates());
+    dispatch(resetEntries());
+    dispatch(resetChat());
   };
 
   return (
@@ -172,6 +178,9 @@ const ManagerDrawerNav = () => {
 
   const handleLogout = async () => {
     dispatch(logoutUser());
+    dispatch(resetCurrentCoordinates());
+    dispatch(resetEntries());
+    dispatch(resetChat());
   };
 
   return (
