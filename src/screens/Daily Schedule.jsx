@@ -38,6 +38,7 @@ import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from "expo-auth-session";
+import { useFocusEffect } from "@react-navigation/native";
 
 const redirectTo = makeRedirectUri();
 const INITIAL_TIME = { hour: 9, minutes: 0 };
@@ -65,79 +66,81 @@ const TimelineCalendarScreen = ({ route }) => {
   const [newEventEndTime, setNewEventEndTime] = useState(new Date());
   const [userAuthorized, setUserAuthorized] = useState(null);
 
-  useEffect(() => {
-    if (userId) {
-      privateApi(token)
-        .get(`/fetch-events/${userId}`)
-        .then((res) => {
-          const events = res.data.events;
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        privateApi(token)
+          .get(`/fetch-events/${userId}`)
+          .then((res) => {
+            const events = res.data.events;
 
-          const updatedEvents = events?.map((event) => {
-            return {
-              title: event.title,
-              description: event.description,
-              start: event.startTime,
-              end: event.endTime,
-              status: event.status,
-              source: event?.source || "local",
-              color:
-                event?.source === "google"
-                  ? "#418be5"
-                  : event.status === "Completed"
-                  ? "#4CAF50"
-                  : event.status === "Started"
-                  ? "#4A90E2"
-                  : "#FFA500",
-            };
-          });
+            const updatedEvents = events?.map((event) => {
+              return {
+                title: event.title,
+                description: event.description,
+                start: event.startTime,
+                end: event.endTime,
+                status: event.status,
+                source: event?.source || "local",
+                color:
+                  event?.source === "google"
+                    ? "#418be5"
+                    : event.status === "Completed"
+                    ? "#4CAF50"
+                    : event.status === "Started"
+                    ? "#4A90E2"
+                    : "#FFA500",
+              };
+            });
 
-          setEvents(updatedEvents);
-          setEventsByDate(
-            groupBy(updatedEvents, (e) =>
-              CalendarUtils.getCalendarDateString(e.start)
-            )
-          );
-          setUserAuthorized(res.data.isGoogle);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    } else {
-      privateApi(token)
-        .get(`/fetch-events/${_id}`)
-        .then((res) => {
-          const events = res.data.events;
+            setEvents(updatedEvents);
+            setEventsByDate(
+              groupBy(updatedEvents, (e) =>
+                CalendarUtils.getCalendarDateString(e.start)
+              )
+            );
+            setUserAuthorized(res.data.isGoogle);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      } else {
+        privateApi(token)
+          .get(`/fetch-events/${_id}`)
+          .then((res) => {
+            const events = res.data.events;
 
-          const updatedEvents = events?.map((event) => {
-            return {
-              title: event.title,
-              description: event.description,
-              start: event.startTime,
-              end: event.endTime,
-              status: event.status,
-              source: event?.source || "local",
-              color:
-                event?.source === "google"
-                  ? "#418be5"
-                  : event.status === "Completed"
-                  ? "#4CAF50"
-                  : event.status === "Started"
-                  ? "#4A90E2"
-                  : "#FFA500",
-            };
-          });
+            const updatedEvents = events?.map((event) => {
+              return {
+                title: event.title,
+                description: event.description,
+                start: event.startTime,
+                end: event.endTime,
+                status: event.status,
+                source: event?.source || "local",
+                color:
+                  event?.source === "google"
+                    ? "#418be5"
+                    : event.status === "Completed"
+                    ? "#4CAF50"
+                    : event.status === "Started"
+                    ? "#4A90E2"
+                    : "#FFA500",
+              };
+            });
 
-          setEvents(updatedEvents);
-          setEventsByDate(
-            groupBy(updatedEvents, (e) =>
-              CalendarUtils.getCalendarDateString(e.start)
-            )
-          );
-          setUserAuthorized(res.data.isGoogle);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [state, userId, token]);
+            setEvents(updatedEvents);
+            setEventsByDate(
+              groupBy(updatedEvents, (e) =>
+                CalendarUtils.getCalendarDateString(e.start)
+              )
+            );
+            setUserAuthorized(res.data.isGoogle);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [state, userId, token])
+  );
 
   const markedDates = {
     [currentDate]: { marked: true },
@@ -337,7 +340,7 @@ const TimelineCalendarScreen = ({ route }) => {
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
-          marginHorizontal:"5%"
+          marginHorizontal: "5%",
 
           //   backgroundColor: "black",
         }}

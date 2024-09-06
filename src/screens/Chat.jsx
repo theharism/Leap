@@ -19,6 +19,7 @@ import { addMessage, setChat } from "../redux/features/chatSlice";
 import { theme } from "../constants/theme";
 import { privateApi } from "../api/axios";
 import Loader from "../components/Loader";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Chat = ({ navigation, route }) => {
   const { userId1, userId2, userName2 } = route?.params || {};
@@ -32,81 +33,85 @@ const Chat = ({ navigation, route }) => {
   const [messageText, setMessageText] = useState("");
   const messages = useSelector((state) => state.Chat.messages);
 
-  useEffect(() => {
-    if (socket && userId1 && userId2) {
-      sendEvent("join", { userId1, userId2 });
+  useFocusEffect(
+    React.useCallback(() => {
+      if (socket && userId1 && userId2) {
+        sendEvent("join", { userId1, userId2 });
 
-      const handleMessageReceive = (newMessage) => {
-        if (newMessage?.sender != userId1) {
-          const date = new Date();
-          const formattedTime = date
-            .toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-            .toUpperCase();
-
-          const msgObj = {
-            id: Date.now(),
-            message: newMessage?.content,
-            time: formattedTime,
-            type: "receiver",
-          };
-
-          dispatch(addMessage({ message: msgObj, unread: 1 }));
-        }
-      };
-
-      onEvent("receive_message", handleMessageReceive);
-
-      return () => {
-        socket.off("receive_message", handleMessageReceive);
-      };
-    }
-  }, [socket, userId1, userId2, sendEvent, onEvent]);
-
-  useEffect(() => {
-    if (token && userId1 && userId2) {
-      privateApi(token)
-        .get(`/chat/${userId1}/${userId2}`)
-        .then((res) => {
-          const newMessages = res.data.map((msg) => {
-            const formattedTime = new Date(msg.timestamp)
+        const handleMessageReceive = (newMessage) => {
+          if (newMessage?.sender != userId1) {
+            const date = new Date();
+            const formattedTime = date
               .toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
                 hour12: true,
               })
               .toUpperCase();
-            let type = "";
-            if (msg.sender === userId1) {
-              type = "sender";
-            } else {
-              type = "receiver";
-            }
 
             const msgObj = {
               id: Date.now(),
-              message: msg.content,
+              message: newMessage?.content,
               time: formattedTime,
-              type,
+              type: "receiver",
             };
 
-            return msgObj;
-          });
+            dispatch(addMessage({ message: msgObj, unread: 1 }));
+          }
+        };
 
-          dispatch(
-            setChat({
-              messages: newMessages,
-              unread: 0,
-            })
-          );
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [token, userId1, userId2]);
+        onEvent("receive_message", handleMessageReceive);
+
+        return () => {
+          socket.off("receive_message", handleMessageReceive);
+        };
+      }
+    }, [socket, userId1, userId2, sendEvent, onEvent])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token && userId1 && userId2) {
+        privateApi(token)
+          .get(`/chat/${userId1}/${userId2}`)
+          .then((res) => {
+            const newMessages = res.data.map((msg) => {
+              const formattedTime = new Date(msg.timestamp)
+                .toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .toUpperCase();
+              let type = "";
+              if (msg.sender === userId1) {
+                type = "sender";
+              } else {
+                type = "receiver";
+              }
+
+              const msgObj = {
+                id: Date.now(),
+                message: msg.content,
+                time: formattedTime,
+                type,
+              };
+
+              return msgObj;
+            });
+
+            dispatch(
+              setChat({
+                messages: newMessages,
+                unread: 0,
+              })
+            );
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token, userId1, userId2])
+  );
 
   useEffect(() => {
     // dispatch(resetUnread());
@@ -148,7 +153,7 @@ const Chat = ({ navigation, route }) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor:theme.colors.background }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // Adjust offset if needed
     >

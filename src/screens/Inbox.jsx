@@ -23,6 +23,7 @@ import {
 } from "@expo/vector-icons";
 import Loader from "../components/Loader";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useFocusEffect } from "@react-navigation/native";
 
 const handleDelete = () => {
   console.log("Deleted");
@@ -42,17 +43,19 @@ const Inbox = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      privateApi(token)
-        .get(`/inbox`)
-        .then((res) => {
-          setChats(res.data);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [token]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get(`/inbox`)
+          .then((res) => {
+            setChats(res.data);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   const InboxComponent = ({ navigation, id, username, time, message }) => {
     return (
@@ -96,7 +99,7 @@ const Inbox = ({ navigation }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          marginHorizontal:"5%",
+          marginHorizontal: "5%",
 
           //   backgroundColor: "black",
         }}
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
     width: "90%",
     alignItems: "flex-end",
     marginTop: 15,
-    marginHorizontal:"5%"
+    marginHorizontal: "5%",
   },
   inboxContainer: {
     width: "100%",

@@ -31,6 +31,7 @@ import Loader from "../components/Loader";
 import { Video, ResizeMode } from "expo-av";
 import { Button } from "react-native-paper";
 import * as Linking from "expo-linking";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Activity = ({
   text,
@@ -453,24 +454,26 @@ const DailyActivity = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      privateApi(token)
-        .get(`/pas/daily?date=${new Date().toLocaleDateString("en-GB")}`)
-        .then((res) => {
-          dispatch(setDailyAchieved({ daily: res.data.pas }));
-        })
-        .catch((err) => console.error(err));
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get(`/pas/daily?date=${new Date().toLocaleDateString("en-GB")}`)
+          .then((res) => {
+            dispatch(setDailyAchieved({ daily: res.data.pas }));
+          })
+          .catch((err) => console.error(err));
 
-      privateApi(token)
-        .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
-        .then((res) => {
-          dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [token]);
+        privateApi(token)
+          .get(`/pas/weekly?date=${new Date().toLocaleDateString("en-GB")}`)
+          .then((res) => {
+            dispatch(setWeeklyAchieved({ weekly: res.data.pas }));
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   const updateAchievements = (data, type) => {
     if (entries?.SalesTargets?.averageCaseSize) {

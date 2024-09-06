@@ -34,6 +34,7 @@ import useSocket from "../hooks/useSocket";
 import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
 import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
 import { privateApi, publicURL } from "../api/axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 const AgentTracking = ({ navigation }) => {
   const user = useSelector((state) => state.User);
@@ -96,11 +97,13 @@ const AgentTracking = ({ navigation }) => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    if (user?.token) {
-      getAgentLocations();
-    }
-  }, [user]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.token) {
+        getAgentLocations();
+      }
+    }, [user])
+  );
 
   const onRefresh = useCallback(() => {
     getAgentLocations();

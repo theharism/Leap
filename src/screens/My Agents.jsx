@@ -23,23 +23,26 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import Loader from "../components/Loader";
+import { useFocusEffect } from "@react-navigation/native";
 
 const MyAgents = ({ navigation }) => {
   const { token, _id } = useSelector((state) => state.User);
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      privateApi(token)
-        .get(`/agents`)
-        .then((res) => {
-          setAgents(res.data);
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
-    }
-  }, [token]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        privateApi(token)
+          .get(`/agents`)
+          .then((res) => {
+            setAgents(res.data);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      }
+    }, [token])
+  );
 
   const AgentComponent = ({ navigation, id, fullName, email }) => {
     return (
@@ -102,8 +105,8 @@ const MyAgents = ({ navigation }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          marginHorizontal:"5%",
-          width:"90%"
+          marginHorizontal: "5%",
+          width: "90%",
           //   backgroundColor: "black",
         }}
       >
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 20,
     paddingHorizontal: 20,
-    alignItems:"center"
+    alignItems: "center",
   },
   goBack: {
     marginLeft: 20,
