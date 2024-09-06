@@ -56,35 +56,6 @@ function StartUp() {
       if (storedUserString) {
         const parsedUser = JSON.parse(storedUserString);
         dispatch(setUser({ user: parsedUser }));
-
-        privateApi(parsedUser?.token)
-          .get("/entries")
-          .then((res) => {
-            dispatch(setEntries({ entries: res.data.entries }));
-          })
-          .catch((err) => {
-            console.error("Error fetching entries", err.response?.data);
-
-            if (err.response?.status === 401) {
-              // Show alert and handle logout on OK
-              Alert.alert(
-                "Session Expired",
-                "Your session has expired. Please log in again.",
-                [
-                  {
-                    text: "OK",
-                    onPress: () => {
-                      dispatch(logoutUser());
-                      dispatch(resetCurrentCoordinates());
-                      dispatch(resetEntries());
-                      dispatch(resetChat());
-                    },
-                  },
-                ],
-                { cancelable: false } // Prevent closing the alert without user action
-              );
-            }
-          });
       }
     } catch (error) {
       console.error("Error loading user from AsyncStorage:", error);
@@ -92,6 +63,43 @@ function StartUp() {
       setLoading(false);
     }
   }, [dispatch]);
+
+  const loadEntries = useCallback(async () => {
+    if (user?.token) {
+      try {
+        const res = await privateApi(user.token).get("/entries");
+        dispatch(setEntries({ entries: res.data.entries }));
+      } catch (err) {
+        console.error("Error fetching entries", err.response?.data);
+
+        if (err.response?.status === 401) {
+          Alert.alert(
+            "Session Expired",
+            "Your session has expired. Please log in again.",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  dispatch(logoutUser());
+                  dispatch(resetCurrentCoordinates());
+                  dispatch(resetEntries());
+                  dispatch(resetChat());
+                },
+              },
+            ],
+            { cancelable: false } // Prevent closing the alert without user action
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [user, dispatch]); // Add user as a dependency here
+
+  // useEffect to call loadEntries when user changes
+  useEffect(() => {
+    loadEntries();
+  }, [loadEntries]); // Make sure to call loadEntries when it changes
 
   useEffect(() => {
     loadUser();
