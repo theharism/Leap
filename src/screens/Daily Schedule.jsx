@@ -290,16 +290,16 @@ const TimelineCalendarScreen = ({ route }) => {
     setNewEventStatus("Pending");
   };
 
-  const AuthorizeToGoogle = () => {
-    setLoading(true);
-    privateApi(token)
-      .get(`/auth/google?redirect=${redirectTo}`)
-      .then(
-        async (res) => await WebBrowser.openAuthSessionAsync(res.data.authUrl)
-      )
-      .catch((err) => Alert.alert(err.response.data.message))
-      .finally(() => setLoading(false));
-  };
+  // const AuthorizeToGoogle = () => {
+  //   setLoading(true);
+  //   privateApi(token)
+  //     .get(`/auth/google?redirect=${redirectTo}`)
+  //     .then(
+  //       async (res) => await WebBrowser.openAuthSessionAsync(res.data.authUrl)
+  //     )
+  //     .catch((err) => Alert.alert(err.response.data.message))
+  //     .finally(() => setLoading(false));
+  // };
 
   // const handleStatusChange = (status) => {
   //   if (selectedEvent) {
@@ -373,7 +373,7 @@ const TimelineCalendarScreen = ({ route }) => {
             color="white"
             style={{ marginHorizontal: 3 }}
           /> */}
-          {!userAuthorized && role === "agent" && (
+          {/* {!userAuthorized && role === "agent" && (
             <Button
               icon="google"
               buttonColor="white"
@@ -381,7 +381,7 @@ const TimelineCalendarScreen = ({ route }) => {
             >
               Authorize
             </Button>
-          )}
+          )} */}
           {/* <MaterialCommunityIcons
             name="progress-check"
             onPress={() => navigation.navigate("Annual Progress")}
