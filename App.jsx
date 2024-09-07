@@ -26,6 +26,9 @@ import { resetChat } from "./src/redux/features/chatSlice";
 // Define the function to send the agent location
 const sendAgentLocation = async (latitude, longitude, user) => {
   try {
+    if (!user) {
+      return;
+    }
     const response = await privateApi(user?.token).post("/location", {
       latitude,
       longitude,
@@ -67,6 +70,7 @@ function StartUp() {
   const loadEntries = useCallback(async () => {
     if (user?.token) {
       try {
+        setLoading(true);
         const res = await privateApi(user.token).get("/entries");
         dispatch(setEntries({ entries: res.data.entries }));
       } catch (err) {
