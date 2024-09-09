@@ -170,11 +170,11 @@ const AgentTracking = ({ navigation }) => {
               })
             }
           />
-          <View style={styles.distanceContainer}>
+          {/* <View style={styles.distanceContainer}>
             <Text style={styles.distanceText}>
               {Math.round(item?.distance)} mi
             </Text>
-          </View>
+          </View> */}
         </View>
       </Pressable>
     );

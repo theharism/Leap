@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
   },
   leftSideView: {
     flexDirection: "row",
+    maxWidth:"80%",
     alignItems: "center",
   },
   rightSideView: {
