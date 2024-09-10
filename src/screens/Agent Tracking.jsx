@@ -1,8 +1,10 @@
 import {
   ActivityIndicator,
   Alert,
+  Button,
   FlatList,
   Image,
+  Modal,
   Pressable,
   RefreshControl,
   SafeAreaView,
@@ -23,6 +25,7 @@ import {
   Entypo,
   MaterialIcons,
 } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Loader from "../components/Loader";
 import MapView, {
   PROVIDER_GOOGLE,
@@ -35,6 +38,7 @@ import { getAddressFromCoordinates } from "../utils/decodeCoordinates";
 import { getDistanceBetweenCoordinates } from "../utils/calculateDistance";
 import { privateApi, publicURL } from "../api/axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { debounce } from "lodash";
 
 const AgentTracking = ({ navigation }) => {
   const user = useSelector((state) => state.User);
@@ -48,17 +52,44 @@ const AgentTracking = ({ navigation }) => {
   const [currentAgents, setCurrentAgents] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
 
+  const [agentEntries, setAgentEntries] = useState({});
+  const [displayModal, setDisplayModal] = useState(false);
+
+  const debouncedProcessLocation = debounce(ProcessLocation, 10000);
+
+  const fetchAgentEntries = (agentId) => {
+    setLoading(true);
+    privateApi(user?.token)
+      .get(`/entries/${agentId}`)
+      .then((res) => {
+        setAgentEntries(res.data.entries);
+        setDisplayModal(true);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        Alert.alert(err.response.data.message || "Internal Server Error");
+      })
+      .finally(() => {
+        setDisplayModal(true);
+
+        setLoading(false);
+        setDisplayModal(true);
+        setDisplayModal(true);
+      });
+  };
+
   async function ProcessLocation(data) {
     const location = await getAddressFromCoordinates(
       data.latitude,
       data.longitude
     );
-    const distance = getDistanceBetweenCoordinates(
+    const distance = await getDistanceBetweenCoordinates(
       data.latitude,
       data.longitude,
       currentCoordinates.latitude,
       currentCoordinates.longitude
     );
+
     setCurrentAgents((prevAgents) => {
       const agentIndex = prevAgents.findIndex(
         (agent) => agent.agentId === data.agentId
@@ -82,7 +113,7 @@ const AgentTracking = ({ navigation }) => {
     });
   }
   // console.log(currentAgents);
-  onEvent("managerReceiveLocation", ProcessLocation);
+  // onEvent("managerReceiveLocation", debouncedProcessLocation);
 
   const getAgentLocations = () => {
     setLoading(true);
@@ -133,6 +164,7 @@ const AgentTracking = ({ navigation }) => {
     // const getTruncatedLocation = (location) => {
     //   return location?.split(" ").slice(0, 3).join(" ") + "...";
     // };
+
     const getTruncatedLocation = (location) => {
       return location?.substring(0, 10) + "...";
     };
@@ -162,6 +194,7 @@ const AgentTracking = ({ navigation }) => {
             name="message1"
             size={26}
             color="black"
+            style={{ marginRight: 5 }}
             onPress={() =>
               navigation.navigate("Chat", {
                 userId1: user?._id,
@@ -170,11 +203,17 @@ const AgentTracking = ({ navigation }) => {
               })
             }
           />
-          {/* <View style={styles.distanceContainer}>
+          <Ionicons
+            name="checkmark-done"
+            size={24}
+            color="black"
+            onPress={() => fetchAgentEntries(item?.agentId)}
+          />
+          <View style={styles.distanceContainer}>
             <Text style={styles.distanceText}>
               {Math.round(item?.distance)} mi
             </Text>
-          </View> */}
+          </View>
         </View>
       </Pressable>
     );
@@ -285,7 +324,12 @@ const AgentTracking = ({ navigation }) => {
                 }}
                 flat={true}
                 anchor={{ x: 0.5, y: 0.5 }}
-              />
+              >
+                <Image
+                  source={{ uri: `${publicURL}${agent?.profilePic}` }}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              </Marker>
             ))}
           </MapView>
         </View>
@@ -337,6 +381,43 @@ const AgentTracking = ({ navigation }) => {
           </Text>
         )}
       </View>
+
+      <Modal animationType="slide" transparent={true} visible={displayModal}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Sales Targets: {agentEntries?.SalesTargets?.salesTargets || 0}
+            </Text>
+            <Text style={styles.modalText}>
+              Average Case Size:{" "}
+              {agentEntries?.SalesTargets?.averageCaseSize || 0}
+            </Text>
+            <Text style={styles.modalText}>
+              Number of Weeks: {agentEntries?.SalesTargets?.numberOfWeeks || 0}
+            </Text>
+            <Text style={styles.modalText}>
+              Prospecting Approach:{" "}
+              {agentEntries?.SuccessFormula?.prospectingApproach || 0}
+            </Text>
+            <Text style={styles.modalText}>
+              Appointments Kept:{" "}
+              {agentEntries?.SuccessFormula?.appointmentsKept || 0}
+            </Text>
+            <Text style={styles.modalText}>
+              Sales Submitted:{" "}
+              {agentEntries?.SuccessFormula?.salesSubmitted || 0}
+            </Text>
+
+            <Button
+              title="Close"
+              onPress={() => {
+                setDisplayModal(false);
+                setAgentEntries({});
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
 
       {loading && <Loader />}
     </SafeAreaView>
@@ -391,5 +472,27 @@ const styles = StyleSheet.create({
   distanceText: {
     color: "white",
     fontWeight: "bold",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional background dimming
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
