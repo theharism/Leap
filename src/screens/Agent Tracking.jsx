@@ -130,10 +130,10 @@ const AgentTracking = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.token) {
+      if (user?.token && currentCoordinates?.longitude !== 0) {
         getAgentLocations();
       }
-    }, [user])
+    }, [user, currentCoordinates])
   );
 
   const onRefresh = useCallback(() => {
