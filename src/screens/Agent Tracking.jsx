@@ -53,6 +53,7 @@ const AgentTracking = ({ navigation }) => {
   const [expandedItems, setExpandedItems] = useState({});
 
   const [agentEntries, setAgentEntries] = useState({});
+  const [agentPAS, setAgentPAS] = useState({});
   const [displayModal, setDisplayModal] = useState(false);
 
   const debouncedProcessLocation = debounce(ProcessLocation, 10000);
@@ -62,7 +63,8 @@ const AgentTracking = ({ navigation }) => {
     privateApi(user?.token)
       .get(`/entries/${agentId}`)
       .then((res) => {
-        setAgentEntries(res.data.entries);
+        setAgentEntries(res.data?.entries);
+        setAgentPAS(res.data?.pas);
         setDisplayModal(true);
       })
       .catch((err) => {
@@ -386,27 +388,44 @@ const AgentTracking = ({ navigation }) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              Sales Targets: {agentEntries?.SalesTargets?.salesTargets || 0}
+              YTD P:{" "}
+              {(
+                (agentPAS?.p_yearly /
+                  (agentPAS?.total_days * agentEntries?.daily_goals?.p_daily)) *
+                  100 || 0
+              ).toFixed(0)}
+              %
             </Text>
             <Text style={styles.modalText}>
-              Average Case Size:{" "}
-              {agentEntries?.SalesTargets?.averageCaseSize || 0}
+              YTD A:{" "}
+              {(
+                (agentPAS?.a_yearly /
+                  (agentPAS?.total_days * agentEntries?.daily_goals?.a_daily)) *
+                  100 || 0
+              ).toFixed(0)}
+              %
             </Text>
             <Text style={styles.modalText}>
-              Number of Weeks: {agentEntries?.SalesTargets?.numberOfWeeks || 0}
+              YTD S:{" "}
+              {(
+                (agentPAS?.s_yearly /
+                  (agentPAS?.total_days * agentEntries?.daily_goals?.s_daily)) *
+                  100 || 0
+              ).toFixed(0)}
+              %
             </Text>
             <Text style={styles.modalText}>
-              Prospecting Approach:{" "}
-              {agentEntries?.SuccessFormula?.prospectingApproach || 0}
+              YTD Premium: $
+              {agentPAS?.totalPremiumYearly?.toLocaleString() || 0}
             </Text>
-            <Text style={styles.modalText}>
+            {/* <Text style={styles.modalText}>
               Appointments Kept:{" "}
               {agentEntries?.SuccessFormula?.appointmentsKept || 0}
             </Text>
             <Text style={styles.modalText}>
               Sales Submitted:{" "}
               {agentEntries?.SuccessFormula?.salesSubmitted || 0}
-            </Text>
+            </Text> */}
 
             <Button
               title="Close"
