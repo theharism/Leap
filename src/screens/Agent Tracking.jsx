@@ -132,7 +132,11 @@ const AgentTracking = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.token && currentCoordinates?.longitude !== 0) {
+      if (
+        user?.token &&
+        currentCoordinates?.longitude !== 0 &&
+        currentAgents.length === 0
+      ) {
         getAgentLocations();
       }
     }, [user, currentCoordinates])
@@ -219,6 +223,21 @@ const AgentTracking = ({ navigation }) => {
         </View>
       </Pressable>
     );
+  };
+
+  const calculateSalesRatioAchieved = (agentPAS) => {
+    const yearlyAchievedA = agentPAS?.a_yearly;
+    const yearlyAchievedS = agentPAS?.p_yearly;
+
+    if (!yearlyAchievedA || !yearlyAchievedS) return 0;
+
+    const SalesRatio = yearlyAchievedS / yearlyAchievedA;
+
+    if (SalesRatio === 0 || isNaN(SalesRatio) || SalesRatio === Infinity) {
+      return 0;
+    }
+
+    return Math.ceil(SalesRatio * 100);
   };
 
   return (
@@ -384,7 +403,7 @@ const AgentTracking = ({ navigation }) => {
         )}
       </View>
 
-      <Modal animationType="slide" transparent={true} visible={displayModal}>
+      {/* <Modal animationType="slide" transparent={true} visible={displayModal}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
@@ -415,17 +434,25 @@ const AgentTracking = ({ navigation }) => {
               %
             </Text>
             <Text style={styles.modalText}>
+              Appointments Ratio:{" "}
+              {Math.ceil((agentPAS?.a_yearly / agentPAS?.p_yearly) * 100 || 0)}%
+            </Text>
+            <Text style={styles.modalText}>
+              Sales Ratio: {calculateSalesRatioAchieved(agentPAS)}%
+            </Text>
+            <Text style={styles.modalText}>
               YTD Premium: $
               {agentPAS?.totalPremiumYearly?.toLocaleString() || 0}
             </Text>
-            {/* <Text style={styles.modalText}>
-              Appointments Kept:{" "}
-              {agentEntries?.SuccessFormula?.appointmentsKept || 0}
-            </Text>
             <Text style={styles.modalText}>
-              Sales Submitted:{" "}
-              {agentEntries?.SuccessFormula?.salesSubmitted || 0}
-            </Text> */}
+              Sales Progress:
+              {(
+                (agentPAS?.totalPremiumYearly /
+                  agentEntries?.SalesTargets?.salesTargets) *
+                  100 || 0
+              ).toFixed(0)}
+              %
+            </Text>
 
             <Button
               title="Close"
@@ -434,6 +461,106 @@ const AgentTracking = ({ navigation }) => {
                 setAgentEntries({});
               }}
             />
+          </View>
+        </View>
+      </Modal> */}
+
+      <Modal animationType="slide" transparent={true} visible={displayModal}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ScrollView>
+              <Text style={styles.modalTitle}>Agent Performance Summary</Text>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>YTD Progress</Text>
+                <View style={styles.row}>
+                  <Text style={styles.label}>YTD P:</Text>
+                  <Text style={styles.value}>
+                    {(
+                      (agentPAS?.p_yearly /
+                        (agentPAS?.total_days *
+                          agentEntries?.daily_goals?.p_daily)) *
+                        100 || 0
+                    ).toFixed(0)}
+                    %
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>YTD A:</Text>
+                  <Text style={styles.value}>
+                    {(
+                      (agentPAS?.a_yearly /
+                        (agentPAS?.total_days *
+                          agentEntries?.daily_goals?.a_daily)) *
+                        100 || 0
+                    ).toFixed(0)}
+                    %
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>YTD S:</Text>
+                  <Text style={styles.value}>
+                    {(
+                      (agentPAS?.s_yearly /
+                        (agentPAS?.total_days *
+                          agentEntries?.daily_goals?.s_daily)) *
+                        100 || 0
+                    ).toFixed(0)}
+                    %
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Ratios</Text>
+                <View style={styles.row}>
+                  <Text style={styles.label}>Appointments Ratio:</Text>
+                  <Text style={styles.value}>
+                    {Math.ceil(
+                      (agentPAS?.a_yearly / agentPAS?.p_yearly) * 100 || 0
+                    )}
+                    %
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>Sales Ratio:</Text>
+                  <Text style={styles.value}>
+                    {calculateSalesRatioAchieved(agentPAS)}%
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Financials</Text>
+                <View style={styles.row}>
+                  <Text style={styles.label}>YTD Premium:</Text>
+                  <Text style={styles.value}>
+                    ${agentPAS?.totalPremiumYearly?.toLocaleString() || 0}
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.label}>Progress:</Text>
+                  <Text style={styles.value}>
+                    {(
+                      (agentPAS?.totalPremiumYearly /
+                        agentEntries?.SalesTargets?.salesTargets) *
+                        100 || 0
+                    ).toFixed(0)}
+                    %
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                setDisplayModal(false);
+                setAgentEntries({});
+              }}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -492,26 +619,82 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+  // centeredView: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional background dimming
+  // },
+  // modalView: {
+  //   width: 300,
+  //   backgroundColor: "white",
+  //   borderRadius: 20,
+  //   padding: 20,
+  //   alignItems: "center",
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 4,
+  //   elevation: 5,
+  // },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional background dimming
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalView: {
-    width: 300,
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 20,
-    alignItems: "center",
+    width: "90%",
+    maxHeight: "80%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
-  modalText: {
-    marginBottom: 15,
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
     textAlign: "center",
+  },
+  section: {
+    marginVertical: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 2,
+  },
+  label: {
+    fontSize: 14,
+    color: "#555",
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    backgroundColor: "#2196F3",
+    borderRadius: 5,
+    padding: 10,
+    alignItems: "center",
+    marginTop: 15,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
   },
 });
