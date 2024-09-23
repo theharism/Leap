@@ -278,7 +278,7 @@ const EffectivenessReport = () => {
 
   const calculateSalesRatioAchieved = (entries) => {
     const yearlyAchievedA = entries?.yearly_achieved?.a_yearly;
-    const yearlyAchievedS = entries?.yearly_achieved?.a_yearly;
+    const yearlyAchievedS = entries?.yearly_achieved?.s_yearly;
 
     if (!yearlyAchievedA || !yearlyAchievedS) return 0;
 
