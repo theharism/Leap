@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { gamificationApi } from "../api/gamification";
 import { theme } from "../constants/theme";
+import { getModuleConfig } from "../constants/moduleConfig";
 import Loader from "../components/Loader";
 import GamificationCard from "../components/GamificationCard";
 import GamificationEmptyState from "../components/GamificationEmptyState";
@@ -23,11 +24,29 @@ import {
   setManagerMissions,
 } from "../redux/features/gamificationSlice";
 
+// "#3871c1" -> "rgba(56, 113, 193, alpha)" so surface tints follow the module.
+const withAlpha = (hex, alpha) => {
+  const value = String(hex || "").replace("#", "");
+  if (value.length !== 6) return `rgba(56, 113, 193, ${alpha})`;
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 const ManagerDashboard = ({ navigation }) => {
   const token = useSelector((state) => state.User?.token);
   const { dashboard, leaderboard, alerts, coachingPrompts, missions } =
     useSelector((state) => state.Gamification.manager);
+  const selectedModule = useSelector((state) => state.Module?.selectedModule);
   const dispatch = useDispatch();
+
+  // `styles` below is built by StyleSheet.create at import time, which snapshots
+  // theme.colors before applyModuleTheme() has run for the active module — so a
+  // static container keeps LEAP's blue even inside QUEST. Read the module's
+  // colours here, at render, and override the frozen values.
+  const moduleColors = getModuleConfig(selectedModule).colors;
+  const tint = withAlpha(moduleColors.background, 0.06);
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
@@ -72,10 +91,12 @@ const ManagerDashboard = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: moduleColors.background }]}
+    >
       <StatusBar
         barStyle="light-content"
-        backgroundColor={theme.colors.background}
+        backgroundColor={moduleColors.background}
       />
       <ScrollView
         style={styles.scrollView}
@@ -87,7 +108,7 @@ const ManagerDashboard = ({ navigation }) => {
         <GamificationCard title="Quick Access" subtitle="Jump to the action">
           <View style={styles.quickRow}>
             <TouchableOpacity
-              style={styles.quickButton}
+              style={[styles.quickButton, { backgroundColor: tint }]}
               onPress={() => navigation.navigate("My Agents")}
             >
               <Text style={styles.quickButtonTitle}>My Agents</Text>
@@ -96,7 +117,7 @@ const ManagerDashboard = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.quickButton}
+              style={[styles.quickButton, { backgroundColor: tint }]}
               onPress={() => navigation.navigate("Live Locations")}
             >
               <Text style={styles.quickButtonTitle}>Live Locations</Text>
@@ -113,7 +134,7 @@ const ManagerDashboard = ({ navigation }) => {
               {Object.entries(dashboard.summary)
                 .slice(0, 4)
                 .map(([key, value]) => (
-                  <View key={key} style={styles.summaryCard}>
+                  <View key={key} style={[styles.summaryCard, { backgroundColor: tint }]}>
                     <Text style={styles.summaryKey}>{key}</Text>
                     <Text style={styles.summaryValue}>{String(value)}</Text>
                   </View>
